@@ -12,6 +12,23 @@ export function initForm(form: HTMLFormElement) {
   // Pre-select the subject from ?objet=… (links from other pages).
   const objet = new URLSearchParams(location.search).get('objet');
   if (objet && Array.from(subject.options).some((o) => o.value === objet)) subject.value = objet;
+  // Pre-fill the message with the chosen formation(s) or pack.
+  const params = new URLSearchParams(location.search);
+  const pack = params.get('pack');
+  const codes = params.get('f');
+  const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+  if (message && !message.value && (pack || codes)) {
+    const lines: string[] = [];
+    if (pack) {
+      const m = pack.match(/^(pack|sur-mesure)-(\d+)$/);
+      if (m) lines.push(m[1] === 'pack' ? `Je souhaite un devis pour le pack ${m[2]} h.` : `Je souhaite un devis pour un pack sur mesure (objectif ${m[2]} h).`);
+    }
+    if (codes) {
+      const list = codes.split(',').filter((c) => /^F\d{2}$/.test(c));
+      if (list.length) lines.push(`${pack ? 'Formations choisies' : 'Formation'} : ${list.join(', ')}.`);
+    }
+    if (lines.length) message.value = `${lines.join('\n')}\n\nMa carte professionnelle : \nMon échéance de renouvellement : `;
+  }
 
   const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea'));
   fields.forEach((f) => f.addEventListener('input', () => f.removeAttribute('aria-invalid')));

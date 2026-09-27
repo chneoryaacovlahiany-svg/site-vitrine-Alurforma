@@ -223,6 +223,22 @@ if (config) initConfigurator(config, $('[data-config-result]')!);
 const form = $<HTMLFormElement>('[data-form]');
 if (form) initForm(form);
 
+// Formations page: catalogue, course sheets and pack composer.
+if (document.querySelector('[data-course-grid]')) {
+  const subtabsEl = $('[data-subtabs]');
+  const subApi = subtabsEl ? initTabs(subtabsEl) : null;
+  import('./ui/catalog').then(({ initCatalog }) =>
+    initCatalog({
+      selectTab: (id) => tabApi?.select(id),
+      selectSubTab: (id) => {
+        tabApi?.select('packs');
+        subApi?.select(id);
+        if (tabs) scrollToEl(tabs);
+      },
+    }),
+  );
+}
+
 // Open a tab from the URL hash on load (e.g. formations.html#packs).
 if (tabApi && location.hash.length > 1) {
   const id = decodeURIComponent(location.hash.slice(1));

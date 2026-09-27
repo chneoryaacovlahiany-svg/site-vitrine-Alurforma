@@ -18,7 +18,7 @@ npm run preview    # sert dist/
 | Page | Contenu | Animation |
 |---|---|---|
 | `index.html` — Accueil | Hero vidéo (la porte du générique s’ouvre), aperçu LMS, repères, formules, cartes T/G/S, formateurs, 4 étapes, cadre réglementaire, film de marque en fenêtre | Séquence **3D** laptop → smartphone → attestation SPÉCIMEN, pilotée au scroll |
-| `formations.html` | Onglets **Formations individuelles** (1 h à 12 h, par thématique) / **Packs** 14 h · 28 h · 42 h, configurateur | Film « de la formation au cycle complet » |
+| `formations.html` | Onglet **Formations individuelles** : catalogue filtrable (recherche, carte, thème, thèmes exigés) et fiche détaillée par formation (`formations.html#f01`). Onglet **Packs** : packs 14 / 28 / 42 h ou **Composer mon pack** (cumul d’heures, contrôle déontologie / non-discrimination, devis prérempli). Configurateur. | Film « de la formation au cycle complet » |
 | `entreprises.html` | Offre agences et réseaux : suivi par collaborateur, chaîne de preuve, devis | Film « tableau de pilotage d’agence » |
 | `financement.html` | Pistes par statut, documents fournis, aucune promesse | Film « de votre statut à la décision » |
 | `faq.html` | Questions par thème | — |
@@ -36,6 +36,7 @@ L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **
 | `src/ui/showcase.ts` + `src/scenes/*` | Séquence 3D (Three.js) : modèles procéduraux articulés, caméra multi-plans. |
 | `src/lms/*` | Écrans LMS dessinés en Canvas 2D (logo officiel, données fictives) et attestation SPÉCIMEN. |
 | `src/presentations/*` | Lecteur de « films » GSAP (chapitres, pause, lecture seulement si visible, format vertical sur mobile) et les trois montages. |
+| `src/catalog/courses.ts` | Catalogue des formations (F01, F02, F03) : objectifs, leçons et durées vidéo mesurées, statut, évaluation. Ajouter une formation = ajouter un objet ici. |
 | `src/config.ts` | **À compléter avant la mise en ligne** : URL du LMS, e-mail, endpoint du formulaire, statuts T/G/S. |
 | `public/brand/` | Logo officiel détouré (sans modification des proportions) et symbole. |
 | `public/media/` | Vidéos web issues du générique : boucle d’ouverture de porte (WebM/MP4, 960 et 1600 px) et film complet. |
@@ -60,6 +61,7 @@ L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **
 
 1. `src/config.ts` : `lmsUrl`, `email` (actuellement `contact@alurforma.fr`, **à confirmer**) et `formEndpoint` (sinon le formulaire ouvre un e-mail pré-rempli).
 2. Pages légales : compléter les champs « à renseigner » (forme juridique, siège, RCS, TVA, directeur de publication, hébergeur, médiateur…).
-3. Thématiques par carte (`formations.html`, `index.html`) : les aligner sur le catalogue réel.
-4. Tarifs TTC dès qu’ils sont fixés.
-5. Statuts T/G/S : ne jamais afficher « disponible » pour un parcours inaccessible dans le LMS.
+3. Statuts et durées des formations dans `src/catalog/courses.ts` : les mettre à jour à chaque mise en ligne (F01 version enrichie, F02 mise en ligne, F03 évaluations).
+4. Nom du formateur : les programmes citent « Maître Leroy », l’accueil et les écrans LMS « Maître Laurent » — à harmoniser.
+5. Tarifs TTC dès qu’ils sont fixés.
+6. Statuts T/G/S : ne jamais afficher « disponible » pour un parcours inaccessible dans le LMS.

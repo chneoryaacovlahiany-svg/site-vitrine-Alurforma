@@ -12,6 +12,64 @@
   <meta property="og:image" content="https://alurforma.fr/og-alurforma.png" />
   <link rel="icon" href="/favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Course",
+      "@id": "https://alurforma.fr/formations.html#f01",
+      "url": "https://alurforma.fr/formations.html#f01",
+      "name": "F01 · Cadre de la transaction et rôle de chacun",
+      "description": "Identifier l’activité et le cadre professionnel, distinguer statuts, habilitations et pouvoirs, vérifier la mission avant d’agir.",
+      "inLanguage": "fr",
+      "provider": {
+        "@type": "Organization",
+        "name": "Alurforma",
+        "url": "https://alurforma.fr/"
+      },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online"
+      }
+    },
+    {
+      "@type": "Course",
+      "@id": "https://alurforma.fr/formations.html#f02",
+      "url": "https://alurforma.fr/formations.html#f02",
+      "name": "F02 · Déontologie et conduite professionnelle",
+      "description": "Relier les principes déontologiques aux actes quotidiens, gérer un conflit d’intérêts et répondre à une pression commerciale.",
+      "inLanguage": "fr",
+      "provider": {
+        "@type": "Organization",
+        "name": "Alurforma",
+        "url": "https://alurforma.fr/"
+      },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online"
+      }
+    },
+    {
+      "@type": "Course",
+      "@id": "https://alurforma.fr/formations.html#f03",
+      "url": "https://alurforma.fr/formations.html#f03",
+      "name": "F03 · Prévenir et traiter les discriminations",
+      "description": "Repérer les situations à risque, rédiger des annonces et examiner les candidatures sans discriminer, répondre à une consigne discriminatoire et traiter une alerte.",
+      "inLanguage": "fr",
+      "provider": {
+        "@type": "Organization",
+        "name": "Alurforma",
+        "url": "https://alurforma.fr/"
+      },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "online"
+      }
+    }
+  ]
+}
+  </script>
 </head>
 <body data-page="formations">
   <!-- @include header -->
@@ -34,94 +92,135 @@
       <div class="wrap">
         <div class="segtabs" role="tablist" aria-label="Format de formation" data-tabs data-hash-tabs>
           <button role="tab" id="tab-individuelles" aria-controls="individuelles" aria-selected="true">
-            <b>Formations individuelles</b><span>1 h à 12 h</span>
+            <b>Formations individuelles <em class="count" data-count-courses>3</em></b><span>Une thématique, à la carte</span>
           </button>
           <button role="tab" id="tab-packs" aria-controls="packs" aria-selected="false" tabindex="-1">
-            <b>Packs Carte Pro</b><span>14 h · 28 h · 42 h</span>
+            <b>Packs Carte Pro <em class="count">3 + sur mesure</em></b><span>14 h · 28 h · 42 h ou votre composition</span>
           </button>
         </div>
 
-        <!-- Individuelles -->
+        <!-- ================================================ Individuelles -->
         <div role="tabpanel" id="individuelles" aria-labelledby="tab-individuelles" class="panel">
-          <div class="split">
-            <header class="head head--tight">
-              <p class="kicker"><span>01</span> Formations individuelles</p>
-              <h2>Une thématique, <em>la durée qu’il lui faut</em>.</h2>
-              <p class="lead">Chaque formation dure entre 1 h et 12 h selon son sujet. Vous choisissez ce dont vous avez besoin, quand vous en avez besoin.</p>
-              <ul class="ticks">
-                <li>Vidéos courtes, cas pratiques et évaluation</li>
-                <li>Accès ordinateur, tablette et smartphone</li>
-                <li>Attestation à l’issue de chaque formation accomplie</li>
-              </ul>
-              <p class="price-note">Tarif en euros TTC communiqué avant toute inscription.</p>
+          <div class="catalog-head">
+            <header>
+              <p class="kicker"><span>01</span> Catalogue</p>
+              <h2>Formations <em>individuelles</em></h2>
             </header>
-            <div class="themes">
-              <article class="theme-card">
-                <div class="pcard__top"><span class="pcard__letter">T</span><span class="status status--ok">Programme publié</span></div>
-                <h3>Transaction immobilière</h3>
-                <ul class="tags"><li>Cadre juridique</li><li>Mandats</li><li>Déontologie</li><li>Non-discrimination</li><li>Lutte contre le blanchiment</li><li>Sécurisation de la vente</li><li>Digitalisation</li></ul>
+            <p class="lead">Chaque formation dure le temps que son sujet exige. Filtrez par carte, par thème ou par mot-clé, puis ouvrez la fiche pour tout savoir.</p>
+          </div>
+
+          <form class="filters" data-filters role="search" aria-label="Filtrer les formations" onsubmit="return false">
+            <label class="filters__search">
+              <span class="sr">Rechercher une formation</span>
+              <input type="search" name="q" placeholder="Rechercher : mandat, déontologie, annonce…" autocomplete="off" />
+            </label>
+            <fieldset class="chips" aria-label="Carte professionnelle">
+              <label><input type="radio" name="card" value="" checked /><span>Toutes les cartes</span></label>
+              <label><input type="radio" name="card" value="T" /><span>Carte T</span></label>
+              <label><input type="radio" name="card" value="G" /><span>Carte G</span></label>
+              <label><input type="radio" name="card" value="S" /><span>Carte S</span></label>
+            </fieldset>
+            <fieldset class="chips" aria-label="Thème">
+              <label><input type="radio" name="theme" value="" checked /><span>Tous les thèmes</span></label>
+              <label><input type="radio" name="theme" value="cadre" /><span>Cadre juridique</span></label>
+              <label><input type="radio" name="theme" value="deontologie" /><span>Déontologie</span></label>
+              <label><input type="radio" name="theme" value="non-discrimination" /><span>Non-discrimination</span></label>
+            </fieldset>
+            <label class="filters__toggle"><input type="checkbox" name="obligation" /><span>Thèmes exigés sur 3 ans uniquement</span></label>
+          </form>
+          <p class="filters__count" data-filter-count aria-live="polite"></p>
+          <div class="course-grid" data-course-grid></div>
+          <div class="soon-band">
+            <p><strong>Cartes G et S.</strong> Les formations spécifiques à la gestion et au syndic sont en production. F03 concerne déjà toutes les cartes.</p>
+            <a class="link" href="./contact.html?objet=carte-g">Être prévenu de l’ouverture →</a>
+          </div>
+        </div>
+
+        <!-- ======================================================== Packs -->
+        <div role="tabpanel" id="packs" aria-labelledby="tab-packs" class="panel" hidden>
+          <div class="catalog-head">
+            <header>
+              <p class="kicker"><span>01</span> Packs Carte Pro</p>
+              <h2>Un pack prêt à l’emploi, <em>ou le vôtre</em>.</h2>
+            </header>
+            <p class="lead">Prenez un pack existant, ou composez le vôtre en choisissant les formations une à une.</p>
+          </div>
+
+          <div class="subtabs" role="tablist" aria-label="Type de pack" data-subtabs>
+            <button role="tab" id="tab-packs-prets" aria-controls="packs-prets" aria-selected="true">Packs prêts à l’emploi</button>
+            <button role="tab" id="tab-packs-composer" aria-controls="packs-composer" aria-selected="false" tabindex="-1">Composer mon pack</button>
+          </div>
+
+          <div role="tabpanel" id="packs-prets" aria-labelledby="tab-packs-prets" class="panel">
+            <div class="packs">
+              <article class="pack">
+                <p class="pack__tag">Pack annuel</p>
+                <p class="pack__hours">14 h</p>
+                <p class="pack__sub">Couvre une année d’obligation</p>
+                <ul class="ticks">
+                  <li>Formations sélectionnées jusqu’à 14 h</li>
+                  <li>Suivi des heures dans l’espace apprenant</li>
+                  <li>Une attestation par formation accomplie</li>
+                </ul>
+                <div class="pack__btns">
+                  <a class="btn btn--dark" href="./contact.html?objet=formation&amp;pack=pack-14">Demander un devis</a>
+                  <button class="btn btn--ghost" type="button" data-compose="14">Personnaliser</button>
+                </div>
               </article>
-              <article class="theme-card">
-                <div class="pcard__top"><span class="pcard__letter">G</span><span class="status status--wip">En production</span></div>
-                <h3>Gestion immobilière</h3>
-                <ul class="tags"><li>Gestion locative</li><li>Mandats de gestion</li><li>Comptabilité</li><li>Obligations du bailleur</li></ul>
+              <article class="pack">
+                <p class="pack__tag">Pack deux ans</p>
+                <p class="pack__hours">28 h</p>
+                <p class="pack__sub">Deux années d’obligation, planifiées</p>
+                <ul class="ticks">
+                  <li>Formations sélectionnées jusqu’à 28 h</li>
+                  <li>Répartition sur deux années</li>
+                  <li>Une attestation par formation accomplie</li>
+                </ul>
+                <div class="pack__btns">
+                  <a class="btn btn--dark" href="./contact.html?objet=formation&amp;pack=pack-28">Demander un devis</a>
+                  <button class="btn btn--ghost" type="button" data-compose="28">Personnaliser</button>
+                </div>
               </article>
-              <article class="theme-card">
-                <div class="pcard__top"><span class="pcard__letter">S</span><span class="status status--wip">En production</span></div>
-                <h3>Syndic de copropriété</h3>
-                <ul class="tags"><li>Gestion de copropriété</li><li>Assemblées générales</li><li>Comptabilité syndic</li><li>Contentieux</li></ul>
+              <article class="pack pack--featured">
+                <span class="pack__ribbon">Cycle complet</span>
+                <p class="pack__tag">Pack triennal</p>
+                <p class="pack__hours">42 h</p>
+                <p class="pack__sub">L’intégralité du cycle de trois ans</p>
+                <ul class="ticks">
+                  <li>Formations sélectionnées jusqu’à 42 h</li>
+                  <li>Inclut la déontologie et la non-discrimination exigées sur 3 ans</li>
+                  <li>Une attestation par formation accomplie</li>
+                </ul>
+                <div class="pack__btns">
+                  <a class="btn btn--primary" href="./contact.html?objet=formation&amp;pack=pack-42">Demander un devis</a>
+                  <button class="btn btn--glass" type="button" data-compose="42">Personnaliser</button>
+                </div>
               </article>
+            </div>
+            <p class="price-note">Tarifs sur devis, communiqués en euros TTC avant toute inscription.</p>
+          </div>
+
+          <div role="tabpanel" id="packs-composer" aria-labelledby="tab-packs-composer" class="panel" hidden>
+            <div class="composer" data-composer>
+              <div class="composer__list">
+                <fieldset class="chips" aria-label="Objectif d’heures">
+                  <legend>Votre objectif</legend>
+                  <label><input type="radio" name="target" value="14" checked /><span>14 h · une année</span></label>
+                  <label><input type="radio" name="target" value="28" /><span>28 h · deux années</span></label>
+                  <label><input type="radio" name="target" value="42" /><span>42 h · trois années</span></label>
+                </fieldset>
+                <ul class="composer__courses" data-composer-courses></ul>
+              </div>
+              <aside class="composer__summary" data-composer-summary aria-live="polite"></aside>
             </div>
           </div>
         </div>
-
-        <!-- Packs -->
-        <div role="tabpanel" id="packs" aria-labelledby="tab-packs" class="panel" hidden>
-          <header class="head head--tight">
-            <p class="kicker"><span>01</span> Packs Carte Pro</p>
-            <h2>Une année, deux années ou <em>le cycle complet</em>.</h2>
-            <p class="lead">Les packs assemblent des formations pour atteindre le volume d’heures voulu, avec un suivi de votre obligation dans l’espace apprenant.</p>
-          </header>
-          <div class="packs">
-            <article class="pack">
-              <p class="pack__tag">Pack annuel</p>
-              <p class="pack__hours">14 h</p>
-              <p class="pack__sub">Couvre une année d’obligation</p>
-              <ul class="ticks">
-                <li>Formations au choix jusqu’à 14 h</li>
-                <li>Suivi des heures dans l’espace apprenant</li>
-                <li>Une attestation par formation accomplie</li>
-              </ul>
-              <a class="btn btn--dark" href="#parcours" data-preset="14">Composer ce pack</a>
-            </article>
-            <article class="pack">
-              <p class="pack__tag">Pack deux ans</p>
-              <p class="pack__hours">28 h</p>
-              <p class="pack__sub">Deux années d’obligation, planifiées</p>
-              <ul class="ticks">
-                <li>Formations au choix jusqu’à 28 h</li>
-                <li>Répartition sur deux années</li>
-                <li>Une attestation par formation accomplie</li>
-              </ul>
-              <a class="btn btn--dark" href="#parcours" data-preset="28">Composer ce pack</a>
-            </article>
-            <article class="pack pack--featured">
-              <span class="pack__ribbon">Cycle complet</span>
-              <p class="pack__tag">Pack triennal</p>
-              <p class="pack__hours">42 h</p>
-              <p class="pack__sub">L’intégralité du cycle de trois ans</p>
-              <ul class="ticks">
-                <li>Formations au choix jusqu’à 42 h</li>
-                <li>Suivi des 2 h de non-discrimination et des 2 h de déontologie</li>
-                <li>Une attestation par formation accomplie</li>
-              </ul>
-              <a class="btn btn--primary" href="#parcours" data-preset="42">Composer ce pack</a>
-            </article>
-          </div>
-          <p class="price-note">Tarifs en euros TTC communiqués avant toute inscription.</p>
-        </div>
       </div>
     </section>
+
+    <dialog class="course-modal" data-course-modal aria-labelledby="course-modal-title">
+      <div class="course-modal__inner" data-course-body data-lenis-prevent></div>
+    </dialog>
 
     <!-- ===================================================== PRESENTATION -->
     <section class="section section--navy" aria-labelledby="pres-title">
