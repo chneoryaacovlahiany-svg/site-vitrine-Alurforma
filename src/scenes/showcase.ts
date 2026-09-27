@@ -137,6 +137,14 @@ const PAPER_ROT: Key<V3>[] = [
   { t: 1.0, v: [-0.04, -0.06, 0] },
 ];
 
+/** On-screen rectangle (canvas CSS pixels) of the device currently in focus. */
+export interface FocusRect {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
 export interface Frame {
   laptopScreen: ScreenState;
   phoneScreen: ScreenState;
@@ -174,6 +182,12 @@ export class Showcase {
   private laptop: Laptop;
   private phone: Phone;
   private paper: Paper;
+  /** Where the focused device (laptop screen, phone, attestation) sits on screen. */
+  focusRect: FocusRect = { left: 0, top: 0, right: 0, bottom: 0 };
+  /** Other visible devices the caption should avoid when it can. */
+  otherRects: FocusRect[] = [];
+  private box = new THREE.Box3();
+  private corner = new THREE.Vector3();
   private laptopShadow: THREE.Mesh;
   private phoneShadow: THREE.Mesh;
   private desk = new DesktopScreen();
@@ -360,6 +374,8 @@ export class Showcase {
     this.camera.position.set(cp[0] + this.tilt.x * 0.18, cp[1] - this.tilt.y * 0.1, cp[2]);
     this.camera.lookAt(cl[0], cl[1], cl[2]);
 
+    this.updateFocusRect(t);
+
     // Screens — only repaint the canvas when the visible state changed.
     const ds = f.laptopScreen;
     const dk = `${ds.power.toFixed(3)}|${ds.boot.toFixed(3)}|${ds.page.toFixed(3)}|${ds.scroll.toFixed(3)}`;
@@ -377,6 +393,37 @@ export class Showcase {
         this.mobTex.needsUpdate = true;
       }
     }
+  }
+
+  /** Project an object's bounding box to canvas pixels. */
+  private project(obj: THREE.Object3D): FocusRect {
+    this.box.setFromObject(obj);
+    const { min, max } = this.box;
+    let l = Infinity, r = -Infinity, tp = Infinity, b = -Infinity;
+    for (let i = 0; i < 8; i++) {
+      this.corner.set(i & 1 ? max.x : min.x, i & 2 ? max.y : min.y, i & 4 ? max.z : min.z).project(this.camera);
+      const x = ((this.corner.x + 1) / 2) * this.vw;
+      const y = ((1 - this.corner.y) / 2) * this.vh;
+      l = Math.min(l, x);
+      r = Math.max(r, x);
+      tp = Math.min(tp, y);
+      b = Math.max(b, y);
+    }
+    return { left: l, top: tp, right: r, bottom: b };
+  }
+
+  /** Screen rectangles of the focused device and of the other visible ones. */
+  private updateFocusRect(t: number) {
+    this.root.updateMatrixWorld(true);
+    this.camera.updateMatrixWorld();
+    const all: [THREE.Object3D, boolean][] = [
+      [this.laptop.screen, true],
+      [this.phone.group, this.phone.group.visible],
+      [this.paper.group, this.paper.group.visible],
+    ];
+    const focus = t < 0.62 ? 0 : t < 0.9 ? 1 : 2;
+    this.focusRect = this.project(all[focus][0]);
+    this.otherRects = all.filter(([, vis], i) => vis && i !== focus).map(([o]) => this.project(o));
   }
 
   dispose() {

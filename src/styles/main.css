@@ -509,6 +509,26 @@ em {
   opacity: 0;
   visibility: hidden;
 }
+.caption.is-floating {
+  /* Positioned by JS (translate) next to the device in focus. */
+  left: 0;
+  top: 0;
+  bottom: auto;
+  transition: width 0.4s var(--ease), padding 0.4s var(--ease);
+}
+.caption.is-compact {
+  padding: 18px 20px;
+}
+.caption.is-compact .caption__body,
+.caption.is-compact .caption__note {
+  display: none;
+}
+.caption.is-compact .caption__title {
+  font-size: 20px;
+}
+body.is-demo-playing .nav {
+  transform: translateY(-100%);
+}
 .caption__kicker {
   font: 600 13px/1 var(--display);
   letter-spacing: 0.12em;

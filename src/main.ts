@@ -71,6 +71,11 @@ let lastY = 0;
 function onScrollNav() {
   const y = window.scrollY;
   nav.classList.toggle('is-solid', y > 24);
+  // The 3D demo's playback owns the header while it runs (see ui/showcase).
+  if (document.body.classList.contains('is-demo-playing')) {
+    lastY = y;
+    return;
+  }
   nav.classList.toggle('is-hidden', y > 500 && y > lastY + 4 && menu.hidden === true);
   if (y < lastY - 4) nav.classList.remove('is-hidden');
   lastY = y;

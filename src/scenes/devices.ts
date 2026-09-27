@@ -49,6 +49,7 @@ export interface Laptop {
   group: THREE.Group;
   lid: THREE.Group;
   screenMat: THREE.MeshBasicMaterial;
+  screen: THREE.Mesh;
   glow: THREE.Mesh;
 }
 
@@ -115,7 +116,7 @@ export function createLaptop(screenTex: THREE.Texture): Laptop {
   hinge.position.set(0, BH, -D / 2 + 0.03);
   group.add(hinge);
 
-  return { group, lid, screenMat, glow };
+  return { group, lid, screenMat, screen, glow };
 }
 
 export interface Phone {

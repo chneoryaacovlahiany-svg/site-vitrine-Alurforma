@@ -99,7 +99,8 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
     tl.to(hero, { autoAlpha: 0, y: -60, ease: 'none' }, 0)
       .to('.show__veil', { opacity: 0.25, ease: 'none' }, 0)
       .to(hint, { autoAlpha: 0, ease: 'none', duration: 0.3 }, 0)
-      .fromTo([caption, rail], { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.5 }, 0.5);
+      .fromTo(rail, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, ease: 'none', duration: 0.5 }, 0.5)
+      .fromTo(caption, { autoAlpha: 0 }, { autoAlpha: 1, ease: 'none', duration: 0.5 }, 0.5);
 
     let st: ScrollTrigger;
     whenIdle(async () => {
@@ -116,7 +117,15 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
       });
       s.setProgress(st.progress, true);
       // Only render while the section is on screen.
-      new IntersectionObserver(([e]) => (e.isIntersecting ? s.start() : s.stop())).observe(show);
+      let onScreen = false;
+      new IntersectionObserver(([e]) => {
+        onScreen = e.isIntersecting;
+        if (onScreen) s.start();
+        else s.stop();
+      }).observe(show);
+      // The caption follows the scene: it sits in the free space beside the
+      // device in focus (laptop screen, phone, attestation), never on it.
+      placeCaption(() => s.focusRect, () => s.otherRects, () => onScreen);
     });
 
     // "Lecture": the page scrolls itself through the sequence at a steady
@@ -141,9 +150,19 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
       toggle.setAttribute('aria-pressed', String(playing));
       toggle.setAttribute('aria-label', playing ? 'Mettre la démonstration en pause' : 'Lire la démonstration automatiquement');
     };
+    const nav = document.querySelector('[data-nav]');
     const stop = () => {
       playing = false;
       cancelAnimationFrame(raf);
+      // Header comes back once, as soon as the visitor has control again.
+      // Wait for the last programmatic scroll to land before releasing it,
+      // so "hide on scroll down" does not catch it.
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          document.body.classList.remove('is-demo-playing');
+          nav?.classList.remove('is-hidden');
+        }),
+      );
       setLabel();
     };
     const step = (now: number) => {
@@ -162,6 +181,8 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
       if (y >= b.end - 2) y = b.top;
       playing = true;
       last = 0;
+      // Immersive playback: the header slides away once instead of flickering.
+      document.body.classList.add('is-demo-playing');
       scrollToY(y, true);
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(step);
@@ -265,4 +286,76 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
   }
 
 
+}
+
+/**
+ * Keep the chapter caption next to the device in focus, never on it, and
+ * away from the other visible devices whenever possible. Candidate spots
+ * (left, right, below, above the device, then the stage corners) are tried
+ * in full and compact size; the one overlapping the least wins.
+ */
+type R = import('../scenes/showcase').FocusRect;
+function placeCaption(focus: () => R, others: () => R[], active: () => boolean) {
+  const caption = document.querySelector<HTMLElement>('[data-caption]')!;
+  const stage = document.querySelector<HTMLElement>('[data-stage]')!;
+  const rail = document.querySelector<HTMLElement>('[data-rail]')!;
+  caption.classList.add('is-floating');
+  const qx = gsap.quickTo(caption, 'x', { duration: 0.8, ease: 'power3' });
+  const qy = gsap.quickTo(caption, 'y', { duration: 0.8, ease: 'power3' });
+  const PAD = 32;
+  const heights = { full: 230, compact: 96 };
+  let first = true;
+  const overlap = (a: R, b: R) =>
+    Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
+  gsap.ticker.add(() => {
+    if (!active()) return;
+    const hard = focus();
+    if (!(hard.right > hard.left)) return;
+    const soft = others();
+    const W = stage.clientWidth;
+    const H = stage.clientHeight;
+    const minX = Math.max(24, (W - 1360) / 2 + 24);
+    const maxX = rail.getBoundingClientRect().left - stage.getBoundingClientRect().left - 24;
+    const minY = 88;
+    const maxY = H - 28;
+    const clampX = (x: number, w: number) => Math.min(Math.max(x, minX), maxX - w);
+    const clampY = (y: number, h: number) => Math.min(Math.max(y, minY), maxY - h);
+
+    let best: { x: number; y: number; w: number; compact: boolean; score: number } | null = null;
+    for (const compact of [false, true]) {
+      const w = compact ? 280 : Math.min(420, W * 0.3);
+      const h = compact ? heights.compact : heights.full;
+      const cy = clampY((hard.top + hard.bottom) / 2 - h / 2, h);
+      const spots: [number, number][] = [
+        [hard.left - PAD - w, cy],
+        [hard.right + PAD, cy],
+        [clampX(hard.left, w), hard.bottom + 16],
+        [clampX(hard.left, w), hard.top - h - 16],
+        [minX, maxY - h],
+        [minX, minY],
+      ];
+      spots.forEach(([x, y], i) => {
+        if (x < minX - 0.5 || x + w > maxX + 0.5 || y < minY - 0.5 || y + h > maxY + 0.5) return;
+        const box = { left: x, top: y, right: x + w, bottom: y + h };
+        const area = w * h;
+        const onFocus = overlap(box, hard) / area;
+        const onOthers = soft.reduce((sum, o) => sum + overlap(box, o), 0) / area;
+        const score = onFocus * 10 + onOthers + (compact ? 0.12 : 0) + i * 0.01;
+        if (!best || score < best.score) best = { x, y, w, compact, score };
+      });
+    }
+    if (!best) return;
+    const b: { x: number; y: number; w: number; compact: boolean } = best;
+    caption.classList.toggle('is-compact', b.compact);
+    caption.style.width = `${b.w}px`;
+    heights[b.compact ? 'compact' : 'full'] = caption.offsetHeight;
+    if (first) {
+      gsap.set(caption, { x: b.x, y: b.y });
+      first = false;
+    } else {
+      qx(b.x);
+      qy(b.y);
+    }
+  });
 }
