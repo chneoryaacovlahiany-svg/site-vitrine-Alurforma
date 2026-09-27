@@ -9,11 +9,9 @@ export function initForm(form: HTMLFormElement) {
   const status = form.querySelector<HTMLElement>('[data-form-status]')!;
   const subject = form.querySelector<HTMLSelectElement>('[data-subject-select]')!;
 
-  document.addEventListener('subject', (e) => {
-    const v = (e as CustomEvent<string>).detail;
-    const opt = Array.from(subject.options).find((o) => o.text === v);
-    if (opt) subject.value = opt.value;
-  });
+  // Pre-select the subject from ?objet=… (links from other pages).
+  const objet = new URLSearchParams(location.search).get('objet');
+  if (objet && Array.from(subject.options).some((o) => o.value === objet)) subject.value = objet;
 
   const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea'));
   fields.forEach((f) => f.addEventListener('input', () => f.removeAttribute('aria-invalid')));
@@ -32,6 +30,7 @@ export function initForm(form: HTMLFormElement) {
       return;
     }
     const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+    data.subject = subject.selectedOptions[0]?.text ?? data.subject;
     delete data.consent;
 
     if (CONFIG.formEndpoint) {

@@ -4,7 +4,7 @@
 
 import {
   UI, DISPLAY, type Ctx,
-  rr, card, text, gradient, pill, progressBar, ring, avatar, wordmark, icon, wrap,
+  rr, card, text, gradient, pill, progressBar, ring, avatar, logo, icon, wrap,
 } from './draw';
 
 export const DESK_W = 1600;
@@ -55,13 +55,13 @@ function drawHome(ctx: Ctx, w: number) {
   ctx.fill();
   icon(ctx, 'play', PAD + 60, y + 163, 20, '#fff');
   text(ctx, 'Reprendre la vidéo', PAD + 88, y + 180, 16, '#fff', 650);
-  ring(ctx, PAD + bw - 120, y + 105, 64, 13, 0.46, '#8FB0FF');
+  ring(ctx, PAD + bw - 120, y + 105, 64, 13, 3.2 / 6, '#7FD8B5');
   text(ctx, '3 h 12', PAD + bw - 120, y + 108, 26, '#fff', 700, 'center', DISPLAY);
-  text(ctx, 'sur 7 h', PAD + bw - 120, y + 132, 14, 'rgba(255,255,255,.6)', 500, 'center');
+  text(ctx, 'sur 6 h', PAD + bw - 120, y + 132, 14, 'rgba(255,255,255,.6)', 500, 'center');
 
   // KPI row
   const kpis: [string, string, string][] = [
-    ['clock', '10 h 12', 'Temps de formation validé'],
+    ['clock', '7 h 12', 'Temps de formation validé'],
     ['book', '1 / 2', 'Formations de l’année'],
     ['chart', '85 %', 'Dernier quiz réussi'],
     ['award', '1', 'Attestation disponible'],
@@ -81,8 +81,8 @@ function drawHome(ctx: Ctx, w: number) {
   // Formations of the current year
   text(ctx, 'Mon parcours 2026 · 14 h', PAD, 564, 24, UI.ink, 700, 'left', DISPLAY);
   const courses: [string, string, string, number, string][] = [
-    ['T01', 'Déontologie & non-discrimination', '7 h · Terminée', 1, UI.green],
-    ['T03', 'Lutte contre le blanchiment (LCB-FT)', '7 h · En cours', 0.46, UI.primary],
+    ['T01', 'Déontologie & non-discrimination', '4 h · Terminée', 1, UI.green],
+    ['T03', 'Lutte contre le blanchiment (LCB-FT)', '6 h · En cours', 0.53, UI.primary],
   ];
   const cw = (bw - 24) / 2;
   courses.forEach(([code, t, m, p, c], i) => {
@@ -193,14 +193,14 @@ function drawVideo(ctx: Ctx, w: number) {
   const lx = PAD + vw + 24;
   const lw = bw - vw - 24;
   card(ctx, lx, vy, lw, vh, 22);
-  text(ctx, 'Programme · 7 h', lx + 24, vy + 46, 20, UI.ink, 700, 'left', DISPLAY);
+  text(ctx, 'Programme · 6 h', lx + 24, vy + 46, 20, UI.ink, 700, 'left', DISPLAY);
   const ch: [string, string, number][] = [
-    ['Cadre LCB-FT & rôle de TRACFIN', '1 h 05', 2],
-    ['Identifier le client', '1 h 10', 2],
-    ['Origine des fonds', '1 h 15', 1],
-    ['Cas pratiques guidés', '1 h 30', 0],
-    ['Déclaration de soupçon', '1 h', 0],
-    ['Évaluation finale', '1 h', 0],
+    ['Cadre LCB-FT & rôle de TRACFIN', '55 min', 2],
+    ['Identifier le client', '1 h', 2],
+    ['Origine des fonds', '1 h 05', 1],
+    ['Cas pratiques guidés', '1 h 15', 0],
+    ['Déclaration de soupçon', '50 min', 0],
+    ['Évaluation finale', '55 min', 0],
   ];
   const rowH = (vh - 80) / 6;
   ch.forEach(([t, d, st], i) => {
@@ -307,8 +307,8 @@ function drawProgress(ctx: Ctx, w: number) {
   const y = 136;
   // Triennial ring
   card(ctx, PAD, y, 420, 400, 24);
-  ring(ctx, PAD + 210, y + 180, 110, 22, 24.2 / 42, gradient(ctx, PAD + 100, 0, PAD + 320, 0, [[0, UI.primary], [1, UI.cyan]]));
-  text(ctx, '24 h 12', PAD + 210, y + 186, 42, UI.ink, 700, 'center', DISPLAY);
+  ring(ctx, PAD + 210, y + 180, 110, 22, 21.2 / 42, gradient(ctx, PAD + 100, 0, PAD + 320, 0, [[0, UI.primary], [1, UI.cyan]]));
+  text(ctx, '21 h 12', PAD + 210, y + 186, 42, UI.ink, 700, 'center', DISPLAY);
   text(ctx, 'sur 42 h', PAD + 210, y + 216, 17, UI.ink3, 500, 'center');
   text(ctx, 'Cycle 2025 → 2028', PAD + 210, y + 336, 18, UI.ink, 650, 'center');
   text(ctx, 'Données fictives', PAD + 210, y + 364, 14, UI.ink3, 500, 'center');
@@ -320,7 +320,7 @@ function drawProgress(ctx: Ctx, w: number) {
   text(ctx, 'Répartition par année', yx + 28, y + 48, 20, UI.ink, 700, 'left', DISPLAY);
   const years: [string, number, string][] = [
     ['Année 1', 14, '14 h · Validée'],
-    ['Année 2', 10.2, '10 h 12 · En cours'],
+    ['Année 2', 7.2, '7 h 12 · En cours'],
     ['Année 3', 0, 'À planifier'],
   ];
   years.forEach(([l, v, s], i) => {
@@ -377,8 +377,11 @@ export const DESK_PAGES = PAGES.length;
 function drawSidebar(ctx: Ctx, active: number) {
   ctx.fillStyle = UI.navy;
   ctx.fillRect(0, 0, SIDE, DESK_H);
-  wordmark(ctx, 32, 54, 27, '#fff');
-  text(ctx, 'ESPACE APPRENANT', 32, 80, 11.5, '#8FB0FF', 700);
+  rr(ctx, 16, 14, SIDE - 32, 78, 14);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  logo(ctx, 30, 24, SIDE - 60);
+  text(ctx, 'ESPACE APPRENANT', 32, 110, 11.5, '#7FD8B5', 700);
   const items: [string, string][] = [
     ['home', 'Accueil'],
     ['book', 'Mes formations'],
@@ -388,11 +391,11 @@ function drawSidebar(ctx: Ctx, active: number) {
     ['chat', 'Messagerie'],
   ];
   items.forEach(([ic, l], i) => {
-    const y = 124 + i * 58;
+    const y = 132 + i * 58;
     const on = i === active;
     if (on) {
       rr(ctx, 16, y, SIDE - 32, 46, 12);
-      ctx.fillStyle = 'rgba(47,91,255,.35)';
+      ctx.fillStyle = 'rgba(11,143,99,.35)';
       ctx.fill();
     }
     icon(ctx, ic, 34, y + 11, 24, on ? '#fff' : 'rgba(255,255,255,.55)');
@@ -401,7 +404,7 @@ function drawSidebar(ctx: Ctx, active: number) {
   rr(ctx, 18, DESK_H - 176, SIDE - 36, 140, 18);
   ctx.fillStyle = 'rgba(255,255,255,.06)';
   ctx.fill();
-  icon(ctx, 'shield', 36, DESK_H - 158, 26, '#8FB0FF');
+  icon(ctx, 'shield', 36, DESK_H - 158, 26, '#7FD8B5');
   text(ctx, 'Une question ?', 36, DESK_H - 104, 16, '#fff', 650);
   text(ctx, 'Écrivez au formateur', 36, DESK_H - 80, 14, 'rgba(255,255,255,.6)', 500);
   text(ctx, 'depuis chaque séquence.', 36, DESK_H - 60, 14, 'rgba(255,255,255,.6)', 500);
@@ -505,18 +508,20 @@ export class DesktopScreen {
   }
 
   private renderBoot(b: number) {
+    // Same end card as the brand film: logo, gold rule, signature.
     const ctx = this.ctx;
-    const g = ctx.createRadialGradient(DESK_W / 2, DESK_H / 2, 10, DESK_W / 2, DESK_H / 2, DESK_W * 0.6);
-    g.addColorStop(0, '#13265C');
-    g.addColorStop(1, '#050B1E');
-    ctx.fillStyle = g;
+    ctx.fillStyle = '#FDFDFB';
     ctx.fillRect(0, 0, DESK_W, DESK_H);
     const a = Math.min(1, b * 2.2);
     ctx.globalAlpha = a;
-    wordmark(ctx, DESK_W / 2, DESK_H / 2 + 10, 84, '#fff', 'center');
-    text(ctx, 'Espace apprenant', DESK_W / 2, DESK_H / 2 + 60, 22, 'rgba(255,255,255,.6)', 500, 'center');
+    const w = 620 + (1 - a) * 30;
+    logo(ctx, DESK_W / 2 - w / 2, DESK_H / 2 - 150, w);
+    ctx.fillStyle = UI.gold;
+    ctx.fillRect(DESK_W / 2 - 170, DESK_H / 2 + 60, 340 * Math.min(1, b * 1.6), 2);
+    text(ctx, 'COMPRENDRE LA RÈGLE. SÉCURISER LA PRATIQUE.', DESK_W / 2, DESK_H / 2 + 108, 22, UI.navy, 700, 'center');
+    text(ctx, 'FORMATION PROFESSIONNELLE IMMOBILIÈRE', DESK_W / 2, DESK_H / 2 + 142, 15, UI.green, 600, 'center');
     const lp = Math.max(0, Math.min(1, (b - 0.3) / 0.65));
-    progressBar(ctx, DESK_W / 2 - 160, DESK_H / 2 + 110, 320, 5, lp, '#8FB0FF');
+    progressBar(ctx, DESK_W / 2 - 120, DESK_H / 2 + 200, 240, 4, lp, UI.green);
     ctx.globalAlpha = 1;
   }
 }

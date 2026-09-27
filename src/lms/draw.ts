@@ -8,14 +8,14 @@ export const UI = {
   ink: '#0E1330',
   ink2: '#4A5073',
   ink3: '#8A90AE',
-  primary: '#2F5BFF',
-  primary2: '#1E3FCC',
-  cyan: '#18B6D6',
-  green: '#10B981',
+  primary: '#1C47B8',
+  primary2: '#0A2A63',
+  cyan: '#0B8F63',
+  green: '#0B8F63',
   amber: '#F59E0B',
   rose: '#F43F5E',
-  navy: '#0A1633',
-  gold: '#B8924A',
+  navy: '#041D4B',
+  gold: '#C9A56A',
 } as const;
 
 export const FONT = '"Inter Variable", Inter, system-ui, sans-serif';
@@ -122,6 +122,17 @@ export function avatar(ctx: Ctx, cx: number, cy: number, r: number, initials: st
  * The official Alurforma logo (PNG supplied by the owner) is used on the
  * site itself; it is intentionally not redrawn here.
  */
+/** Official logo (transparent PNG), preloaded before the screens are painted. */
+export const LOGO = new Image();
+LOGO.src = `${import.meta.env.BASE_URL}brand/alurforma-logo-640.png`;
+export const logoReady: Promise<void> = LOGO.decode().catch(() => undefined);
+
+/** Draw the official logo at width w (keeps its exact proportions). */
+export function logo(ctx: Ctx, x: number, y: number, w: number) {
+  if (LOGO.complete && LOGO.naturalWidth) ctx.drawImage(LOGO, x, y, w, (w * LOGO.naturalHeight) / LOGO.naturalWidth);
+  else wordmark(ctx, x, y + w * 0.2, w * 0.16, UI.navy);
+}
+
 export function wordmark(ctx: Ctx, x: number, y: number, size: number, color: string, align: CanvasTextAlign = 'left') {
   text(ctx, 'Alurforma', x, y, size, color, 700, align, DISPLAY);
 }

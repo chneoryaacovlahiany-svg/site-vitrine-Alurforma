@@ -2,7 +2,7 @@
 // n° 2016-173 (objectifs, contenu, durée, date de réalisation). It is always
 // watermarked SPÉCIMEN: it illustrates a document, it is not one.
 
-import { UI, DISPLAY, SERIF, text, wrap, qr, wordmark, icon } from './draw';
+import { UI, DISPLAY, SERIF, text, wrap, qr, logo, icon } from './draw';
 
 export const ATT_W = 1000;
 export const ATT_H = 1414;
@@ -36,11 +36,12 @@ export function renderAttestation(): HTMLCanvasElement {
   ctx.lineWidth = 1;
   ctx.strokeRect(48, 48, W - 96, H - 96);
 
-  ctx.fillStyle = UI.navy;
-  ctx.fillRect(48, 48, W - 96, 150);
-  wordmark(ctx, 96, 140, 46, '#fff');
-  text(ctx, 'Organisme de formation', W - 96, 118, 18, 'rgba(255,255,255,.7)', 500, 'right');
-  text(ctx, 'Identité complète sur le document réel', W - 96, 146, 18, 'rgba(255,255,255,.7)', 500, 'right');
+  logo(ctx, 90, 70, 300);
+  text(ctx, 'SUMMITWISE — organisme de formation', W - 96, 104, 17, UI.ink2, 600, 'right');
+  text(ctx, 'SIRET 944 811 819 00019', W - 96, 130, 15, UI.ink3, 500, 'right');
+  text(ctx, 'Déclaration d’activité n° 11922912592', W - 96, 154, 15, UI.ink3, 500, 'right');
+  ctx.fillStyle = UI.gold;
+  ctx.fillRect(90, 196, W - 180, 1.5);
 
   text(ctx, 'Attestation de formation', W / 2, 300, 62, UI.ink, 400, 'center', SERIF);
   text(ctx, 'Formation continue des professionnels de l’immobilier — décret n° 2016-173, art. 5', W / 2, 342, 17, UI.ink3, 500, 'center');
@@ -55,7 +56,7 @@ export function renderAttestation(): HTMLCanvasElement {
     ['Formation', 'T03 · Lutte contre le blanchiment des capitaux et le financement du terrorisme'],
     ['Objectifs', 'Identifier le client, questionner l’origine des fonds, documenter la vigilance et connaître la procédure de déclaration.'],
     ['Contenu', 'Cadre LCB-FT · Identification · Origine des fonds · Cas pratiques · Déclaration de soupçon · Évaluation.'],
-    ['Durée', '7 heures'],
+    ['Durée', '6 heures'],
     ['Réalisation', 'Du 09/10/2026 au 16/10/2026 — formation à distance'],
   ];
   let y = 620;

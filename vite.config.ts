@@ -1,9 +1,44 @@
-import { resolve } from 'node:path';
-import { defineConfig } from 'vite';
+import { readFileSync } from 'node:fs';
+import { basename, resolve } from 'node:path';
+import { defineConfig, type Plugin } from 'vite';
 
-const pages = ['index', 'mentions-legales', 'cgv', 'confidentialite', 'accessibilite', 'reclamations'];
+const pages = [
+  'index',
+  'formations',
+  'entreprises',
+  'financement',
+  'faq',
+  'contact',
+  'mentions-legales',
+  'cgv',
+  'confidentialite',
+  'accessibilite',
+  'reclamations',
+];
+
+/**
+ * Static includes: `<!-- @include header -->` is replaced at build (and dev)
+ * time by partials/header.html. The current page's nav link receives
+ * aria-current="page", so every page ships complete, crawlable HTML.
+ */
+function includes(): Plugin {
+  return {
+    name: 'alurforma-includes',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html, ctx) {
+        const page = basename(ctx.filename, '.html');
+        return html.replace(/<!--\s*@include\s+([\w-]+)\s*-->/g, (_, name: string) => {
+          const partial = readFileSync(resolve(import.meta.dirname, 'partials', `${name}.html`), 'utf8');
+          return partial.replace(new RegExp(`data-page="${page}"`, 'g'), `data-page="${page}" aria-current="page"`);
+        });
+      },
+    },
+  };
+}
 
 export default defineConfig({
+  plugins: [includes()],
   build: {
     target: 'es2022',
     sourcemap: false,

@@ -36,11 +36,11 @@ function mProgress(ctx: Ctx, w: number) {
   rr(ctx, P, y, bw, 470, 36);
   ctx.fillStyle = gradient(ctx, P, y, P + bw, y + 470, [[0, UI.navy], [1, '#13265C']]);
   ctx.fill();
-  text(ctx, 'CARTE T · CYCLE 2025 → 2028', P + 36, y + 58, 19, '#8FB0FF', 700);
-  ring(ctx, w / 2, y + 240, 132, 26, 24.2 / 42, gradient(ctx, P, 0, P + bw, 0, [[0, '#8FB0FF'], [1, UI.cyan]]));
-  text(ctx, '24 h 12', w / 2, y + 250, 58, '#fff', 700, 'center', DISPLAY);
+  text(ctx, 'CARTE T · CYCLE 2025 → 2028', P + 36, y + 58, 19, '#7FD8B5', 700);
+  ring(ctx, w / 2, y + 240, 132, 26, 21.2 / 42, gradient(ctx, P, 0, P + bw, 0, [[0, '#8FB0FF'], [1, UI.cyan]]));
+  text(ctx, '21 h 12', w / 2, y + 250, 58, '#fff', 700, 'center', DISPLAY);
   text(ctx, 'sur 42 h', w / 2, y + 292, 24, 'rgba(255,255,255,.65)', 500, 'center');
-  text(ctx, 'Année 2 : 10 h 12 / 14 h', w / 2, y + 430, 24, '#fff', 600, 'center');
+  text(ctx, 'Année 2 : 7 h 12 / 14 h', w / 2, y + 430, 24, '#fff', 600, 'center');
 
   const ry = y + 510;
   const req: [string, string][] = [['Non-discrimination', '2 h / 2 h'], ['Déontologie', '2 h / 2 h']];
@@ -65,8 +65,8 @@ function mProgress(ctx: Ctx, w: number) {
   ctx.fill();
   text(ctx, 'T03', P + 68, cy + 104, 26, '#fff', 700, 'center', DISPLAY);
   text(ctx, 'Lutte contre le blanchiment', P + 132, cy + 84, 25, UI.ink, 650);
-  text(ctx, 'Séquence 3 / 6 · 3 h 12 sur 7 h', P + 132, cy + 118, 20, UI.ink3, 500);
-  progressBar(ctx, P + 26, cy + 170, bw - 52, 12, 0.46, UI.primary);
+  text(ctx, 'Séquence 3 / 6 · 3 h 12 sur 6 h', P + 132, cy + 118, 20, UI.ink3, 500);
+  progressBar(ctx, P + 26, cy + 170, bw - 52, 12, 0.53, UI.primary);
 }
 
 function mVideo(ctx: Ctx, w: number) {

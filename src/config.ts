@@ -12,8 +12,6 @@ export const CONFIG = {
    * serverless function). When null, the form opens a pre-filled e-mail.
    */
   formEndpoint: null as string | null,
-  /** Path of the official logo PNG in /public. null = typographic fallback. */
-  logo: null as string | null,
 };
 
 export type Card = 'T' | 'G' | 'S';
