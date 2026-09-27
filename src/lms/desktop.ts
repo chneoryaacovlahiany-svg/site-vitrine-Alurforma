@@ -49,7 +49,7 @@ function drawHome(ctx: Ctx, w: number) {
   ctx.fill();
   text(ctx, 'REPRENDRE', PAD + 40, y + 52, 14, '#8FB0FF', 700);
   text(ctx, 'T03 · Lutte contre le blanchiment (LCB-FT)', PAD + 40, y + 96, 30, '#fff', 700, 'left', DISPLAY);
-  text(ctx, 'Séquence 3 — Vigilance sur l’origine des fonds · avec Maître Laurent', PAD + 40, y + 130, 18, 'rgba(255,255,255,.72)', 500);
+  text(ctx, 'Séquence 3 — Vigilance sur l’origine des fonds · avec le formateur référent', PAD + 40, y + 130, 18, 'rgba(255,255,255,.72)', 500);
   rr(ctx, PAD + 40, y + 152, 206, 44, 22);
   ctx.fillStyle = UI.primary;
   ctx.fill();
@@ -142,7 +142,7 @@ function drawVideo(ctx: Ctx, w: number) {
     ctx.fillRect(PAD + 30, vy + 60 + i * 52, vw * 0.4, 3);
   }
   ctx.globalAlpha = 1;
-  // Presenter silhouette (Maître Laurent)
+  // Presenter silhouette (formateur référent)
   const px = PAD + vw * 0.28;
   ctx.fillStyle = gradient(ctx, 0, vy + 110, 0, vy + vh, [[0, '#5B7BE0'], [1, '#1B2F6B']]);
   ctx.beginPath();
@@ -176,8 +176,8 @@ function drawVideo(ctx: Ctx, w: number) {
   rr(ctx, PAD + 28, vy + vh - 148, 290, 56, 12);
   ctx.fillStyle = 'rgba(255,255,255,.95)';
   ctx.fill();
-  text(ctx, 'Maître Laurent', PAD + 46, vy + vh - 116, 18, UI.ink, 700);
-  text(ctx, 'Formateur — droit immobilier', PAD + 46, vy + vh - 98, 13, UI.ink3, 550);
+  text(ctx, 'Formateur référent', PAD + 46, vy + vh - 116, 18, UI.ink, 700);
+  text(ctx, 'Cadre et règles', PAD + 46, vy + vh - 98, 13, UI.ink3, 550);
   const g = ctx.createLinearGradient(0, vy + vh - 80, 0, vy + vh);
   g.addColorStop(0, 'rgba(0,0,0,0)');
   g.addColorStop(1, 'rgba(0,0,0,.6)');
@@ -249,12 +249,13 @@ function drawQuiz(ctx: Ctx, w: number) {
   text(ctx, 'T03 · Question 4 / 10', PAD, 102, 18, UI.ink3, 500);
   progressBar(ctx, PAD + bw - 320, 80, 320, 10, 0.4, UI.primary);
 
-  // Scenario with Sarah
+  // Scenario submitted by the field professional
   const y = 136;
   card(ctx, PAD, y, bw, 196, 22);
-  avatar(ctx, PAD + 64, y + 66, 34, 'S', '#5B7BE0', UI.navy);
-  text(ctx, 'Sarah, négociatrice', PAD + 118, y + 56, 19, UI.ink, 700);
-  text(ctx, 'Situation', PAD + 118, y + 80, 14, UI.ink3, 600);
+  avatar(ctx, PAD + 64, y + 66, 34, '', UI.green, '#06543B');
+  icon(ctx, 'user', PAD + 50, y + 52, 28, '#fff');
+  text(ctx, 'Professionnel de terrain', PAD + 118, y + 56, 19, UI.ink, 700);
+  text(ctx, 'Situation d’agence', PAD + 118, y + 80, 14, UI.ink3, 600);
   wrap(ctx, '« Un acquéreur que je rencontre pour la première fois souhaite signer rapidement. Il indique qu’une partie importante du financement proviendra d’un virement depuis l’étranger, sans pouvoir préciser l’origine des fonds. »', PAD + 118, y + 118, bw - 160, 29, 18, UI.ink2, 450);
 
   text(ctx, 'Quelle est la réaction la plus adaptée ?', PAD, y + 256, 26, UI.ink, 700, 'left', DISPLAY);

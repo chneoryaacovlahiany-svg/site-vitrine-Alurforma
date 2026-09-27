@@ -62,6 +62,6 @@ L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **
 1. `src/config.ts` : `lmsUrl`, `email` (actuellement `contact@alurforma.fr`, **à confirmer**) et `formEndpoint` (sinon le formulaire ouvre un e-mail pré-rempli).
 2. Pages légales : compléter les champs « à renseigner » (forme juridique, siège, RCS, TVA, directeur de publication, hébergeur, médiateur…).
 3. Statuts et durées des formations dans `src/catalog/courses.ts` : les mettre à jour à chaque mise en ligne (F01 version enrichie, F02 mise en ligne, F03 évaluations).
-4. Nom du formateur : les programmes citent « Maître Leroy », l’accueil et les écrans LMS « Maître Laurent » — à harmoniser.
+4. Intervenants : le site ne cite aucun nom, seulement les rôles « formateur référent » et « professionnel de terrain » (plusieurs formateurs selon les formations).
 5. Tarifs TTC dès qu’ils sont fixés.
 6. Statuts T/G/S : ne jamais afficher « disponible » pour un parcours inaccessible dans le LMS.

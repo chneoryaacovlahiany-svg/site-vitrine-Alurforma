@@ -40,7 +40,7 @@ export interface Course {
 }
 
 const COMMON_METHODS =
-  'Trois intervenants (Maître Leroy, Sarah et une narration), cas fictifs, questions intégrées aux vidéos, quiz à choix unique, dossier à analyser et comparaison avec corrigé. Sous-titres sur les leçons ; textes et consignes disponibles dans la bibliothèque ; interactions utilisables au clavier.';
+  'Un formateur référent, un professionnel de terrain et une narration, cas fictifs, questions intégrées aux vidéos, quiz à choix unique, dossier à analyser et comparaison avec corrigé. Sous-titres sur les leçons ; textes et consignes disponibles dans la bibliothèque ; interactions utilisables au clavier.';
 
 const COMMON_EVALUATION = [
   { title: 'Quiz de chapitre', text: '12 questions, avec le nombre de bonnes réponses et une explication pour chaque option.' },

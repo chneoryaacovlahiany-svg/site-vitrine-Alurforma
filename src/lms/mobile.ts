@@ -96,7 +96,7 @@ function mVideo(ctx: Ctx, w: number) {
   pill(ctx, P, ty - 34, '● Reprise à 08:10', UI.green + '1C', '#047857', 20);
   text(ctx, 'Vigilance sur l’origine', P, ty + 50, 36, UI.ink, 700, 'left', DISPLAY);
   text(ctx, 'des fonds', P, ty + 94, 36, UI.ink, 700, 'left', DISPLAY);
-  text(ctx, 'avec Maître Laurent · 14 min', P, ty + 134, 22, UI.ink3, 500);
+  text(ctx, 'avec le formateur référent · 14 min', P, ty + 134, 22, UI.ink3, 500);
   wrap(ctx, 'Savoir questionner, documenter et identifier les situations qui demandent une vigilance renforcée.', P, ty + 190, bw, 34, 23, UI.ink2, 450);
 
   const ly = ty + 290;
@@ -119,8 +119,9 @@ function mQuiz(ctx: Ctx, w: number) {
   progressBar(ctx, P, 106, bw, 10, 0.4, UI.primary);
   text(ctx, 'Question 4 / 10', P, 160, 21, UI.ink3, 600);
   card(ctx, P, 186, bw, 250, 28);
-  avatar(ctx, P + 56, 246, 30, 'S', '#5B7BE0', UI.navy);
-  text(ctx, 'Sarah, négociatrice', P + 104, 256, 22, UI.ink, 700);
+  avatar(ctx, P + 56, 246, 30, '', UI.green, '#06543B');
+  icon(ctx, 'user', P + 44, 234, 24, '#fff');
+  text(ctx, 'Professionnel de terrain', P + 104, 256, 22, UI.ink, 700);
   wrap(ctx, '« L’acquéreur ne peut pas préciser l’origine d’un virement venant de l’étranger. »', P + 28, 324, bw - 56, 32, 23, UI.ink2, 450);
   text(ctx, 'Votre réaction ?', P, 500, 36, UI.ink, 700, 'left', DISPLAY);
   const ans = ['Poursuivre sans vérifier', 'Vigilance, justificatifs, traçabilité', 'Refuser sans analyse'];
