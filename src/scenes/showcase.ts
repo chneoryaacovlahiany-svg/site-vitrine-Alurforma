@@ -60,10 +60,10 @@ const CAM_POS: Key<V3>[] = [
   { t: 0.0, v: [0.4, 3.4, 8.8] },
   { t: 0.1, v: [0.2, 2.3, 7.0] },
   { t: 0.17, v: [0, 1.7, 5.6] },
-  { t: 0.24, v: [0, 1.25, 4.75] }, // home — straight on
-  { t: 0.33, v: [-0.9, 1.2, 4.45] }, // video — orbit left, closer
-  { t: 0.43, v: [0.85, 1.35, 4.55] }, // quiz — orbit right
-  { t: 0.54, v: [0, 1.75, 4.9] }, // progress — slightly high
+  { t: 0.24, v: [0, 1.25, 5.05] }, // home — straight on
+  { t: 0.33, v: [-0.8, 1.2, 4.8] }, // video — orbit left, closer
+  { t: 0.43, v: [0.45, 1.35, 4.95] }, // quiz — orbit right
+  { t: 0.54, v: [0, 1.75, 5.2] }, // progress — slightly high
   { t: 0.64, v: [0.9, 1.5, 6.2] }, // pull back, reveal the phone
   { t: 0.72, v: [1.35, 1.2, 5.2] },
   { t: 0.8, v: [1.05, 1.1, 4.9] },
@@ -71,12 +71,27 @@ const CAM_POS: Key<V3>[] = [
   { t: 0.95, v: [0.2, 1.25, 5.7] },
   { t: 1.0, v: [0.1, 1.25, 5.6] },
 ];
+/**
+ * Horizontal framing on wide screens, as a fraction of the viewport width:
+ * the optical centre sits right of centre while the intro copy is shown,
+ * then the laptop glides back toward the middle for the LMS close-ups so
+ * the whole screen stays clear of the chapter rail.
+ */
+const FRAME_SHIFT: Key<number>[] = [
+  { t: 0, v: 0.14 },
+  { t: 0.08, v: 0.14 },
+  { t: 0.17, v: 0.02 },
+  { t: 0.58, v: 0.02 },
+  { t: 0.66, v: 0.1 },
+];
 const CAM_LOOK: Key<V3>[] = [
   { t: 0.0, v: [0, 0.4, 0] },
   { t: 0.1, v: [0, 0.8, 0] },
-  { t: 0.17, v: [0, 1.05, -0.2] },
-  { t: 0.24, v: [0, 1.08, -0.3] },
-  { t: 0.54, v: [0, 1.05, -0.3] },
+  { t: 0.17, v: [0, 0.97, -0.2] },
+  { t: 0.24, v: [0, 0.98, -0.3] }, // aimed a little low: the laptop sits higher, clear of the caption
+  { t: 0.33, v: [0, 0.97, -0.3] },
+  { t: 0.43, v: [0.3, 0.97, -0.3] }, // aimed right: the orbiting shot stays clear of the rail
+  { t: 0.54, v: [0, 0.95, -0.3] },
   { t: 0.64, v: [0.9, 1.05, 0.6] },
   { t: 0.72, v: [1.25, 1.12, 1.4] },
   { t: 0.87, v: [1.25, 1.12, 1.4] },
@@ -175,7 +190,9 @@ export class Showcase {
   private raf = 0;
   private running = false;
   private dirty = true;
-  private offsetX = 0;
+  private vw = 0;
+  private vh = 0;
+  private shift = -1;
   private lastTime = 0;
 
   constructor(private canvas: HTMLCanvasElement, private opts: { damping?: boolean } = {}) {
@@ -237,8 +254,9 @@ export class Showcase {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     // On wide screens, shift the optical centre right so copy sits on the left.
-    this.offsetX = w >= 1100 ? -w * 0.14 : 0;
-    this.camera.setViewOffset(w, h, this.offsetX, 0, w, h);
+    this.vw = w;
+    this.vh = h;
+    this.shift = -1; // force the framing to be recomputed on next frame
     this.camera.fov = w / h < 1 ? 42 : 30;
     this.camera.updateProjectionMatrix();
     this.dirty = true;
@@ -326,6 +344,14 @@ export class Showcase {
       this.paper.group.rotation.set(r[0], r[1], r[2]);
       this.paper.group.scale.setScalar(lerp(0.35, 1, f.paper));
       this.paper.mat.opacity = f.paper;
+    }
+
+    // Framing (wide screens only): shift the optical centre horizontally.
+    const shift = this.vw >= 1100 ? scalar(FRAME_SHIFT, t) : 0;
+    if (Math.abs(shift - this.shift) > 1e-4 && this.vw) {
+      this.shift = shift;
+      this.camera.setViewOffset(this.vw, this.vh, -this.vw * shift, 0, this.vw, this.vh);
+      this.camera.updateProjectionMatrix();
     }
 
     // Camera + gentle tilt
