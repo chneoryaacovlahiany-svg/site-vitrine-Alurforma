@@ -7,7 +7,7 @@ import { CHAPTERS, PILLARS, chapterAt } from '../timeline';
 interface Ctx {
   reduced: boolean;
   finePointer: boolean;
-  scrollToY: (y: number) => void;
+  scrollToY: (y: number, immediate?: boolean) => void;
 }
 
 const $ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => root.querySelector<T>(s)!;
@@ -119,17 +119,81 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
       new IntersectionObserver(([e]) => (e.isIntersecting ? s.start() : s.stop())).observe(show);
     });
 
+    // "Lecture": the page scrolls itself through the sequence at a steady
+    // pace; any wheel, touch or navigation key hands control back.
+    const controls = $('[data-controls]');
+    const toggle = $<HTMLButtonElement>('[data-toggle]');
+    const toggleLabel = $('[data-toggle-label]');
+    controls.hidden = false;
+    const DURATION = 45; // seconds for the whole sequence
+    let playing = false;
+    let raf = 0;
+    let last = 0;
+    let y = 0;
+    const bounds = () => {
+      const top = show.offsetTop;
+      const len = show.offsetHeight - window.innerHeight;
+      return { top, len, end: top + len };
+    };
+    const setLabel = () => {
+      const done = window.scrollY >= bounds().end - 2;
+      toggleLabel.textContent = playing ? '❚❚ Pause' : done ? '↺ Revoir' : '▶ Lecture';
+      toggle.setAttribute('aria-pressed', String(playing));
+      toggle.setAttribute('aria-label', playing ? 'Mettre la démonstration en pause' : 'Lire la démonstration automatiquement');
+    };
+    const stop = () => {
+      playing = false;
+      cancelAnimationFrame(raf);
+      setLabel();
+    };
+    const step = (now: number) => {
+      raf = requestAnimationFrame(step);
+      // Capped at 0.25 s so a slow machine keeps a steady pace without jumps.
+      const dt = last ? Math.min(0.25, (now - last) / 1000) : 0;
+      last = now;
+      const b = bounds();
+      y = Math.min(b.end, y + (b.len / DURATION) * dt);
+      scrollToY(y, true);
+      if (y >= b.end) stop();
+    };
+    const play = () => {
+      const b = bounds();
+      y = Math.max(window.scrollY, b.top);
+      if (y >= b.end - 2) y = b.top;
+      playing = true;
+      last = 0;
+      scrollToY(y, true);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(step);
+      setLabel();
+    };
+    setLabel();
+    toggle.addEventListener('click', () => (playing ? stop() : play()));
+    const interrupt = () => {
+      if (playing) stop();
+    };
+    window.addEventListener('wheel', interrupt, { passive: true });
+    window.addEventListener('touchstart', interrupt, { passive: true });
+    window.addEventListener('keydown', (e) => {
+      if (e.target !== toggle && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) interrupt();
+    });
+    window.addEventListener('scroll', () => {
+      if (!playing) setLabel();
+    }, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+    });
+
     railButtons.forEach((b, i) =>
       b.addEventListener('click', () => {
-        const top = show.offsetTop;
-        const len = show.offsetHeight - window.innerHeight;
+        stop();
+        const { top, len } = bounds();
         scrollToY(top + CHAPTERS[i].at * len);
       }),
     );
     $('[data-play-demo]').addEventListener('click', (e) => {
       e.preventDefault();
-      const len = show.offsetHeight - window.innerHeight;
-      scrollToY(show.offsetTop + CHAPTERS[1].at * len);
+      play();
     });
   } else if (mode === 'auto') {
     // Touch devices / small screens / reduced motion: a self-running loop with
@@ -149,7 +213,7 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
     const setPlaying = (p: boolean) => {
       playing = p;
       toggle.setAttribute('aria-pressed', String(!p));
-      toggleLabel.textContent = p ? 'Pause' : 'Lecture';
+      toggleLabel.textContent = p ? '❚❚ Pause' : '▶ Lecture';
     };
     setPlaying(playing);
 

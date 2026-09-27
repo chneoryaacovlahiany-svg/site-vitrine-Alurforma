@@ -655,8 +655,22 @@ em {
 .show__controls {
   position: absolute;
   z-index: 3;
-  right: var(--gutter);
-  bottom: 22px;
+  right: max(var(--gutter), calc((100vw - 1360px) / 2 + var(--gutter)));
+  bottom: 28px;
+}
+.show[data-mode='scroll'] .chip {
+  border-color: transparent;
+  background: var(--green);
+  box-shadow: 0 12px 30px -12px rgba(11, 143, 99, 0.8);
+  transition: transform 0.3s var(--ease), background-color 0.3s;
+}
+.show[data-mode='scroll'] .chip:hover {
+  transform: translateY(-1px);
+  background: #0a9d6c;
+}
+.show[data-mode='scroll'] .chip[aria-pressed='true'] {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
 }
 .chip {
   min-height: 44px;
