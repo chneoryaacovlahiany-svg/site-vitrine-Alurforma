@@ -344,7 +344,7 @@ em {
   margin-top: 14px;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1240px) {
   .nav__links,
   .nav__cta {
     display: none;
