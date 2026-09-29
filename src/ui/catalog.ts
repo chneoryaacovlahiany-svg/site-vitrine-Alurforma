@@ -21,6 +21,10 @@ function access(c: Course) {
   return c.online ? 'Accès immédiat' : 'Accès dès la mise en ligne';
 }
 
+function accessValue(c: Course) {
+  return c.online ? 'Immédiat, 100 % à distance' : 'Dès la mise en ligne';
+}
+
 function priceOf(c: Course) {
   return c.price ?? 'Sur devis';
 }
@@ -51,10 +55,10 @@ function courseCard(c: Course) {
       <p>${esc(c.summary)}</p>
       <p class="course-card__price"><span>Prix</span><b>${esc(priceOf(c))}</b></p>
       <ul class="course-card__meta">
-        <li><b>${c.videoTotal}</b><span>de vidéo</span></li>
-        <li><b>${esc(THEME_LABELS[c.themes[0]])}</b><span>thème</span></li>
-        <li><b>${access(c)}</b><span>100 % à distance</span></li>
-        <li><b>Attestation immédiate</b><span>à l’issue du parcours</span></li>
+        <li><span>Durée</span><b>${esc(c.durationShort)}</b></li>
+        <li><span>Thème</span><b>${esc(THEME_LABELS[c.themes[0]])}</b></li>
+        <li><span>Accès</span><b>${accessValue(c)}</b></li>
+        <li><span>Attestation</span><b>Immédiate</b></li>
       </ul>
       <div class="course-card__btns">
         <button type="button" class="btn btn--dark" data-open="${c.id}">Voir la fiche</button>
@@ -105,10 +109,10 @@ function detail(c: Course) {
       <h2 id="course-modal-title">${esc(c.title)}</h2>
       <p class="sheet-hero__lead">${esc(c.summary)}</p>
       <ul class="sheet-stats">
-        <li><b>${c.videoTotal}</b><span>de vidéo mesurée</span></li>
-        <li><b>${access(c)}</b><span>100 % à distance</span></li>
-        <li><b>${cardsLabel(c)}</b><span>public visé</span></li>
-        <li><b>Attestation immédiate</b><span>à l’issue du parcours</span></li>
+        <li><span>Durée</span><b>${esc(c.durationShort)}</b></li>
+        <li><span>Accès</span><b>${accessValue(c)}</b></li>
+        <li><span>Public visé</span><b>${cardsLabel(c)}</b></li>
+        <li><span>Attestation</span><b>Immédiate</b></li>
       </ul>
     </div>
     <aside class="sheet-offer">
@@ -116,7 +120,7 @@ function detail(c: Course) {
       <span class="status status--${c.status.tone}">${esc(c.status.label)}</span>
       <p class="sheet-offer__price"><small>Prix</small>${esc(priceOf(c))}</p>
       <ul class="ticks">
-        <li>${c.videoTotal} de vidéos</li>
+        <li>Durée ${esc(c.durationShort)}</li>
         <li>${access(c)} · 100 % à distance</li>
         <li>Quiz, cas pratique et évaluation</li>
         <li>Attestation immédiate à l’issue du parcours</li>
