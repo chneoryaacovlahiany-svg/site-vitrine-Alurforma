@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Formations ALUR en ligne — individuelles et packs 14 h, 28 h, 42 h · Alurforma</title>
+  <title>Formations ALUR en ligne — individuelles et packs 14 h, 28 h, 42 h · Alurforma</title>
   <meta name="description" content="Formations ALUR individuelles de 1 h à 12 h et packs 14 h, 28 h ou 42 h pour renouveler votre carte professionnelle T, G ou S. 100 % en ligne, attestation de formation." />
   <link rel="canonical" href="https://alurforma.fr/formations.html" />
   <meta name="theme-color" content="#041D4B" />
@@ -83,7 +83,7 @@
       <div class="wrap page-hero__inner">
         <nav class="crumbs" aria-label="Fil d’Ariane"><a href="./index.html">Accueil</a><span>Formations</span></nav>
         <h1>Formations <em>ALUR</em> en ligne</h1>
-        <p>Des formations individuelles de 1 h à 12 h, ou des packs de 14 h, 28 h et 42 h pour couvrir votre obligation sur une, deux ou trois années.</p>
+        <p>Des formations individuelles de 1 h à 12 h, ou des packs de 14 h, 28 h et 42 h pour couvrir votre obligation sur une, deux ou trois années.</p>
       </div>
     </section>
 
@@ -95,7 +95,7 @@
             <b>Formations individuelles <em class="count" data-count-courses>3</em></b><span>Une thématique, à la carte</span>
           </button>
           <button role="tab" id="tab-packs" aria-controls="packs" aria-selected="false" tabindex="-1">
-            <b>Packs Carte Pro <em class="count">3 + sur mesure</em></b><span>14 h · 28 h · 42 h ou votre composition</span>
+            <b>Packs Carte Pro <em class="count">3 + sur mesure</em></b><span>14 h · 28 h · 42 h ou votre composition</span>
           </button>
         </div>
 
@@ -153,12 +153,12 @@
 
           <div role="tabpanel" id="packs-prets" aria-labelledby="tab-packs-prets" class="panel">
             <div class="packs">
-              <article class="pack">
+              <article class="pack" id="pack-14">
                 <p class="pack__tag">Pack annuel</p>
-                <p class="pack__hours">14 h</p>
+                <p class="pack__hours">14 h</p>
                 <p class="pack__sub">Couvre une année d’obligation</p>
                 <ul class="ticks">
-                  <li>Formations sélectionnées jusqu’à 14 h</li>
+                  <li>Formations sélectionnées jusqu’à 14 h</li>
                   <li>Suivi des heures dans l’espace apprenant</li>
                   <li>Une attestation par formation accomplie</li>
                 </ul>
@@ -167,12 +167,12 @@
                   <button class="btn btn--ghost" type="button" data-compose="14">Personnaliser</button>
                 </div>
               </article>
-              <article class="pack">
+              <article class="pack" id="pack-28">
                 <p class="pack__tag">Pack deux ans</p>
-                <p class="pack__hours">28 h</p>
+                <p class="pack__hours">28 h</p>
                 <p class="pack__sub">Deux années d’obligation, planifiées</p>
                 <ul class="ticks">
-                  <li>Formations sélectionnées jusqu’à 28 h</li>
+                  <li>Formations sélectionnées jusqu’à 28 h</li>
                   <li>Répartition sur deux années</li>
                   <li>Une attestation par formation accomplie</li>
                 </ul>
@@ -181,13 +181,13 @@
                   <button class="btn btn--ghost" type="button" data-compose="28">Personnaliser</button>
                 </div>
               </article>
-              <article class="pack pack--featured">
+              <article class="pack pack--featured" id="pack-42">
                 <span class="pack__ribbon">Cycle complet</span>
                 <p class="pack__tag">Pack triennal</p>
-                <p class="pack__hours">42 h</p>
+                <p class="pack__hours">42 h</p>
                 <p class="pack__sub">L’intégralité du cycle de trois ans</p>
                 <ul class="ticks">
-                  <li>Formations sélectionnées jusqu’à 42 h</li>
+                  <li>Formations sélectionnées jusqu’à 42 h</li>
                   <li>Inclut la déontologie et la non-discrimination exigées sur 3 ans</li>
                   <li>Une attestation par formation accomplie</li>
                 </ul>
@@ -205,9 +205,9 @@
               <div class="composer__list">
                 <fieldset class="chips" aria-label="Objectif d’heures">
                   <legend>Votre objectif</legend>
-                  <label><input type="radio" name="target" value="14" checked /><span>14 h · une année</span></label>
-                  <label><input type="radio" name="target" value="28" /><span>28 h · deux années</span></label>
-                  <label><input type="radio" name="target" value="42" /><span>42 h · trois années</span></label>
+                  <label><input type="radio" name="target" value="14" checked /><span>14 h · une année</span></label>
+                  <label><input type="radio" name="target" value="28" /><span>28 h · deux années</span></label>
+                  <label><input type="radio" name="target" value="42" /><span>42 h · trois années</span></label>
                 </fieldset>
                 <ul class="composer__courses" data-composer-courses></ul>
               </div>
@@ -261,10 +261,10 @@
           <fieldset>
             <legend>2. Ce que vous voulez couvrir</legend>
             <div class="seg seg--4">
-              <label><input type="radio" name="hours" value="1" /><span><b>1–12 h</b> Une formation</span></label>
-              <label><input type="radio" name="hours" value="14" checked /><span><b>14 h</b> Une année</span></label>
-              <label><input type="radio" name="hours" value="28" /><span><b>28 h</b> Deux années</span></label>
-              <label><input type="radio" name="hours" value="42" /><span><b>42 h</b> Trois années</span></label>
+              <label><input type="radio" name="hours" value="1" /><span><b>1–12 h</b> Une formation</span></label>
+              <label><input type="radio" name="hours" value="14" checked /><span><b>14 h</b> Une année</span></label>
+              <label><input type="radio" name="hours" value="28" /><span><b>28 h</b> Deux années</span></label>
+              <label><input type="radio" name="hours" value="42" /><span><b>42 h</b> Trois années</span></label>
             </div>
           </fieldset>
         </form>

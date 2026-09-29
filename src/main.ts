@@ -242,10 +242,26 @@ if (config) initConfigurator(config, $('[data-config-result]')!);
 const form = $<HTMLFormElement>('[data-form]');
 if (form) initForm(form);
 
+// Home page: individual courses "à la une".
+const topCourses = $('[data-top-courses]');
+if (topCourses) import('./ui/top-courses').then(({ renderTopCourses }) => renderTopCourses(topCourses));
+
 // Formations page: catalogue, course sheets and pack composer.
 if (document.querySelector('[data-course-grid]')) {
   const subtabsEl = $('[data-subtabs]');
   const subApi = subtabsEl ? initTabs(subtabsEl) : null;
+  // Deep links from the home page: #packs-prets, #packs-composer, #pack-14/28/42.
+  const hash = decodeURIComponent(location.hash.slice(1));
+  const packCard = /^pack-(14|28|42)$/.test(hash) ? document.getElementById(hash) : null;
+  if (subApi && (subApi.has(hash) || packCard)) {
+    tabApi?.select('packs');
+    subApi.select(packCard ? 'packs-prets' : hash);
+    // After the browser's own jump to the anchor, settle below the header.
+    window.setTimeout(() => {
+      if (packCard) scrollToY(packCard.getBoundingClientRect().top + window.scrollY - 120);
+      else scrollToEl(tabs!);
+    }, 60);
+  }
   import('./ui/catalog').then(({ initCatalog }) =>
     initCatalog({
       selectTab: (id) => tabApi?.select(id),
