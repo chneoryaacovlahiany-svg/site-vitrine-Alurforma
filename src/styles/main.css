@@ -686,6 +686,8 @@ body.is-demo-playing .nav {
 .show__controls {
   position: absolute;
   z-index: 3;
+  display: flex;
+  gap: 8px;
   right: max(var(--gutter), calc((100vw - 1360px) / 2 + var(--gutter)));
   bottom: 28px;
 }
@@ -698,6 +700,14 @@ body.is-demo-playing .nav {
 .show[data-mode='scroll'] .chip:hover {
   transform: translateY(-1px);
   background: #0a9d6c;
+}
+.show[data-mode='scroll'] .chip.chip--skip {
+  border-color: var(--line-dark);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+.show[data-mode='scroll'] .chip.chip--skip:hover {
+  background: rgba(255, 255, 255, 0.16);
 }
 .show[data-mode='scroll'] .chip[aria-pressed='true'] {
   background: rgba(255, 255, 255, 0.12);

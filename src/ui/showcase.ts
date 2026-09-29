@@ -92,6 +92,11 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
     else setTimeout(fn, 200);
   }
 
+  // "Passer": straight to the section after the demonstration.
+  const skipBtn = $<HTMLButtonElement>('[data-skip]');
+  const nextSection = show.nextElementSibling as HTMLElement | null;
+  const skipTarget = () => (nextSection ? nextSection.getBoundingClientRect().top + window.scrollY : show.offsetTop + show.offsetHeight);
+
   if (mode === 'scroll') {
     // The hero copy hands over to the chapter caption and rail.
     const tl = gsap.timeline({
@@ -217,6 +222,10 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
       e.preventDefault();
       play();
     });
+    skipBtn.addEventListener('click', () => {
+      stop();
+      scrollToY(skipTarget());
+    });
   } else if (mode === 'auto') {
     // Touch devices / small screens / reduced motion: a self-running loop with
     // an explicit pause, tap-to-jump chapters, and no autoplay if reduced.
@@ -283,6 +292,10 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
       e.preventDefault();
       canvas.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
       setPlaying(true);
+    });
+    skipBtn.addEventListener('click', () => {
+      setPlaying(false);
+      scrollToY(skipTarget());
     });
   }
 
