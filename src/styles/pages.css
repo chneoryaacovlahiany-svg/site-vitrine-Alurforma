@@ -516,6 +516,43 @@ main {
   object-fit: cover;
   border-radius: var(--r-lg) var(--r-lg) 0 0;
 }
+/* Cards not yet open (G, S): the visual is veiled with a clear label. */
+.pcard__media {
+  position: relative;
+  margin: -30px -30px 8px;
+}
+.pcard__media .pcard__img {
+  width: 100%;
+  margin: 0;
+}
+.pcard__media--soon .pcard__img {
+  filter: grayscale(0.55) brightness(0.72);
+}
+.pcard__media--soon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: linear-gradient(180deg, rgba(4, 29, 75, 0.25), rgba(4, 29, 75, 0.55));
+}
+.pcard__soon {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  background: rgba(4, 29, 75, 0.78);
+  color: #fff;
+  font: 600 14px/1 var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
 .pcard:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow);

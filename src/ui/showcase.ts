@@ -96,6 +96,10 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
   const skipBtn = $<HTMLButtonElement>('[data-skip]');
   const nextSection = show.nextElementSibling as HTMLElement | null;
   const skipTarget = () => (nextSection ? nextSection.getBoundingClientRect().top + window.scrollY : show.offsetTop + show.offsetHeight);
+  // "Section précédente": back to the section before the demonstration.
+  const prevBtn = $<HTMLButtonElement>('[data-prev]');
+  const prevSection = show.previousElementSibling as HTMLElement | null;
+  const prevTarget = () => (prevSection ? prevSection.getBoundingClientRect().top + window.scrollY : 0);
 
   if (mode === 'scroll') {
     // The hero copy hands over to the chapter caption and rail.
@@ -226,6 +230,10 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
       stop();
       scrollToY(skipTarget());
     });
+    prevBtn.addEventListener('click', () => {
+      stop();
+      scrollToY(prevTarget());
+    });
   } else if (mode === 'auto') {
     // Touch devices / small screens / reduced motion: a self-running loop with
     // an explicit pause, tap-to-jump chapters, and no autoplay if reduced.
@@ -296,6 +304,10 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
     skipBtn.addEventListener('click', () => {
       setPlaying(false);
       scrollToY(skipTarget());
+    });
+    prevBtn.addEventListener('click', () => {
+      setPlaying(false);
+      scrollToY(prevTarget());
     });
   }
 
