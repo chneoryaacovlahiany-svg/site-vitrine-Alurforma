@@ -1263,8 +1263,38 @@ main {
   margin-top: 8px;
   color: var(--ink-2);
 }
+.pack__sub {
+  font-weight: 650;
+  color: var(--gold) !important;
+}
 .pack--featured .pack__sub {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--gold) !important;
+}
+.pack__desc {
+  margin-top: 10px;
+  color: var(--ink-2);
+}
+.pack--featured .pack__desc {
+  color: rgba(255, 255, 255, 0.78);
+}
+.pack__tag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.pack__soon {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #fdf3e2;
+  color: #9a5b00;
+  font: 600 12px/1 var(--font);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.pack--featured .pack__soon {
+  background: rgba(201, 165, 106, 0.2);
+  color: #f3e3c3;
 }
 .pack .ticks {
   margin-bottom: 30px;
@@ -3050,4 +3080,68 @@ main {
     grid-template-areas: 'main' 'list' 'cta';
     padding: 28px 22px;
   }
+}
+
+/* ------------------------------------------- formations: hero, 2 paths */
+
+.hero-paths {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 340px));
+  gap: 14px;
+  margin-top: 30px;
+}
+.hero-path {
+  display: grid;
+  gap: 6px;
+  padding: 20px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--r);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.35s var(--ease), border-color 0.35s, background-color 0.35s;
+}
+.hero-path:hover {
+  transform: translateY(-2px);
+  border-color: rgba(127, 216, 181, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+}
+.hero-path small {
+  font: 600 12px/1 var(--display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue-soft);
+}
+.hero-path b {
+  font: 600 21px/1.25 var(--display);
+}
+.hero-path span {
+  margin-top: 6px;
+  font-weight: 650;
+  color: var(--blue-soft);
+}
+.hero-path i {
+  display: inline-block;
+  font-style: normal;
+  transition: transform 0.35s var(--ease);
+}
+.hero-path:hover i {
+  transform: translateX(4px);
+}
+@media (max-width: 640px) {
+  .hero-paths {
+    grid-template-columns: 1fr;
+  }
+}
+
+.soon-inline {
+  color: var(--gold);
+  font-weight: 650;
+}
+
+.seg .seg__long b {
+  font-size: 21px;
+  white-space: nowrap;
 }

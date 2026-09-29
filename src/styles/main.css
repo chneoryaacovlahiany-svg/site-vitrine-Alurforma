@@ -1099,6 +1099,7 @@ legend {
 }
 .seg label {
   position: relative;
+  display: flex;
   cursor: pointer;
 }
 .seg input {
@@ -1108,6 +1109,7 @@ legend {
 }
 .seg span {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 4px;
   min-height: 96px;

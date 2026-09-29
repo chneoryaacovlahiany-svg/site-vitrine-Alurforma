@@ -18,9 +18,9 @@ export type Card = 'T' | 'G' | 'S';
 
 /** Commercial availability per professional card — never overstate it. */
 export const AVAILABILITY: Record<Card, { label: string; open: boolean }> = {
-  T: { label: 'Programme publié', open: true },
-  G: { label: 'Programme conçu — production en cours', open: false },
-  S: { label: 'Programme conçu — production en cours', open: false },
+  T: { label: 'Disponible', open: true },
+  G: { label: 'Bientôt disponible', open: false },
+  S: { label: 'Bientôt disponible', open: false },
 };
 
 export const CARD_NAMES: Record<Card, string> = {

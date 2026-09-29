@@ -1,49 +1,72 @@
-// Formations page: how formations (1 h to 12 h) add up to 14, 28 and 42 h.
+// Formations page: how Alurforma follows an ALUR obligation, in five steps —
+// card, courses, plan (14 → 28 → 42 h), follow-up, centralised attestations.
 
 import { gsap } from 'gsap';
 import { el, counter, endCard, type Builder } from './player';
 
-const THEMES = ['Cadre juridique', 'Mandats', 'Déontologie', 'Non-discrimination', 'Lutte contre le blanchiment', 'Digitalisation', 'Sécurisation de la vente'];
+// Only themes that exist in the catalogue today.
+const COURSES = ['F01 · Cadre juridique', 'F02 · Déontologie', 'F03 · Non-discrimination'];
 const COLORS = ['#123a7e', '#0b8f63', '#2c58c8', '#0a6f4e', '#1d4aa8', '#0f7d59'];
 
 export const buildPacks: Builder = (stage, L) => {
   const tl = gsap.timeline();
   const T = L.tall;
+  const tx = T ? 48 : 70;
+  const titleStyle = { x: tx, y: 56, 'white-space': T ? 'normal' : 'nowrap', w: T ? 620 : undefined };
+  const step = (parent: HTMLElement, n: number) => el(parent, 'st-label', { x: tx, y: T ? 20 : 26, color: '#7fd8b5', 'letter-spacing': '.14em' }, `ÉTAPE ${n} / 5`);
 
-  // ------------------------------------------------ 1. durations 1 h → 12 h
-  const g1 = el(stage, 'g1', { x: 0, y: 0, w: L.W, h: L.H });
-  const title1 = el(g1, 'st-title', { x: T ? 48 : 70, y: T ? 56 : 56, 'white-space': T ? 'normal' : 'nowrap', w: T ? 620 : undefined }, 'Chaque thématique, <em>sa juste durée.</em>');
-  const sub1 = el(g1, 'st-sub', { x: T ? 48 : 70, y: T ? 176 : 124, w: T ? 600 : 620 }, 'Une formation dure de 1 h à 12 h, selon ce que le sujet exige.');
-  const rx = T ? 60 : 120;
-  const rw = T ? 600 : 1040;
-  const ry = T ? 470 : 470;
-  const ruler = el(g1, '', { x: rx, y: ry, w: rw, h: 2, background: 'rgba(255,255,255,.35)', 'transform-origin': 'left' });
-  const ticks: HTMLElement[] = [];
-  for (let i = 1; i <= 12; i++) {
-    const x = rx + ((i - 1) / 11) * rw;
-    ticks.push(el(g1, '', { x: x - 1, y: ry - 10, w: 2, h: 20, background: 'rgba(255,255,255,.35)' }));
-    if (i === 1 || i === 12 || (!T && i % 3 === 0)) ticks.push(el(g1, 'st-label', { x: x - 16, y: ry + 22 }, `${i} h`));
-  }
-  const cursor = el(g1, '', { x: rx - 9, y: ry - 9, w: 18, h: 18, 'border-radius': '50%', background: '#7fd8b5', 'box-shadow': '0 0 0 6px rgba(127,216,181,.2)' });
-  const cards = THEMES.slice(0, T ? 6 : 7).map((t, i) => {
-    const col = T ? i % 2 : i;
-    const row = T ? Math.floor(i / 2) : i % 2;
-    const x = T ? 48 + col * 318 : 70 + col * 160;
-    const y = T ? 250 + row * 64 : 226 + row * 90 + (i % 3) * 8;
-    return el(g1, 'st-card', { x, y, 'font-size': '17px', padding: '12px 16px' }, t);
+  // ------------------------------------------------------- 1. the card
+  const g0 = el(stage, 'g0', { x: 0, y: 0, w: L.W, h: L.H });
+  const s0 = step(g0, 1);
+  const t0 = el(g0, 'st-title', titleStyle, 'Choisissez <em>votre carte.</em>');
+  const CARDS: [string, string, boolean][] = [
+    ['T', 'Transaction', true],
+    ['G', 'Gestion', false],
+    ['S', 'Syndic', false],
+  ];
+  const tiles = CARDS.map(([k, name, open], i) => {
+    const x = T ? 48 + i * 214 : 70 + i * 230;
+    const y = T ? 250 : 200;
+    return el(
+      g0,
+      'st-card',
+      { x, y, w: T ? 196 : 206, h: 200, 'white-space': 'normal', opacity: open ? 1 : 0.55 },
+      `<b style="font-size:64px;line-height:1">${k}</b><span style="display:block;margin-top:14px;font-size:19px">${name}</span><small style="display:block;margin-top:10px;color:${open ? '#7fd8b5' : 'rgba(255,255,255,.6)'}">${open ? 'Disponible' : 'Bientôt disponible'}</small>`,
+    );
   });
-  tl.addLabel('durees')
-    .from([title1, sub1], { y: '+=20', autoAlpha: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out' })
-    .from(ruler, { scaleX: 0, duration: 1, ease: 'power3.inOut' }, '<0.3')
-    .from(ticks, { autoAlpha: 0, duration: 0.3, stagger: 0.03 }, '<0.3')
-    .from(cards, { y: '-=30', autoAlpha: 0, rotationX: -40, duration: 0.7, stagger: 0.12, ease: 'back.out(1.6)' }, '<')
-    .to(cursor, { x: rw, duration: 2.2, ease: 'power2.inOut' }, '<0.2')
-    .to({}, { duration: 0.8 })
-    .to(g1, { autoAlpha: 0, y: -20, duration: 0.5 });
+  tl.addLabel('carte')
+    .from([s0, t0], { y: '+=20', autoAlpha: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' })
+    .from(tiles, { y: 40, autoAlpha: 0, rotationX: -30, transformPerspective: 1200, duration: 0.7, stagger: 0.14, ease: 'back.out(1.6)' }, '<0.2')
+    .to(tiles[0], { borderColor: 'rgba(127,216,181,.9)', boxShadow: '0 0 0 4px rgba(127,216,181,.25)', scale: 1.04, duration: 0.5 }, '>0.4')
+    .to({}, { duration: 1.2 })
+    .to(g0, { autoAlpha: 0, y: -20, duration: 0.5 });
 
-  // ------------------------------------------------ 2-4. packs 14 / 28 / 42
+  // ------------------------------------------------ 2. the courses
+  const g1 = el(stage, 'g1', { x: 0, y: 0, w: L.W, h: L.H });
+  const s1 = step(g1, 2);
+  const t1 = el(g1, 'st-title', titleStyle, 'Choisissez <em>vos formations.</em>');
+  const panel = el(g1, 'st-panel', T ? { x: 48, y: 520, w: 624, h: 300 } : { x: 680, y: 170, w: 530, h: 330 });
+  el(panel, 'st-label', { x: 24, y: 20 }, 'MON PARCOURS');
+  const picks = COURSES.map((c, i) =>
+    el(g1, 'st-card', T ? { x: 48, y: 220 + i * 92, w: 624, 'font-size': '19px' } : { x: 70, y: 200 + i * 100, w: 520, 'font-size': '20px' }, c),
+  );
+  gsap.set(g1, { autoAlpha: 0 });
+  tl.addLabel('formations')
+    .set(g1, { autoAlpha: 1 })
+    .from([s1, t1], { y: '+=20', autoAlpha: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' })
+    .from(panel, { autoAlpha: 0, x: '+=40', duration: 0.6, ease: 'power3.out' }, '<0.2')
+    .from(picks, { x: -40, autoAlpha: 0, duration: 0.5, stagger: 0.14, ease: 'power2.out' }, '<0.2');
+  picks.forEach((p, i) => {
+    tl.to(p, T ? { top: 580 + i * 76, left: 72, width: 576, duration: 0.6, ease: 'power3.inOut' } : { top: 230 + i * 86, left: 704, width: 482, duration: 0.6, ease: 'power3.inOut' }, `>${i ? 0.05 : 0.4}`);
+  });
+  tl.to({}, { duration: 1.2 }).to(g1, { autoAlpha: 0, y: -20, duration: 0.5 });
+
+  // -------------------------------------- 3-5. plan, follow-up, attestations
   const g2 = el(stage, 'g2', { x: 0, y: 0, w: L.W, h: L.H });
-  const title2 = el(g2, 'st-title', { x: T ? 48 : 70, y: 56, 'white-space': T ? 'normal' : 'nowrap', w: T ? 620 : undefined }, 'Les formations s’additionnent. <em>L’obligation se remplit.</em>');
+  const s2 = el(g2, 'st-label', { x: tx, y: T ? 20 : 26, color: '#7fd8b5', 'letter-spacing': '.14em' }, 'ÉTAPE 3 / 5');
+  const t3 = el(g2, 'st-title', titleStyle, 'Construisez <em>votre parcours.</em>');
+  const t4 = el(g2, 'st-title', titleStyle, 'Alurforma suit <em>vos obligations.</em>');
+  const t5 = el(g2, 'st-title', titleStyle, 'Vos attestations, <em>centralisées.</em>');
   const sx = T ? 48 : 300;
   const sw = T ? 624 : 900;
   const sy0 = T ? 230 : 190;
@@ -73,48 +96,51 @@ export const buildPacks: Builder = (stage, L) => {
     );
     return slot;
   });
-  const big = el(g2, 'st-big', T ? { x: 48, y: 690 } : { x: 70, y: 500 }, '0 h');
-  const packBadge = el(g2, 'st-badge st-badge--green', T ? { x: 300, y: 716 } : { x: 330, y: 528 }, 'Pack annuel');
-  const nd = el(g2, 'st-badge st-badge--gold', T ? { x: 48, y: 820 } : { x: 860, y: 500 }, '✓ 2 h non-discrimination');
-  const de = el(g2, 'st-badge st-badge--gold', T ? { x: 360, y: 820 } : { x: 860, y: 556 }, '✓ 2 h déontologie');
+  const big = el(g2, 'st-big', T ? { x: 48, y: 680 } : { x: 70, y: 500 }, '0 h');
+  const packBadge = el(g2, 'st-badge st-badge--green', T ? { x: 48, y: 800 } : { x: 330, y: 528 }, '1 année');
+  const checks = ['✓ Déontologie', '✓ Non-discrimination', '✓ Heures réalisées'].map((txt, i) =>
+    el(g2, 'st-badge st-badge--gold', T ? { x: 380, y: 680 + i * 64 } : { x: 860, y: 486 + i * 54 }, txt),
+  );
   gsap.set(g2, { autoAlpha: 0 });
-  gsap.set([packBadge, nd, de, ...docs], { autoAlpha: 0 });
+  gsap.set([t4, t5, packBadge, ...checks, ...docs], { autoAlpha: 0 });
 
-  const fill = (yr: number) =>
-    gsap.from(blocks[yr], { x: '+=260', autoAlpha: 0, rotationY: -70, duration: 0.8, stagger: 0.22, ease: 'power3.out' });
+  const fill = (yr: number) => gsap.from(blocks[yr], { x: '+=260', autoAlpha: 0, rotationY: -70, duration: 0.8, stagger: 0.22, ease: 'power3.out' });
+  const badge = (text: string) =>
+    gsap
+      .timeline()
+      .to(packBadge, { autoAlpha: 0, duration: 0.2 })
+      .add(() => (packBadge.textContent = text))
+      .to(packBadge, { autoAlpha: 1, duration: 0.4 });
 
-  tl.addLabel('p14')
+  // 3. plan: 14 → 28 → 42 h
+  tl.addLabel('parcours')
     .set(g2, { autoAlpha: 1 })
-    .from(title2, { y: 20, autoAlpha: 0, duration: 0.7, ease: 'power3.out' })
+    .from([s2, t3], { y: 20, autoAlpha: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' })
     .from([...slots, ...slotLabels], { autoAlpha: 0, duration: 0.5, stagger: 0.06 }, '<0.2')
     .from(big, { autoAlpha: 0, duration: 0.4 }, '<')
     .add(fill(0));
   counter(tl, big, 0, 14, '<');
-  tl.to(packBadge, { autoAlpha: 1, duration: 0.4 }, '>-0.3').to({}, { duration: 1.2 });
-
-  tl.addLabel('p28').add(fill(1));
+  tl.to(packBadge, { autoAlpha: 1, duration: 0.4 }, '>-0.3').to({}, { duration: 0.6 }).add(fill(1));
   counter(tl, big, 14, 28, '<');
-  tl.to(packBadge, { autoAlpha: 0, duration: 0.2 }, '<')
-    .add(() => {
-      packBadge.textContent = tl.time() >= (tl.labels.p28 ?? 0) ? 'Pack deux ans' : 'Pack annuel';
-    }, '<0.2')
-    .to(packBadge, { autoAlpha: 1, duration: 0.4 }, '>0.6')
-    .to({}, { duration: 1.2 });
-
-  tl.addLabel('p42').add(fill(2));
+  tl.add(badge('2 années'), '>-0.4').to({}, { duration: 0.4 }).add(fill(2));
   counter(tl, big, 28, 42, '<');
-  tl.to(packBadge, { autoAlpha: 0, duration: 0.2 }, '<')
-    .add(() => {
-      packBadge.textContent = tl.time() >= (tl.labels.p42 ?? 0) ? 'Cycle complet' : 'Pack deux ans';
-    }, '<0.2')
-    .to(packBadge, { autoAlpha: 1, duration: 0.4 }, '>0.6')
-    .to([nd, de], { autoAlpha: 1, x: 0, duration: 0.5, stagger: 0.25, ease: 'back.out(2)' })
+  tl.add(badge('Cycle complet'), '>-0.4').to({}, { duration: 1 });
+
+  // 4. follow-up
+  tl.addLabel('suivi')
+    .add(() => (s2.textContent = tl.time() >= tl.labels.suivi ? 'ÉTAPE 4 / 5' : 'ÉTAPE 3 / 5'))
+    .to(t3, { autoAlpha: 0, duration: 0.3 })
+    .to(t4, { autoAlpha: 1, duration: 0.5 }, '<0.2')
+    .to(checks, { autoAlpha: 1, x: 0, duration: 0.5, stagger: 0.3, ease: 'back.out(2)' })
     .to({}, { duration: 1.4 });
 
-  // ------------------------------------------------ 5. attestations + end
+  // 5. attestations
   tl.addLabel('attest')
+    .add(() => (s2.textContent = tl.time() >= tl.labels.attest ? 'ÉTAPE 5 / 5' : 'ÉTAPE 4 / 5'))
+    .to(t4, { autoAlpha: 0, duration: 0.3 })
+    .to(t5, { autoAlpha: 1, duration: 0.5 }, '<0.2')
     .to(docs, { autoAlpha: 1, y: '-=10', duration: 0.4, stagger: 0.08, ease: 'back.out(2)' })
-    .to({}, { duration: 1.2 })
+    .to({}, { duration: 1.4 })
     .to(g2, { autoAlpha: 0, scale: 0.96, duration: 0.6 });
   const end = endCard(stage, L);
   gsap.set(end, { autoAlpha: 0 });
@@ -123,10 +149,10 @@ export const buildPacks: Builder = (stage, L) => {
   return {
     tl,
     chapters: [
-      { id: 'durees', label: '1 h à 12 h' },
-      { id: 'p14', label: '14 h' },
-      { id: 'p28', label: '28 h' },
-      { id: 'p42', label: '42 h' },
+      { id: 'carte', label: 'Carte' },
+      { id: 'formations', label: 'Formations' },
+      { id: 'parcours', label: 'Parcours' },
+      { id: 'suivi', label: 'Suivi' },
       { id: 'attest', label: 'Attestations' },
     ],
   };

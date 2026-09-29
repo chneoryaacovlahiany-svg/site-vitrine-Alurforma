@@ -58,11 +58,11 @@ function courseCard(c: Course) {
         <li><span>Durée</span><b>${esc(c.durationShort)}</b></li>
         <li><span>Thème</span><b>${esc(THEME_LABELS[c.themes[0]])}</b></li>
         <li><span>Accès</span><b>${accessValue(c)}</b></li>
-        <li><span>Attestation</span><b>Immédiate</b></li>
+        <li><span>Attestation</span><b>Dès validation</b></li>
       </ul>
       <div class="course-card__btns">
         <button type="button" class="btn btn--dark" data-open="${c.id}">Voir la fiche</button>
-        <button type="button" class="btn btn--ghost" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon pack' : '+ Ajouter à mon pack'}</button>
+        <button type="button" class="btn btn--ghost" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon parcours' : '+ Ajouter à mon parcours'}</button>
       </div>
     </div>
   </article>`;
@@ -110,9 +110,9 @@ function detail(c: Course) {
       <p class="sheet-hero__lead">${esc(c.summary)}</p>
       <ul class="sheet-stats">
         <li><span>Durée</span><b>${esc(c.durationShort)}</b></li>
-        <li><span>Accès</span><b>${accessValue(c)}</b></li>
-        <li><span>Public visé</span><b>${cardsLabel(c)}</b></li>
-        <li><span>Attestation</span><b>Immédiate</b></li>
+        <li><span>Accès</span><b>${c.online ? 'Immédiat' : 'Dès la mise en ligne'}</b></li>
+        <li><span>Format</span><b>100 % en ligne</b></li>
+        <li><span>Attestation</span><b>Dès validation du parcours</b></li>
       </ul>
     </div>
     <aside class="sheet-offer">
@@ -123,10 +123,10 @@ function detail(c: Course) {
         <li>Durée ${esc(c.durationShort)}</li>
         <li>${access(c)} · 100 % à distance</li>
         <li>Quiz, cas pratique et évaluation</li>
-        <li>Attestation immédiate à l’issue du parcours</li>
+        <li>Attestation disponible dès validation du parcours</li>
       </ul>
       <a class="btn btn--primary" href="./contact.html?objet=formation&amp;f=${c.code}">Demander un devis</a>
-      <button class="btn btn--ghost" type="button" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon pack' : '+ Ajouter à mon pack'}</button>
+      <button class="btn btn--ghost" type="button" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon parcours' : '+ Ajouter à mon parcours'}</button>
     </aside>
   </header>
   <div class="sheet-body">
@@ -145,7 +145,7 @@ function detail(c: Course) {
           <div><dt>Vidéos</dt><dd>${c.videoTotal}</dd></div>
           <div><dt>Durée estimée</dt><dd>${esc(c.duration)}</dd></div>
           <div><dt>Accès</dt><dd>${c.online ? 'Immédiat' : 'Dès la mise en ligne'}, 100 % à distance</dd></div>
-          <div><dt>Attestation</dt><dd>Immédiate, à l’issue du parcours</dd></div>
+          <div><dt>Attestation</dt><dd>Disponible dès validation du parcours</dd></div>
           <div><dt>Support</dt><dd>PC, tablette, mobile</dd></div>
           <div><dt>Cartes</dt><dd>${c.cards.join(', ')}</dd></div>
           <div><dt>Langue</dt><dd>Français</dd></div>
@@ -214,29 +214,28 @@ function initComposer(root: HTMLElement, selectPacksTab: (sub: 'packs-prets' | '
     list.innerHTML = COURSES.map((c) => {
       const on = selected.has(c.id);
       return `<li class="${on ? 'is-on' : ''}">
-        <div><span class="course-card__code">${c.code}</span><strong>${esc(c.title)}</strong><small>${cardsLabel(c)} · ${c.videoTotal} de vidéo · ≈ ${c.hours} h</small></div>
+        <div><span class="course-card__code">${c.code}</span><strong>${esc(c.title)}</strong><small>${cardsLabel(c)} · durée indicative ${esc(c.durationShort)} · ${esc(c.status.label)}</small></div>
         <button type="button" class="btn ${on ? 'btn--dark' : 'btn--ghost'}" data-add="${c.id}" aria-pressed="${on}">${on ? '✓ Ajoutée' : 'Ajouter'}</button>
       </li>`;
     }).join('');
     const picks = COURSES.filter((c) => selected.has(c.id));
-    const hours = picks.reduce((s, c) => s + c.hours, 0);
     const t = target();
-    const ratio = Math.min(1, hours / t);
     const hasDeonto = picks.some((c) => c.obligation === 'déontologie');
     const hasNd = picks.some((c) => c.obligation === 'non-discrimination');
     const codes = picks.map((c) => c.code).join(',');
+    // No hour arithmetic until course durations are final: the count is exact,
+    // the volume of hours is confirmed from the definitive durations.
     summary.innerHTML = `
-      <p class="composer__label">Mon pack · objectif ${t} h</p>
-      <p class="composer__hours"><b>≈ ${hours} h</b> <span>sur ${t} h</span></p>
-      <div class="composer__bar"><i style="transform:scaleX(${ratio})"></i></div>
+      <p class="composer__label">Mon parcours · objectif ${t} h</p>
+      <p class="composer__hours"><b>${picks.length}</b> <span>formation${picks.length > 1 ? 's' : ''} sélectionnée${picks.length > 1 ? 's' : ''}</span></p>
       <ul class="composer__checks">
         <li class="${hasDeonto ? 'ok' : ''}">Déontologie ${hasDeonto ? 'incluse' : 'à ajouter'}</li>
         <li class="${hasNd ? 'ok' : ''}">Non-discrimination ${hasNd ? 'incluse' : 'à ajouter'}</li>
       </ul>
       ${picks.length ? `<ol class="composer__picked">${picks.map((c) => `<li><span>${c.code}</span>${esc(c.title)}</li>`).join('')}</ol>` : '<p class="composer__empty">Ajoutez des formations depuis la liste.</p>'}
-      ${hours < t && picks.length ? `<p class="composer__hint">Il reste environ ${t - hours} h à compléter : le catalogue s’enrichit, nous vous proposerons les formations adaptées dans le devis.</p>` : ''}
-      <a class="btn btn--primary ${picks.length ? '' : 'is-disabled'}" ${picks.length ? `href="./contact.html?objet=formation&amp;pack=sur-mesure-${t}&amp;f=${codes}"` : 'aria-disabled="true"'}>Demander un devis pour ce pack</a>
-      <p class="composer__small">Durées indicatives : elles seront confirmées dans le devis.</p>`;
+      <p class="composer__hint">Le volume d’heures sera calculé à partir des durées définitives des formations sélectionnées, et complété avec vous pour atteindre ${t} h.</p>
+      <a class="btn btn--primary ${picks.length ? '' : 'is-disabled'}" ${picks.length ? `href="./contact.html?objet=formation&amp;pack=sur-mesure-${t}&amp;f=${codes}"` : 'aria-disabled="true"'}>Demander un devis pour ce parcours</a>
+      <p class="composer__small">Aucun paiement sur cette page : durées et tarif vous sont confirmés par écrit.</p>`;
   };
   root.addEventListener('change', render);
   listeners.push(render);

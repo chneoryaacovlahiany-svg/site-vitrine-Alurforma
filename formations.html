@@ -83,7 +83,43 @@
       <div class="wrap page-hero__inner">
         <nav class="crumbs" aria-label="Fil d’Ariane"><a href="./index.html">Accueil</a><span>Formations</span></nav>
         <h1>Formations <em>ALUR</em> en ligne</h1>
-        <p>Des formations individuelles de 1 h à 12 h, ou des packs de 14 h, 28 h et 42 h pour couvrir votre obligation sur une, deux ou trois années.</p>
+        <p>Choisissez une formation ciblée pour compléter vos heures, ou planifiez votre parcours sur une, deux ou trois années.</p>
+        <div class="hero-paths">
+          <a class="hero-path" href="#individuelles"><small>Formations à la carte</small><b>Choisir un thème précis</b><span>Voir les formations <i aria-hidden="true">→</i></span></a>
+          <a class="hero-path" href="#packs"><small>Packs Carte Pro</small><b>Planifier 14&nbsp;h, 28&nbsp;h ou 42&nbsp;h</b><span>Voir les packs <i aria-hidden="true">→</i></span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== CONFIGURATOR -->
+    <section class="section" id="parcours">
+      <div class="wrap config config--light">
+        <header class="head reveal">
+          <p class="kicker"><span>01</span> Trouver mon parcours</p>
+          <h2>Quel est <em>votre besoin</em>&nbsp;?</h2>
+          <p class="lead">Deux questions pour vous orienter : ce qui est disponible aujourd’hui, et ce qui ouvre prochainement.</p>
+        </header>
+        <form class="config__form reveal" data-config novalidate>
+          <fieldset>
+            <legend>1. Votre carte professionnelle</legend>
+            <div class="seg">
+              <label><input type="radio" name="card" value="T" checked /><span><b>T</b> Transaction</span></label>
+              <label><input type="radio" name="card" value="G" /><span><b>G</b> Gestion</span></label>
+              <label><input type="radio" name="card" value="S" /><span><b>S</b> Syndic</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>2. Votre objectif</legend>
+            <div class="seg seg--4">
+              <label><input type="radio" name="hours" value="1" checked /><span class="seg__long"><b>À la carte</b> Un thème précis</span></label>
+              <label><input type="radio" name="hours" value="14" /><span><b>14&nbsp;h</b> 1 année</span></label>
+              <label><input type="radio" name="hours" value="28" /><span><b>28&nbsp;h</b> 2 années</span></label>
+              <label><input type="radio" name="hours" value="42" /><span><b>42&nbsp;h</b> Cycle complet</span></label>
+            </div>
+          </fieldset>
+        </form>
+        <div class="config__result reveal" data-config-result aria-live="polite"></div>
+        <p class="config__disclaimer">Outil d’orientation : il ne remplace pas la vérification de votre situation (activité exercée, date de renouvellement de la carte).</p>
       </div>
     </section>
 
@@ -92,10 +128,10 @@
       <div class="wrap">
         <div class="segtabs" role="tablist" aria-label="Format de formation" data-tabs data-hash-tabs>
           <button role="tab" id="tab-individuelles" aria-controls="individuelles" aria-selected="true">
-            <b>Formations individuelles <em class="count" data-count-courses>3</em></b><span>Une thématique, à la carte</span>
+            <b>Formations individuelles</b><span>Une thématique, à la carte</span>
           </button>
           <button role="tab" id="tab-packs" aria-controls="packs" aria-selected="false" tabindex="-1">
-            <b>Packs Carte Pro <em class="count">3 + sur mesure</em></b><span>14 h · 28 h · 42 h ou votre composition</span>
+            <b>Packs Carte Pro</b><span>14 h · 28 h · 42 h ou votre composition</span>
           </button>
         </div>
 
@@ -103,10 +139,10 @@
         <div role="tabpanel" id="individuelles" aria-labelledby="tab-individuelles" class="panel">
           <div class="catalog-head">
             <header>
-              <p class="kicker"><span>01</span> Catalogue</p>
+              <p class="kicker"><span>02</span> Formations à la carte</p>
               <h2>Formations <em>individuelles</em></h2>
             </header>
-            <p class="lead">Chaque formation dure le temps que son sujet exige. Filtrez par carte, par thème ou par mot-clé, puis ouvrez la fiche pour tout savoir.</p>
+            <p class="lead">Un thème, une formation. Filtrez par carte, par thème ou par mot-clé, puis ouvrez la fiche pour tout savoir.</p>
           </div>
 
           <form class="filters" data-filters role="search" aria-label="Filtrer les formations" onsubmit="return false">
@@ -140,64 +176,66 @@
         <div role="tabpanel" id="packs" aria-labelledby="tab-packs" class="panel" hidden>
           <div class="catalog-head">
             <header>
-              <p class="kicker"><span>01</span> Packs Carte Pro</p>
-              <h2>Un pack prêt à l’emploi, <em>ou le vôtre</em>.</h2>
+              <p class="kicker"><span>03</span> Packs Carte Pro</p>
+              <h2>Organisez vos heures ALUR <em>sur 1, 2 ou 3 ans</em>.</h2>
             </header>
-            <p class="lead">Prenez un pack existant, ou composez le vôtre en choisissant les formations une à une.</p>
+            <p class="lead">Un pack prêt à suivre, ou votre propre parcours composé formation par formation. <strong>Les packs ouvrent prochainement.</strong></p>
           </div>
 
           <div class="subtabs" role="tablist" aria-label="Type de pack" data-subtabs>
-            <button role="tab" id="tab-packs-prets" aria-controls="packs-prets" aria-selected="true">Packs prêts à l’emploi</button>
-            <button role="tab" id="tab-packs-composer" aria-controls="packs-composer" aria-selected="false" tabindex="-1">Composer mon pack</button>
+            <button role="tab" id="tab-packs-prets" aria-controls="packs-prets" aria-selected="true">Packs prêts à suivre</button>
+            <button role="tab" id="tab-packs-composer" aria-controls="packs-composer" aria-selected="false" tabindex="-1">Composer mon parcours</button>
           </div>
 
           <div role="tabpanel" id="packs-prets" aria-labelledby="tab-packs-prets" class="panel">
             <div class="packs">
               <article class="pack" id="pack-14">
-                <p class="pack__tag">Pack annuel</p>
-                <p class="pack__hours">14 h</p>
-                <p class="pack__sub">Couvre une année d’obligation</p>
+                <p class="pack__tag">Pack annuel <span class="pack__soon">Ouverture prochaine</span></p>
+                <p class="pack__hours">14&nbsp;h</p>
+                <p class="pack__sub">1 année</p>
+                <p class="pack__desc">14&nbsp;h de formations pour votre année ALUR.</p>
                 <ul class="ticks">
-                  <li>Formations sélectionnées jusqu’à 14 h</li>
-                  <li>Suivi des heures dans l’espace apprenant</li>
-                  <li>Une attestation par formation accomplie</li>
+                  <li>Heures suivies dans l’espace apprenant</li>
+                  <li>Une attestation par formation, dès validation</li>
                 </ul>
                 <div class="pack__btns">
-                  <a class="btn btn--dark" href="./contact.html?objet=formation&amp;pack=pack-14">Demander un devis</a>
-                  <button class="btn btn--ghost" type="button" data-compose="14">Personnaliser</button>
+                  <a class="btn btn--dark" href="./contact.html?objet=formation&amp;pack=pack-14">Être informé de l’ouverture</a>
+                  <button class="btn btn--ghost" type="button" data-compose="14">Composer mon parcours</button>
                 </div>
               </article>
               <article class="pack" id="pack-28">
-                <p class="pack__tag">Pack deux ans</p>
-                <p class="pack__hours">28 h</p>
-                <p class="pack__sub">Deux années d’obligation, planifiées</p>
+                <p class="pack__tag">Pack deux ans <span class="pack__soon">Ouverture prochaine</span></p>
+                <p class="pack__hours">28&nbsp;h</p>
+                <p class="pack__sub">2 années · 14&nbsp;h par an</p>
+                <p class="pack__desc">Deux années planifiées à 14&nbsp;h par année.</p>
                 <ul class="ticks">
-                  <li>Formations sélectionnées jusqu’à 28 h</li>
-                  <li>Répartition sur deux années</li>
-                  <li>Une attestation par formation accomplie</li>
+                  <li>Heures suivies dans l’espace apprenant</li>
+                  <li>Une attestation par formation, dès validation</li>
                 </ul>
                 <div class="pack__btns">
-                  <a class="btn btn--dark" href="./contact.html?objet=formation&amp;pack=pack-28">Demander un devis</a>
-                  <button class="btn btn--ghost" type="button" data-compose="28">Personnaliser</button>
+                  <a class="btn btn--dark" href="./contact.html?objet=formation&amp;pack=pack-28">Être informé de l’ouverture</a>
+                  <button class="btn btn--ghost" type="button" data-compose="28">Composer mon parcours</button>
                 </div>
               </article>
               <article class="pack pack--featured" id="pack-42">
                 <span class="pack__ribbon">Cycle complet</span>
-                <p class="pack__tag">Pack triennal</p>
-                <p class="pack__hours">42 h</p>
-                <p class="pack__sub">L’intégralité du cycle de trois ans</p>
+                <p class="pack__tag">Pack triennal <span class="pack__soon">Ouverture prochaine</span></p>
+                <p class="pack__hours">42&nbsp;h</p>
+                <p class="pack__sub">Cycle de 3 ans</p>
+                <p class="pack__desc">Votre parcours ALUR sur trois années consécutives.</p>
                 <ul class="ticks">
-                  <li>Formations sélectionnées jusqu’à 42 h</li>
-                  <li>Inclut la déontologie et la non-discrimination exigées sur 3 ans</li>
-                  <li>Une attestation par formation accomplie</li>
+                  <li>Déontologie suivie</li>
+                  <li>Non-discrimination suivie</li>
+                  <li>Heures centralisées</li>
+                  <li>Attestations par formation</li>
                 </ul>
                 <div class="pack__btns">
-                  <a class="btn btn--primary" href="./contact.html?objet=formation&amp;pack=pack-42">Demander un devis</a>
-                  <button class="btn btn--glass" type="button" data-compose="42">Personnaliser</button>
+                  <a class="btn btn--primary" href="./contact.html?objet=formation&amp;pack=pack-42">Être informé de l’ouverture</a>
+                  <button class="btn btn--glass" type="button" data-compose="42">Composer mon parcours</button>
                 </div>
               </article>
             </div>
-            <p class="price-note">Tarifs sur devis, communiqués en euros TTC avant toute inscription.</p>
+            <p class="price-note">Les packs ouvrent à mesure que le catalogue permet de les compléter. D’ici là, suivez les formations disponibles à la carte, ou composez votre parcours : nous le complétons avec vous. Tarifs communiqués en euros TTC avant toute inscription.</p>
           </div>
 
           <div role="tabpanel" id="packs-composer" aria-labelledby="tab-packs-composer" class="panel" hidden>
@@ -226,11 +264,11 @@
     <section class="section section--navy" aria-labelledby="pres-title">
       <div class="wrap pres-wrap">
         <header class="head head--light reveal">
-          <p class="kicker kicker--light"><span>02</span> En images</p>
-          <h2 id="pres-title">De la formation <em>au cycle complet</em>.</h2>
-          <p class="lead">Comment les formations s’additionnent pour couvrir votre obligation — en moins d’une minute.</p>
+          <p class="kicker kicker--light"><span>04</span> Votre suivi</p>
+          <h2 id="pres-title">Comment Alurforma suit <em>votre obligation</em>.</h2>
+          <p class="lead">Votre carte, vos formations, votre parcours, le suivi des thèmes exigés et vos attestations — en moins d’une minute.</p>
         </header>
-        <div class="pres reveal" data-presentation="packs" aria-label="Présentation animée : composition des packs">
+        <div class="pres reveal" data-presentation="packs" aria-label="Présentation animée : comment Alurforma suit votre obligation">
           <div class="pres__screen" data-pres-screen></div>
           <div class="pres__bar">
             <button type="button" class="pres__toggle" data-pres-toggle aria-label="Mettre en pause">❚❚</button>
@@ -241,35 +279,15 @@
       </div>
     </section>
 
-    <!-- ======================================================== CONFIGURATOR -->
-    <section class="section" id="parcours">
-      <div class="wrap config config--light">
-        <header class="head reveal">
-          <p class="kicker"><span>03</span> Configurateur</p>
-          <h2>De combien d’heures avez-vous <em>besoin</em>&nbsp;?</h2>
-          <p class="lead">Deux questions, une orientation honnête : ce qui est disponible, et ce qui ne l’est pas encore.</p>
-        </header>
-        <form class="config__form reveal" data-config novalidate>
-          <fieldset>
-            <legend>1. Votre carte professionnelle</legend>
-            <div class="seg">
-              <label><input type="radio" name="card" value="T" checked /><span><b>T</b> Transaction</span></label>
-              <label><input type="radio" name="card" value="G" /><span><b>G</b> Gestion</span></label>
-              <label><input type="radio" name="card" value="S" /><span><b>S</b> Syndic</span></label>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend>2. Ce que vous voulez couvrir</legend>
-            <div class="seg seg--4">
-              <label><input type="radio" name="hours" value="1" /><span><b>1–12 h</b> Une formation</span></label>
-              <label><input type="radio" name="hours" value="14" checked /><span><b>14 h</b> Une année</span></label>
-              <label><input type="radio" name="hours" value="28" /><span><b>28 h</b> Deux années</span></label>
-              <label><input type="radio" name="hours" value="42" /><span><b>42 h</b> Trois années</span></label>
-            </div>
-          </fieldset>
-        </form>
-        <div class="config__result reveal" data-config-result aria-live="polite"></div>
-        <p class="config__disclaimer">Outil d’orientation : il ne remplace pas la vérification de votre situation (activité exercée, date de renouvellement de la carte).</p>
+    <section class="cta-final">
+      <div class="wrap cta-final__inner reveal">
+        <img class="cta-final__mark" src="/brand/alurforma-mark.png" width="416" height="425" alt="" loading="lazy" />
+        <h2>Vous ne savez pas quel parcours choisir&nbsp;?</h2>
+        <p>Nous vérifions avec vous votre carte, votre échéance et les heures à compléter.</p>
+        <div class="cta-final__btns">
+          <a class="btn btn--primary btn--lg" href="#parcours">Trouver mon parcours</a>
+          <a class="btn btn--dark btn--lg" href="./contact.html?objet=formation">Nous contacter</a>
+        </div>
       </div>
     </section>
   </main>
