@@ -74,6 +74,7 @@ export function initShowcase({ reduced, finePointer, scrollToY }: Ctx) {
     await Promise.all([
       document.fonts.load('600 20px "Inter Variable"'),
       document.fonts.load('700 20px "Space Grotesk Variable"'),
+      document.fonts.load('700 20px "Alur Digits"', '0123456789'),
       document.fonts.load('400 20px "Instrument Serif"'),
     ]).catch(() => undefined);
     // The screens also draw the official logo: wait for it to decode.

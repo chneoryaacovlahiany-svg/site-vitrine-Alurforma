@@ -383,8 +383,6 @@ main {
   color: #fff;
 }
 .duo__big span {
-  font-family: var(--serif);
-  font-style: italic;
   font-weight: 400;
   color: var(--gold);
 }
@@ -595,7 +593,8 @@ main {
   content: '';
   position: absolute;
   left: 28px;
-  right: 28px;
+  /* Stops at the centre of the last step's circle. */
+  right: calc((100% - 60px) / 4 - 28px);
   top: 27px;
   height: 2px;
   background: linear-gradient(90deg, var(--cyan), var(--green));
@@ -1446,6 +1445,7 @@ main {
 }
 .idcard div {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 16px;
   padding: 14px 18px;
@@ -1639,6 +1639,10 @@ main {
     grid-template-columns: 1fr;
     gap: 36px;
   }
+  /* One column: the heading must scroll with its content, not stay pinned over it. */
+  .split .head {
+    position: static;
+  }
   .footer__grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1648,8 +1652,7 @@ main {
   .pres__chapters {
     order: 3;
     width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
+    flex-wrap: wrap;
   }
 }
 
@@ -1675,8 +1678,15 @@ main {
   }
   .faq__nav {
     position: static;
-    grid-auto-flow: column;
-    overflow-x: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .faq__nav a {
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    white-space: nowrap;
   }
   .segtabs {
     grid-template-columns: 1fr;
@@ -1969,7 +1979,7 @@ main {
 .course-card__meta span {
   display: block;
   margin-bottom: 4px;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2285,7 +2295,7 @@ main {
 .sheet-stats span {
   display: block;
   margin-bottom: 6px;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;

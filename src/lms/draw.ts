@@ -19,7 +19,7 @@ export const UI = {
 } as const;
 
 export const FONT = '"Inter Variable", Inter, system-ui, sans-serif';
-export const DISPLAY = '"Space Grotesk Variable", "Inter Variable", system-ui, sans-serif';
+export const DISPLAY = '"Alur Digits", "Space Grotesk Variable", "Inter Variable", system-ui, sans-serif';
 export const SERIF = '"Instrument Serif", Georgia, serif';
 
 export type Ctx = CanvasRenderingContext2D;
