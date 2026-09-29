@@ -16,6 +16,10 @@ function toggleSelected(id: string) {
   notify();
 }
 
+function priceOf(c: Course) {
+  return c.price ?? 'Sur devis';
+}
+
 function cardsLabel(c: Course) {
   return c.cards.length === 3 ? 'Toutes cartes' : c.cards.map((k) => `Carte ${k}`).join(' · ');
 }
@@ -42,10 +46,11 @@ function courseCard(c: Course) {
       <p>${esc(c.summary)}</p>
       <ul class="course-card__meta">
         <li><b>${c.videoTotal}</b><span>de vidéo</span></li>
-        <li><b>${c.lessons.length} leçons</b><span>1 chapitre</span></li>
         <li><b>${esc(THEME_LABELS[c.themes[0]])}</b><span>thème</span></li>
-        <li><b>${esc(c.level.split(' · ')[0])}</b><span>niveau</span></li>
+        <li><b>Accès immédiat</b><span>100 % à distance</span></li>
+        <li><b>Attestation immédiate</b><span>à l’issue du parcours</span></li>
       </ul>
+      <p class="course-card__price"><span>Prix</span><b>${esc(priceOf(c))}</b></p>
       <div class="course-card__btns">
         <button type="button" class="btn btn--dark" data-open="${c.id}">Voir la fiche</button>
         <button type="button" class="btn btn--ghost" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon pack' : '+ Ajouter à mon pack'}</button>
@@ -90,26 +95,26 @@ function detail(c: Course) {
   <button class="course-modal__close" type="button" data-close aria-label="Fermer la fiche">×</button>
   <header class="sheet-hero">
     <div class="sheet-hero__main">
-      <div class="course-card__badges"><span class="badge">${cardsLabel(c)}</span><span class="badge">${esc(c.level)}</span>${c.obligation ? '<span class="badge badge--gold">Thème exigé sur 3 ans</span>' : ''}</div>
+      <div class="course-card__badges"><span class="badge">${cardsLabel(c)}</span>${c.obligation ? '<span class="badge badge--gold">Thème exigé sur 3 ans</span>' : ''}</div>
       <p class="course-card__code">${c.code} · Formation individuelle</p>
       <h2 id="course-modal-title">${esc(c.title)}</h2>
       <p class="sheet-hero__lead">${esc(c.summary)}</p>
       <ul class="sheet-stats">
         <li><b>${c.videoTotal}</b><span>de vidéo mesurée</span></li>
-        <li><b>${c.lessons.length} leçons</b><span>1 chapitre</span></li>
+        <li><b>Accès immédiat</b><span>100 % à distance</span></li>
         <li><b>${cardsLabel(c)}</b><span>public visé</span></li>
-        <li><b>Attestation</b><span>de formation</span></li>
+        <li><b>Attestation immédiate</b><span>à l’issue du parcours</span></li>
       </ul>
     </div>
     <aside class="sheet-offer">
       ${visual(c, 'sheet-offer__img', '(max-width: 1000px) 92vw, 400px', true)}
       <span class="status status--${c.status.tone}">${esc(c.status.label)}</span>
-      <p class="sheet-offer__price">Sur devis</p>
+      <p class="sheet-offer__price"><small>Prix</small>${esc(priceOf(c))}</p>
       <ul class="ticks">
-        <li>${c.videoTotal} de vidéos · ${c.lessons.length} leçons</li>
+        <li>${c.videoTotal} de vidéos</li>
+        <li>Accès immédiat · 100 % à distance</li>
         <li>Quiz, cas pratique et évaluation</li>
-        <li>Accès ordinateur, tablette, smartphone</li>
-        <li>Attestation à l’issue du parcours accompli</li>
+        <li>Attestation immédiate à l’issue du parcours</li>
       </ul>
       <a class="btn btn--primary" href="./contact.html?objet=formation&amp;f=${c.code}">Demander un devis</a>
       <button class="btn btn--ghost" type="button" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon pack' : '+ Ajouter à mon pack'}</button>
@@ -127,13 +132,12 @@ function detail(c: Course) {
       <div class="sheet-info">
         <h3>Informations pratiques</h3>
         <dl>
-          <div><dt>Tarif</dt><dd>Sur devis</dd></div>
+          <div><dt>Tarif</dt><dd>${esc(priceOf(c))}</dd></div>
           <div><dt>Vidéos</dt><dd>${c.videoTotal}</dd></div>
           <div><dt>Durée estimée</dt><dd>${esc(c.duration)}</dd></div>
           <div><dt>Leçons</dt><dd>${c.lessons.length}</dd></div>
           <div><dt>Format</dt><dd>100 % en ligne</dd></div>
           <div><dt>Support</dt><dd>PC, tablette, mobile</dd></div>
-          <div><dt>Niveau</dt><dd>${esc(c.level)}</dd></div>
           <div><dt>Cartes</dt><dd>${c.cards.join(', ')}</dd></div>
           <div><dt>Langue</dt><dd>Français</dd></div>
         </dl>

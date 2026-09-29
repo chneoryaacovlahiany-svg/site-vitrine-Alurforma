@@ -29,6 +29,8 @@ export interface Course {
   duration: string;
   /** Heures indicatives utilisées par le composeur de pack. */
   hours: number;
+  /** Prix public TTC affiché (ex. « 49 € TTC ») ; « Sur devis » tant qu'il n'est pas renseigné. */
+  price?: string;
   public: string;
   prerequisites: string;
   objectives: string[];
