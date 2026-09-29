@@ -22,9 +22,16 @@ function cardsLabel(c: Course) {
 
 // ---------------------------------------------------------------- cards --
 
+/** Course visual (16:9, title and logo baked in, so the alt text stays empty). */
+function visual(c: Course, cls: string, sizes: string, eager = false) {
+  const base = `${import.meta.env.BASE_URL}media/formations/${c.id}`;
+  return `<img class="${cls}" src="${base}-640.webp" srcset="${base}-640.webp 640w, ${base}-1200.webp 1200w" sizes="${sizes}" width="640" height="360" alt="" ${eager ? '' : 'loading="lazy" '}decoding="async" />`;
+}
+
 function courseCard(c: Course) {
   const inPack = selected.has(c.id);
   return `<article class="course-card" data-id="${c.id}">
+    ${visual(c, 'course-card__img', '(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 380px')}
     <div class="course-card__top">
       <div class="course-card__badges"><span class="badge">${cardsLabel(c)}</span>${c.obligation ? `<span class="badge badge--gold">Thème exigé sur 3 ans</span>` : ''}</div>
       <p class="course-card__code">${c.code}</p>
@@ -95,6 +102,7 @@ function detail(c: Course) {
       </ul>
     </div>
     <aside class="sheet-offer">
+      ${visual(c, 'sheet-offer__img', '(max-width: 1000px) 92vw, 400px', true)}
       <span class="status status--${c.status.tone}">${esc(c.status.label)}</span>
       <p class="sheet-offer__price">Sur devis</p>
       <ul class="ticks">

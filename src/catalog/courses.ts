@@ -14,7 +14,7 @@ export interface Lesson {
 }
 
 export interface Course {
-  id: string; // ancre URL, ex. #f01
+  id: string; // ancre URL, ex. #f01 ; sert aussi au visuel public/media/formations/<id>-640|1200.webp
   code: string;
   title: string;
   summary: string;

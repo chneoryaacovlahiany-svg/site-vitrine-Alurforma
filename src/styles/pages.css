@@ -1869,6 +1869,22 @@ main {
   overflow: hidden;
   transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease);
 }
+.course-card__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--navy);
+}
+.sheet-offer__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 14px;
+}
 .course-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 30px 60px -30px rgba(4, 29, 75, 0.35);
