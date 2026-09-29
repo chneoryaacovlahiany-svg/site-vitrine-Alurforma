@@ -16,15 +16,35 @@ function toggleSelected(id: string) {
   notify();
 }
 
+/** « Accès immédiat » only for courses that are online today. */
+function access(c: Course) {
+  return c.online ? 'Accès immédiat' : 'Accès dès la mise en ligne';
+}
+
+function accessValue(c: Course) {
+  return c.online ? 'Immédiat, 100 % à distance' : 'Dès la mise en ligne';
+}
+
+function priceOf(c: Course) {
+  return c.price ?? 'Sur devis';
+}
+
 function cardsLabel(c: Course) {
   return c.cards.length === 3 ? 'Toutes cartes' : c.cards.map((k) => `Carte ${k}`).join(' · ');
 }
 
 // ---------------------------------------------------------------- cards --
 
+/** Course visual (16:9, title and logo baked in, so the alt text stays empty). */
+function visual(c: Course, cls: string, sizes: string, eager = false) {
+  const base = `${import.meta.env.BASE_URL}media/formations/${c.id}`;
+  return `<img class="${cls}" src="${base}-640.webp" srcset="${base}-640.webp 640w, ${base}-1200.webp 1200w" sizes="${sizes}" width="640" height="360" alt="" ${eager ? '' : 'loading="lazy" '}decoding="async" />`;
+}
+
 function courseCard(c: Course) {
   const inPack = selected.has(c.id);
   return `<article class="course-card" data-id="${c.id}">
+    ${visual(c, 'course-card__img', '(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 380px')}
     <div class="course-card__top">
       <div class="course-card__badges"><span class="badge">${cardsLabel(c)}</span>${c.obligation ? `<span class="badge badge--gold">Thème exigé sur 3 ans</span>` : ''}</div>
       <p class="course-card__code">${c.code}</p>
@@ -33,11 +53,12 @@ function courseCard(c: Course) {
     </div>
     <div class="course-card__body">
       <p>${esc(c.summary)}</p>
+      <p class="course-card__price"><span>Prix</span><b>${esc(priceOf(c))}</b></p>
       <ul class="course-card__meta">
-        <li><b>${c.videoTotal}</b><span>de vidéo</span></li>
-        <li><b>${c.lessons.length} leçons</b><span>1 chapitre</span></li>
-        <li><b>${esc(THEME_LABELS[c.themes[0]])}</b><span>thème</span></li>
-        <li><b>${esc(c.level.split(' · ')[0])}</b><span>niveau</span></li>
+        <li><span>Durée</span><b>${esc(c.durationShort)}</b></li>
+        <li><span>Thème</span><b>${esc(THEME_LABELS[c.themes[0]])}</b></li>
+        <li><span>Accès</span><b>${accessValue(c)}</b></li>
+        <li><span>Attestation</span><b>Immédiate</b></li>
       </ul>
       <div class="course-card__btns">
         <button type="button" class="btn btn--dark" data-open="${c.id}">Voir la fiche</button>
@@ -83,25 +104,26 @@ function detail(c: Course) {
   <button class="course-modal__close" type="button" data-close aria-label="Fermer la fiche">×</button>
   <header class="sheet-hero">
     <div class="sheet-hero__main">
-      <div class="course-card__badges"><span class="badge">${cardsLabel(c)}</span><span class="badge">${esc(c.level)}</span>${c.obligation ? '<span class="badge badge--gold">Thème exigé sur 3 ans</span>' : ''}</div>
+      <div class="course-card__badges"><span class="badge">${cardsLabel(c)}</span>${c.obligation ? '<span class="badge badge--gold">Thème exigé sur 3 ans</span>' : ''}</div>
       <p class="course-card__code">${c.code} · Formation individuelle</p>
       <h2 id="course-modal-title">${esc(c.title)}</h2>
       <p class="sheet-hero__lead">${esc(c.summary)}</p>
       <ul class="sheet-stats">
-        <li><b>${c.videoTotal}</b><span>de vidéo mesurée</span></li>
-        <li><b>${c.lessons.length} leçons</b><span>1 chapitre</span></li>
-        <li><b>${cardsLabel(c)}</b><span>public visé</span></li>
-        <li><b>Attestation</b><span>de formation</span></li>
+        <li><span>Durée</span><b>${esc(c.durationShort)}</b></li>
+        <li><span>Accès</span><b>${accessValue(c)}</b></li>
+        <li><span>Public visé</span><b>${cardsLabel(c)}</b></li>
+        <li><span>Attestation</span><b>Immédiate</b></li>
       </ul>
     </div>
     <aside class="sheet-offer">
+      ${visual(c, 'sheet-offer__img', '(max-width: 1000px) 92vw, 400px', true)}
       <span class="status status--${c.status.tone}">${esc(c.status.label)}</span>
-      <p class="sheet-offer__price">Sur devis</p>
+      <p class="sheet-offer__price"><small>Prix</small>${esc(priceOf(c))}</p>
       <ul class="ticks">
-        <li>${c.videoTotal} de vidéos · ${c.lessons.length} leçons</li>
+        <li>Durée ${esc(c.durationShort)}</li>
+        <li>${access(c)} · 100 % à distance</li>
         <li>Quiz, cas pratique et évaluation</li>
-        <li>Accès ordinateur, tablette, smartphone</li>
-        <li>Attestation à l’issue du parcours accompli</li>
+        <li>Attestation immédiate à l’issue du parcours</li>
       </ul>
       <a class="btn btn--primary" href="./contact.html?objet=formation&amp;f=${c.code}">Demander un devis</a>
       <button class="btn btn--ghost" type="button" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon pack' : '+ Ajouter à mon pack'}</button>
@@ -119,13 +141,12 @@ function detail(c: Course) {
       <div class="sheet-info">
         <h3>Informations pratiques</h3>
         <dl>
-          <div><dt>Tarif</dt><dd>Sur devis</dd></div>
+          <div><dt>Tarif</dt><dd>${esc(priceOf(c))}</dd></div>
           <div><dt>Vidéos</dt><dd>${c.videoTotal}</dd></div>
           <div><dt>Durée estimée</dt><dd>${esc(c.duration)}</dd></div>
-          <div><dt>Leçons</dt><dd>${c.lessons.length}</dd></div>
-          <div><dt>Format</dt><dd>100 % en ligne</dd></div>
+          <div><dt>Accès</dt><dd>${c.online ? 'Immédiat' : 'Dès la mise en ligne'}, 100 % à distance</dd></div>
+          <div><dt>Attestation</dt><dd>Immédiate, à l’issue du parcours</dd></div>
           <div><dt>Support</dt><dd>PC, tablette, mobile</dd></div>
-          <div><dt>Niveau</dt><dd>${esc(c.level)}</dd></div>
           <div><dt>Cartes</dt><dd>${c.cards.join(', ')}</dd></div>
           <div><dt>Langue</dt><dd>Français</dd></div>
         </dl>

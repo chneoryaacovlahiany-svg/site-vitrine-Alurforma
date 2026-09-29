@@ -4,6 +4,16 @@
    électrique pour l'action, cyan avec parcimonie, or fin pour les preuves.
    ========================================================================= */
 
+/* Uniform numerals: Inter's digits (and a few number signs) wherever the display font is used. */
+@font-face {
+  font-family: 'Alur Digits';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0030-0039, U+0025, U+002B, U+2248, U+20AC;
+}
+
 :root {
   --navy: #041d4b;
   --navy-2: #0a2a63;
@@ -25,7 +35,8 @@
   --amber: #b45309;
 
   --font: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --display: 'Space Grotesk Variable', var(--font);
+  /* Digits come from Inter (clean lining figures), letters from Space Grotesk. */
+  --display: 'Alur Digits', 'Space Grotesk Variable', var(--font);
   --serif: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
   --r: 18px;
@@ -1538,6 +1549,7 @@ legend {
 .chain li {
   position: relative;
   display: grid;
+  align-content: start;
   gap: 4px;
   padding: 22px 20px 0 0;
   border-top: 1px solid var(--line-dark);
@@ -1665,6 +1677,7 @@ details p {
 .form__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: end;
   gap: 18px;
 }
 .form label {

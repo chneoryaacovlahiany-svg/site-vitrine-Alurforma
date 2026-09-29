@@ -14,7 +14,7 @@ export interface Lesson {
 }
 
 export interface Course {
-  id: string; // ancre URL, ex. #f01
+  id: string; // ancre URL, ex. #f01 ; sert aussi au visuel public/media/formations/<id>-640|1200.webp
   code: string;
   title: string;
   summary: string;
@@ -24,11 +24,17 @@ export interface Course {
   obligation?: 'déontologie' | 'non-discrimination';
   level: string;
   status: { label: string; tone: 'ok' | 'wip' };
+  /** Formation accessible en ligne aujourd'hui (conditionne la mention « Accès immédiat »). */
+  online: boolean;
   videoTotal: string;
   /** Durée pédagogique indicative, présentée comme une estimation. */
   duration: string;
+  /** Version courte de la durée, pour les encarts. */
+  durationShort: string;
   /** Heures indicatives utilisées par le composeur de pack. */
   hours: number;
+  /** Prix public TTC affiché (ex. « 49 € TTC ») ; « Sur devis » tant qu'il n'est pas renseigné. */
+  price?: string;
   public: string;
   prerequisites: string;
   objectives: string[];
@@ -52,6 +58,8 @@ export const COURSES: Course[] = [
   {
     id: 'f01',
     code: 'F01',
+    durationShort: '≈ 1 h 45',
+    online: true,
     title: 'Cadre de la transaction et rôle de chacun',
     summary: 'Identifier l’activité et le cadre professionnel, distinguer statuts, habilitations et pouvoirs, vérifier la mission avant d’agir.',
     cards: ['T'],
@@ -84,6 +92,8 @@ export const COURSES: Course[] = [
   {
     id: 'f02',
     code: 'F02',
+    durationShort: '≈ 2 h',
+    online: false,
     title: 'Déontologie et conduite professionnelle',
     summary: 'Relier les principes déontologiques aux actes quotidiens, gérer un conflit d’intérêts et répondre à une pression commerciale.',
     cards: ['T'],
@@ -117,6 +127,8 @@ export const COURSES: Course[] = [
   {
     id: 'f03',
     code: 'F03',
+    durationShort: '≈ 2 h',
+    online: false,
     title: 'Prévenir et traiter les discriminations',
     summary: 'Repérer les situations à risque, rédiger des annonces et examiner les candidatures sans discriminer, répondre à une consigne discriminatoire et traiter une alerte.',
     cards: ['T', 'G', 'S'],
