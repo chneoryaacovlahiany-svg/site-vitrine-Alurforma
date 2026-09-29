@@ -135,8 +135,8 @@ function detail(c: Course) {
           <div><dt>Tarif</dt><dd>${esc(priceOf(c))}</dd></div>
           <div><dt>Vidéos</dt><dd>${c.videoTotal}</dd></div>
           <div><dt>Durée estimée</dt><dd>${esc(c.duration)}</dd></div>
-          <div><dt>Leçons</dt><dd>${c.lessons.length}</dd></div>
-          <div><dt>Format</dt><dd>100 % en ligne</dd></div>
+          <div><dt>Accès</dt><dd>Immédiat, 100 % à distance</dd></div>
+          <div><dt>Attestation</dt><dd>Immédiate, à l’issue du parcours</dd></div>
           <div><dt>Support</dt><dd>PC, tablette, mobile</dd></div>
           <div><dt>Cartes</dt><dd>${c.cards.join(', ')}</dd></div>
           <div><dt>Langue</dt><dd>Français</dd></div>
