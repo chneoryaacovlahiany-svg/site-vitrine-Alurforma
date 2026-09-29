@@ -16,6 +16,11 @@ function toggleSelected(id: string) {
   notify();
 }
 
+/** « Accès immédiat » only for courses that are online today. */
+function access(c: Course) {
+  return c.online ? 'Accès immédiat' : 'Accès dès la mise en ligne';
+}
+
 function priceOf(c: Course) {
   return c.price ?? 'Sur devis';
 }
@@ -44,13 +49,13 @@ function courseCard(c: Course) {
     </div>
     <div class="course-card__body">
       <p>${esc(c.summary)}</p>
+      <p class="course-card__price"><span>Prix</span><b>${esc(priceOf(c))}</b></p>
       <ul class="course-card__meta">
         <li><b>${c.videoTotal}</b><span>de vidéo</span></li>
         <li><b>${esc(THEME_LABELS[c.themes[0]])}</b><span>thème</span></li>
-        <li><b>Accès immédiat</b><span>100 % à distance</span></li>
+        <li><b>${access(c)}</b><span>100 % à distance</span></li>
         <li><b>Attestation immédiate</b><span>à l’issue du parcours</span></li>
       </ul>
-      <p class="course-card__price"><span>Prix</span><b>${esc(priceOf(c))}</b></p>
       <div class="course-card__btns">
         <button type="button" class="btn btn--dark" data-open="${c.id}">Voir la fiche</button>
         <button type="button" class="btn btn--ghost" data-add="${c.id}" aria-pressed="${inPack}">${inPack ? '✓ Dans mon pack' : '+ Ajouter à mon pack'}</button>
@@ -101,7 +106,7 @@ function detail(c: Course) {
       <p class="sheet-hero__lead">${esc(c.summary)}</p>
       <ul class="sheet-stats">
         <li><b>${c.videoTotal}</b><span>de vidéo mesurée</span></li>
-        <li><b>Accès immédiat</b><span>100 % à distance</span></li>
+        <li><b>${access(c)}</b><span>100 % à distance</span></li>
         <li><b>${cardsLabel(c)}</b><span>public visé</span></li>
         <li><b>Attestation immédiate</b><span>à l’issue du parcours</span></li>
       </ul>
@@ -112,7 +117,7 @@ function detail(c: Course) {
       <p class="sheet-offer__price"><small>Prix</small>${esc(priceOf(c))}</p>
       <ul class="ticks">
         <li>${c.videoTotal} de vidéos</li>
-        <li>Accès immédiat · 100 % à distance</li>
+        <li>${access(c)} · 100 % à distance</li>
         <li>Quiz, cas pratique et évaluation</li>
         <li>Attestation immédiate à l’issue du parcours</li>
       </ul>
@@ -135,7 +140,7 @@ function detail(c: Course) {
           <div><dt>Tarif</dt><dd>${esc(priceOf(c))}</dd></div>
           <div><dt>Vidéos</dt><dd>${c.videoTotal}</dd></div>
           <div><dt>Durée estimée</dt><dd>${esc(c.duration)}</dd></div>
-          <div><dt>Accès</dt><dd>Immédiat, 100 % à distance</dd></div>
+          <div><dt>Accès</dt><dd>${c.online ? 'Immédiat' : 'Dès la mise en ligne'}, 100 % à distance</dd></div>
           <div><dt>Attestation</dt><dd>Immédiate, à l’issue du parcours</dd></div>
           <div><dt>Support</dt><dd>PC, tablette, mobile</dd></div>
           <div><dt>Cartes</dt><dd>${c.cards.join(', ')}</dd></div>
