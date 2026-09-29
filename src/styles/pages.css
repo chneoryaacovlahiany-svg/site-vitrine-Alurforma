@@ -373,6 +373,49 @@ main {
 .duo__card--navy .duo__tag {
   color: var(--blue-soft);
 }
+.duo__title {
+  margin-top: 16px;
+  font: 600 clamp(26px, 2.6vw, 34px) / 1.15 var(--display);
+  letter-spacing: -0.02em;
+  color: var(--navy);
+}
+.duo__card--navy .duo__title {
+  color: #fff;
+}
+.duo__stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 0;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.duo__stats li {
+  display: grid;
+  gap: 6px;
+  padding: 0 26px;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+}
+.duo__stats li:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.duo__stats b {
+  font: 600 clamp(30px, 3.6vw, 50px) / 1 var(--display);
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: #fff;
+}
+@media (max-width: 480px) {
+  .duo__stats li {
+    padding: 0 14px;
+  }
+}
+.duo__stats span {
+  font-size: 14px;
+  color: var(--gold);
+}
 .duo__big {
   margin-top: 22px;
   font: 600 clamp(40px, 4.4vw, 60px) / 1 var(--display);
@@ -387,7 +430,7 @@ main {
   color: var(--gold);
 }
 .duo__text {
-  margin-top: 18px;
+  margin-top: 14px;
   max-width: 44ch;
   color: var(--ink-2);
 }
