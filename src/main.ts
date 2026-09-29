@@ -12,6 +12,7 @@ import { CONFIG } from './config';
 import { initConfigurator } from './ui/configurator';
 import { initForm } from './ui/form';
 import { initTabs } from './ui/tabs';
+import { watchPlayback } from './ui/video-fallback';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -118,6 +119,7 @@ if (heroVideo) {
   } else {
     // The door opens once, then rests on its last (open) frame.
     heroVideo.play().catch(() => (heroVideo.poster = `${import.meta.env.BASE_URL}media/porte-ouverte.jpg`));
+    watchPlayback(heroVideo, { timeout: 4000 });
   }
 }
 
@@ -125,11 +127,28 @@ const filmBtn = $('[data-film]');
 const filmModal = $<HTMLDialogElement>('[data-film-modal]');
 if (filmBtn && filmModal) {
   const v = $<HTMLVideoElement>('[data-film-video]', filmModal)!;
+  const status = $<HTMLElement>('[data-film-status]', filmModal)!;
+  // Phones get the lighter 720p file if the full download path is needed.
+  if (matchMedia('(max-width: 900px)').matches) v.dataset.fallbackSrc = `${import.meta.env.BASE_URL}media/film-alurforma-720.mp4`;
   filmBtn.addEventListener('click', () => {
     filmModal.showModal();
     v.currentTime = 0;
     v.play().catch(() => undefined);
+    watchPlayback(v, {
+      onFallback: () => {
+        status.hidden = false;
+        status.textContent = 'Chargement du film…';
+      },
+      onProgress: (r) => (status.textContent = `Chargement du film… ${Math.round(r * 100)} %`),
+      onReady: (autoplayed) => {
+        if (autoplayed) status.hidden = true;
+        else status.textContent = 'Film prêt : touchez ▶ pour le lancer.';
+      },
+    });
   });
+  v.addEventListener('playing', () => (status.hidden = true));
+  // No "Save video as…" menu on the film.
+  v.addEventListener('contextmenu', (e) => e.preventDefault());
   const close = () => {
     v.pause();
     filmModal.close();

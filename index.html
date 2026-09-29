@@ -271,9 +271,11 @@
 
   <dialog class="film-modal" data-film-modal aria-label="Film Alurforma">
     <button class="film-modal__close" type="button" data-film-close aria-label="Fermer">×</button>
-    <video controls playsinline preload="none" poster="/media/film-poster.jpg" data-film-video>
+    <video controls controlslist="nodownload" playsinline preload="none" poster="/media/film-poster.jpg" data-film-video>
+      <source src="/media/film-alurforma-720.mp4" type="video/mp4" media="(max-width: 900px)" />
       <source src="/media/film-alurforma.mp4" type="video/mp4" />
     </video>
+    <p class="film-modal__status" data-film-status role="status" hidden></p>
   </dialog>
 
   <!-- @include footer -->
