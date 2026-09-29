@@ -37,8 +37,11 @@ export const buildAgence: Builder = (stage, L) => {
   const toast = el(stage, 'st-card', { x: T ? 30 : 70, y: toastY, w: T ? 660 : 360, 'white-space': 'normal', 'border-color': 'rgba(245,158,11,.6)' }, '<small>Alerte échéance</small><b>Collaborateur C</b><span style="font-size:17px;color:rgba(255,255,255,.75)">Carte à renouveler dans 3 mois · 35 h restantes</span>');
   const assign = el(stage, 'st-badge st-badge--green', { x: T ? 30 : 70, y: toastY + (T ? 150 : 160) }, '✓ Formations affectées');
   const folder = el(stage, 'st-card', { x: T ? 30 : 70, y: T ? 700 : 330, w: T ? 660 : 360, 'white-space': 'normal' }, '<small>Justificatifs</small><b>Export des attestations</b><span data-n style="font-size:17px;color:#7fd8b5">0 document prêt</span>');
+  const need = el(stage, 'st-card', { x: T ? 30 : 70, y: toastY, w: T ? 660 : 360, 'white-space': 'normal', 'border-color': 'rgba(127,216,181,.6)' }, '<small>Besoin identifié</small><b>Collaborateur B</b><span style="font-size:17px;color:rgba(255,255,255,.75)">Déontologie : à compléter</span><span style="display:block;margin-top:14px;font-size:14px;letter-spacing:.08em;color:#7fd8b5">PARCOURS RECOMMANDÉ</span><span style="font-size:17px;color:#fff">Déontologie et conduite professionnelle · ≈ 2 h</span>');
+  // Tall layout: the button sits in the card's top-right corner to stay on screen.
+  const affect = el(stage, 'st-badge st-badge--action', T ? { x: 356, y: toastY + 20 } : { x: 70, y: toastY + 245 }, 'Affecter la formation →');
   const docs = rows.map((_, i) => el(stage, 'st-doc', { x: px + pw - 120, y: py + 70 + i * rowH, w: 34, h: 44, 'border-radius': '4px' }));
-  gsap.set([toast, assign, folder, ...docs], { autoAlpha: 0 });
+  gsap.set([toast, assign, need, affect, folder, ...docs], { autoAlpha: 0 });
 
   // 1. team
   tl.addLabel('equipe')
@@ -79,7 +82,29 @@ export const buildAgence: Builder = (stage, L) => {
       c.pill.setAttribute('style', PILL.warn);
     });
 
-  // 4. proofs
+  // 4. needs: a need is identified and the matching course assigned.
+  const b = rows[1];
+  tl.addLabel('besoins')
+    .fromTo(need, { autoAlpha: 0, x: -30 }, { autoAlpha: 1, x: 0, duration: 0.6, ease: 'power3.out' })
+    .to(b.r, { backgroundColor: 'rgba(127,216,181,.14)', duration: 0.4, yoyo: true, repeat: 3 }, '<')
+    .fromTo(affect, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.4 }, '>0.2')
+    .to(affect, { scale: 0.94, duration: 0.12, yoyo: true, repeat: 1 }, '>0.6')
+    .add(() => {
+      affect.textContent = '✓ Parcours affecté';
+      affect.classList.replace('st-badge--action', 'st-badge--green');
+      b.pill.textContent = 'Parcours affecté';
+      b.pill.setAttribute('style', PILL.ok);
+    })
+    .to({}, { duration: 1.4 })
+    .to([need, affect], { autoAlpha: 0, duration: 0.4 })
+    .add(() => {
+      affect.textContent = 'Affecter la formation →';
+      affect.classList.replace('st-badge--green', 'st-badge--action');
+      b.pill.textContent = 'En cours';
+      b.pill.setAttribute('style', PILL.info);
+    });
+
+  // 5. proofs
   const n = folder.querySelector<HTMLElement>('[data-n]')!;
   tl.addLabel('export').fromTo(folder, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.5 });
   const fx = (T ? 30 + 660 : 70 + 360) - 110;
@@ -105,6 +130,7 @@ export const buildAgence: Builder = (stage, L) => {
       { id: 'equipe', label: 'Équipe' },
       { id: 'heures', label: 'Heures' },
       { id: 'alerte', label: 'Échéance' },
+      { id: 'besoins', label: 'Besoins' },
       { id: 'export', label: 'Justificatifs' },
     ],
   };
