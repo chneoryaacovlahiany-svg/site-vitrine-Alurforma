@@ -243,6 +243,21 @@ const form = $<HTMLFormElement>('[data-form]');
 if (form) initForm(form);
 
 // Financement page: situation → circuit.
+// FAQ: highlight the rubric being read in the sticky nav.
+const faqNav = $('.faq__nav');
+if (faqNav && 'IntersectionObserver' in window) {
+  const links = new Map(Array.from(faqNav.querySelectorAll<HTMLAnchorElement>('a')).map((a) => [a.hash.slice(1), a]));
+  const spy = new IntersectionObserver(
+    (entries) => {
+      const hit = entries.find((e) => e.isIntersecting);
+      if (!hit) return;
+      links.forEach((a, id) => a.setAttribute('aria-current', String(id === hit.target.getAttribute('aria-labelledby'))));
+    },
+    { rootMargin: '-30% 0px -60% 0px' },
+  );
+  document.querySelectorAll('.faq__cat').forEach((c) => spy.observe(c));
+}
+
 const fundSit = $('[data-fund-sit]');
 const fundOut = $('[data-fund-out]');
 if (fundSit && fundOut) import('./ui/funding').then(({ initFunding }) => initFunding(fundSit, fundOut));

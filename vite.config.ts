@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
+import { renderFaqJsonLd, renderFaqList, renderFaqNav } from './src/content/faq';
 
 const pages = [
   'index',
@@ -37,8 +38,23 @@ function includes(): Plugin {
   };
 }
 
+/**
+ * FAQ: `<!-- @faq nav|list|jsonld -->` markers are filled from
+ * src/content/faq.ts, so accordions, nav and FAQPage JSON-LD share one source.
+ */
+function faq(): Plugin {
+  const render = { nav: renderFaqNav, list: renderFaqList, jsonld: renderFaqJsonLd } as const;
+  return {
+    name: 'alurforma-faq',
+    transformIndexHtml: {
+      order: 'pre',
+      handler: (html) => html.replace(/<!--\s*@faq\s+(nav|list|jsonld)\s*-->/g, (_, k: keyof typeof render) => render[k]()),
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [includes()],
+  plugins: [includes(), faq()],
   build: {
     target: 'es2022',
     sourcemap: false,
