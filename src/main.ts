@@ -242,6 +242,11 @@ if (config) initConfigurator(config, $('[data-config-result]')!);
 const form = $<HTMLFormElement>('[data-form]');
 if (form) initForm(form);
 
+// Financement page: situation → circuit.
+const fundSit = $('[data-fund-sit]');
+const fundOut = $('[data-fund-out]');
+if (fundSit && fundOut) import('./ui/funding').then(({ initFunding }) => initFunding(fundSit, fundOut));
+
 // Home page: individual courses "à la une".
 const topCourses = $('[data-top-courses]');
 if (topCourses) import('./ui/top-courses').then(({ renderTopCourses }) => renderTopCourses(topCourses));

@@ -17,6 +17,11 @@ export function initForm(form: HTMLFormElement) {
   const pack = params.get('pack');
   const codes = params.get('f');
   const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+  const statut = params.get('statut');
+  const STATUTS: Record<string, string> = { salarie: 'Salarié', independant: 'Indépendant / dirigeant', entreprise: 'Entreprise / agence / réseau' };
+  if (message && !message.value && statut && STATUTS[statut]) {
+    message.value = `Ma situation : ${STATUTS[statut]}\nFormation concernée : \nNombre de personnes à former : \n\nJe souhaite étudier le financement de cette formation.`;
+  }
   if (message && !message.value && (pack || codes)) {
     const lines: string[] = [];
     if (pack) {
