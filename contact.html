@@ -32,23 +32,30 @@
     <section class="section section--ivory cpage">
       <div class="wrap contact">
         <div class="contact__main">
-          <form class="form form--light cform ccard" data-form novalidate>
-            <div class="cstep">
-              <div class="cstep__head"><span class="cstep__num" aria-hidden="true">1</span><h2 class="cstep__title">Votre besoin</h2></div>
+          <form class="form form--light cform ccard cwiz" data-form novalidate>
+            <ol class="cwiz__steps" aria-label="Étapes de la demande">
+              <li><button type="button" data-goto="0"><span class="cwiz__dot">1</span><span class="cwiz__name">Besoin</span></button></li>
+              <li><button type="button" data-goto="1"><span class="cwiz__dot">2</span><span class="cwiz__name">Coordonnées</span></button></li>
+              <li><button type="button" data-goto="2"><span class="cwiz__dot">3</span><span class="cwiz__name">Votre demande</span></button></li>
+            </ol>
+            <div class="cwiz__bar" aria-hidden="true"><span data-progress></span></div>
+
+            <div class="cstep" data-step="0">
+              <h2 class="cstep__title" tabindex="-1">Que souhaitez-vous faire&nbsp;?</h2>
               <fieldset class="cintent">
                 <legend class="sr-only">Que souhaitez-vous faire&nbsp;?</legend>
                 <div class="cintent__grid">
-                  <label class="cintent__card"><input type="radio" name="intent" value="formation" checked /><b>Trouver une formation</b><span>Carte professionnelle, heures à compléter, échéance.</span></label>
-                  <label class="cintent__card"><input type="radio" name="intent" value="entreprise" /><b>Former mon équipe</b><span>Agence, réseau, collaborateurs et pilotage.</span></label>
-                  <label class="cintent__card"><input type="radio" name="intent" value="financement" /><b>Étudier un financement</b><span>Situation, financeur et accompagnement administratif.</span></label>
-                  <label class="cintent__card"><input type="radio" name="intent" value="autre" /><b>Autre demande</b><span>Question générale ou assistance.</span></label>
+                  <label class="cintent__card"><input type="radio" name="intent" value="formation" checked /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><b>Trouver une formation</b><span>Carte, heures et parcours.</span></label>
+                  <label class="cintent__card"><input type="radio" name="intent" value="entreprise" /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 6-4.2"/></svg><b>Former mon équipe</b><span>Agence, collaborateurs et pilotage.</span></label>
+                  <label class="cintent__card"><input type="radio" name="intent" value="financement" /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><b>Étudier un financement</b><span>OPCO, financeur et accompagnement administratif.</span></label>
+                  <label class="cintent__card"><input type="radio" name="intent" value="autre" /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg><b>Autre demande</b><span>Question ou assistance.</span></label>
                 </div>
               </fieldset>
               <div class="creq" data-context hidden></div>
             </div>
 
-            <div class="cstep">
-              <div class="cstep__head"><span class="cstep__num" aria-hidden="true">2</span><h2 class="cstep__title">Vos coordonnées</h2></div>
+            <div class="cstep" data-step="1" hidden>
+              <h2 class="cstep__title" tabindex="-1">Vos coordonnées</h2>
               <div class="cstep__body">
                 <div class="form__row">
                   <label>Nom et prénom<input name="name" autocomplete="name" required maxlength="120" /></label>
@@ -65,9 +72,9 @@
               </div>
             </div>
 
-            <div class="cstep" data-for="formation-std entreprise financement autre">
-              <div class="cstep__head"><span class="cstep__num" aria-hidden="true">3</span><h2 class="cstep__title">Votre demande en détail</h2></div>
-              <div class="cstep__body">
+            <div class="cstep" data-step="2" hidden>
+              <h2 class="cstep__title" tabindex="-1">Votre demande</h2>
+              <div class="cstep__body" data-for="formation-std entreprise financement autre">
               <fieldset class="cfield" data-for="formation-std">
                   <legend>Carte professionnelle</legend>
                   <div class="pills">
@@ -161,55 +168,57 @@
 
                 <label data-for="formation-std entreprise financement autre"><span data-message-label>Message <small>(facultatif)</small></span><textarea name="message" rows="4" maxlength="3000"></textarea></label>
               </div>
+              <div class="crecap" data-recap></div>
             </div>
 
             <div class="hp" aria-hidden="true"><label>Ne pas remplir<input name="website" tabindex="-1" autocomplete="off" /></label></div>
 
-            <div class="cform__foot">
-              <button class="btn btn--primary btn--lg" type="submit" data-submit>Demander mon orientation</button>
-              <div class="cform__notes">
-                <p class="cnote" data-mailto-note hidden>L’envoi se fait depuis votre messagerie : la demande nous parvient une fois l’e-mail envoyé.</p>
-                <p class="cnote">Vos informations servent uniquement à traiter votre demande. <a href="./confidentialite.html">Politique de confidentialité</a></p>
-              </div>
-              <p class="form__status" data-form-status role="status" aria-live="polite"></p>
+            <div class="cwiz__nav">
+              <button type="button" class="cwiz__back" data-back hidden>← Retour</button>
+              <button type="button" class="btn btn--primary btn--lg" data-next>Continuer →</button>
+              <button class="btn btn--primary btn--lg" type="submit" data-submit hidden>Demander mon orientation</button>
+            </div>
+            <p class="form__status" data-form-status role="status" aria-live="polite"></p>
+            <div class="cform__notes" data-notes hidden>
+              <p class="cnote" data-mailto-note hidden>L’envoi se fait depuis votre messagerie : la demande nous parvient une fois l’e-mail envoyé.</p>
+              <p class="cnote">Vos informations servent uniquement à traiter votre demande. <a href="./confidentialite.html">Politique de confidentialité</a></p>
             </div>
           </form>
           <div class="csuccess" data-success hidden tabindex="-1"></div>
         </div>
 
         <aside class="contact__aside caside">
-          <h2>Comment pouvons-nous vous aider&nbsp;?</h2>
+          <h2>Besoin d’aide&nbsp;?</h2>
           <ul class="chelp">
-            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><div><b>Orientation</b><span>Trouver la formation ou le parcours adapté.</span></div></li>
-            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 6-4.2"/></svg><div><b>Entreprise</b><span>Organiser et piloter la formation de votre équipe.</span></div></li>
-            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><div><b>Financement</b><span>Préparer et suivre les démarches administratives.</span></div></li>
+            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><div><b>Orientation</b><span>Trouver votre parcours.</span></div></li>
+            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 6-4.2"/></svg><div><b>Entreprise</b><span>Former vos équipes.</span></div></li>
+            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><div><b>Financement</b><span>Gestion administrative du dossier.</span></div></li>
             <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg><div><b>Assistance</b><span>Une question sur votre accès ou votre parcours.</span></div></li>
           </ul>
-          <div class="cdirect" data-direct-email hidden>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><div><b>Contact direct</b><a data-email-link href="#"></a></div>
-          </div>
-          <div class="cdirect">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><div><b>Téléphone</b><a href="tel:+33757990889">07 57 99 08 89</a></div>
-          </div>
-          <div class="cdirect cdirect--plain">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg><div><b>Adresse</b><span>1 rue du Débarcadère<br />92700 Colombes</span></div>
+          <div class="caside__reach">
+            <a class="caside__line" href="tel:+33757990889"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span>07 57 99 08 89</span></a>
+            <a class="caside__line" data-direct-email data-email-link href="#" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span data-email-text></span></a>
           </div>
         </aside>
       </div>
 
       <div class="wrap">
-        <div class="corg" aria-label="Organisme de formation">
-          <p class="corg__title">Organisme de formation</p>
-          <dl class="corg__list">
-            <div><dt>Marque</dt><dd>Alurforma</dd></div>
-            <div><dt>Société</dt><dd>SUMMITWISE SAS</dd></div>
-            <div class="corg__wide"><dt>Siège</dt><dd>1 rue du Débarcadère, 92700 Colombes</dd></div>
-            <div><dt>SIRET</dt><dd>944 811 819 00019</dd></div>
-            <div><dt>Déclaration d’activité</dt><dd>11922912592</dd></div>
-            <div><dt>Certification qualité</dt><dd>Qualiopi</dd></div>
+        <article class="corg" aria-labelledby="corg-title">
+          <header class="corg__head">
+            <img class="corg__logo" src="/brand/alurforma-logo-640.png" width="640" height="183" alt="Alurforma" loading="lazy" />
+            <span class="corg__badge">Organisme de formation</span>
+          </header>
+          <h2 class="corg__title" id="corg-title">Alurforma, organisme de formation professionnelle</h2>
+          <p class="corg__lead">Une marque de SUMMITWISE SAS dédiée à la formation continue des professionnels de l’immobilier.</p>
+          <dl class="corg__grid">
+            <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5l8-2v18M12 21h8V9l-8-2M8 8h.01M8 12h.01M8 16h.01M16 12h.01M16 16h.01"/></svg><dt>Société</dt><dd>SUMMITWISE SAS</dd></div>
+            <div class="corg__q"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><dt>Certification qualité</dt><dd>Qualiopi</dd></div>
+            <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h6M7 14h4"/></svg><dt>SIRET</dt><dd>944 811 819 00019</dd></div>
+            <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 6h4v4H6V9h4L9 3ZM5 17h14v4H5z"/></svg><dt>Déclaration d’activité</dt><dd>11922912592</dd></div>
           </dl>
-          <p class="corg__fine">Cet enregistrement ne vaut pas agrément de l’État.</p>
-        </div>
+          <p class="corg__addr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span><b>Siège social</b> 1 rue du Débarcadère, 92700 Colombes</span></p>
+          <p class="corg__fine">Déclaration d’activité enregistrée auprès du préfet de région d’Île-de-France. Cet enregistrement ne vaut pas agrément de l’État.</p>
+        </article>
       </div>
     </section>
   </main>

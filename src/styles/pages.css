@@ -4202,3 +4202,443 @@ main {
     grid-column: 1 / -1;
   }
 }
+
+/* ------------------------------------- contact : assistant en 3 étapes */
+
+.cpage .contact {
+  grid-template-columns: minmax(0, 1.75fr) minmax(260px, 0.8fr);
+}
+.cpage .contact__aside {
+  order: 0;
+}
+.cwiz__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cwiz__steps button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  font: 600 14.5px/1.2 var(--font);
+  color: var(--ink-3);
+  text-align: left;
+  cursor: pointer;
+}
+.cwiz__steps button:disabled {
+  cursor: default;
+}
+.cwiz__steps button:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.cwiz__dot {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid #cfd4e2;
+  border-radius: 50%;
+  font: 600 13px/1 var(--display);
+  color: var(--ink-3);
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+.cwiz__steps .is-current button {
+  color: var(--navy);
+}
+.cwiz__steps .is-current .cwiz__dot {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #fff;
+}
+.cwiz__steps .is-done button {
+  color: var(--green);
+}
+.cwiz__steps .is-done .cwiz__dot {
+  border-color: var(--green);
+  background: var(--green);
+  color: transparent;
+  position: relative;
+}
+.cwiz__steps .is-done .cwiz__dot::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 14px;
+}
+.cwiz__bar {
+  height: 4px;
+  margin: 14px 0 30px;
+  border-radius: 4px;
+  background: #eceef4;
+  overflow: hidden;
+}
+.cwiz__bar span {
+  display: block;
+  height: 100%;
+  width: 33.33%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--navy), var(--green));
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cwiz .cstep + .cstep {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.cwiz .cstep__title {
+  margin: 0 0 4px;
+  font: 600 clamp(22px, 2.2vw, 28px) / 1.2 var(--display);
+  letter-spacing: -0.02em;
+  color: var(--navy);
+}
+.cwiz .cstep__title:focus {
+  outline: none;
+}
+
+/* Cartes de choix : toute la carte est cliquable, le bouton radio est masqué. */
+.cwiz .cintent__card {
+  padding: 22px 52px 22px 22px;
+  gap: 8px;
+}
+.cwiz .cintent__card input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.cintent__ico {
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border-radius: 12px;
+  background: var(--ivory);
+  color: var(--navy);
+  transition: background-color 0.25s, color 0.25s;
+}
+.cwiz .cintent__card::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #cfd4e2;
+  border-radius: 50%;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.cwiz .cintent__card:has(input:checked)::after {
+  border-color: var(--green);
+  background: var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12 4 4 8-8'/%3E%3C/svg%3E") center / 14px no-repeat;
+}
+.cwiz .cintent__card:has(input:checked) .cintent__ico {
+  background: var(--green);
+  color: #fff;
+}
+
+.cwiz__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.cwiz__nav .btn {
+  margin-left: auto;
+}
+.cwiz__back {
+  padding: 10px 4px;
+  border: 0;
+  background: none;
+  font: 600 15px var(--font);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.cwiz__back:hover {
+  color: var(--navy);
+}
+.cwiz__back:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.cwiz > .form__status {
+  margin: 14px 0 0;
+  min-height: 0;
+}
+.cwiz > .form__status:empty {
+  display: none;
+}
+.cwiz > .cform__notes {
+  margin-top: 14px;
+  text-align: right;
+}
+
+/* Récapitulatif avant envoi. */
+.crecap {
+  display: grid;
+  gap: 0;
+  margin-top: 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fbfaf6;
+  overflow: hidden;
+}
+.crecap:empty {
+  display: none;
+}
+.crecap__title {
+  margin: 0;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  font: 600 12.5px/1.2 var(--display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a6a33;
+}
+.crecap__group {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+}
+.crecap__group + .crecap__group {
+  border-top: 1px solid var(--line);
+}
+.crecap dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+.crecap dl div {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 12px;
+}
+.crecap dt {
+  font-size: 14px;
+  color: var(--ink-3);
+}
+.crecap dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+  overflow-wrap: anywhere;
+}
+.crecap__edit {
+  flex: none;
+  padding: 2px;
+  border: 0;
+  background: none;
+  font: 600 14px var(--font);
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Encart d'aide, allégé, à droite. */
+.caside__reach {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+.caside__line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.caside__line[hidden] {
+  display: none;
+}
+.caside__line:hover {
+  border-color: rgba(127, 216, 181, 0.6);
+  background: rgba(255, 255, 255, 0.05);
+}
+.caside__line svg {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #7fd8b5;
+}
+.caside__line span {
+  overflow-wrap: anywhere;
+}
+
+/* Carte institutionnelle. */
+.cpage .corg {
+  display: block;
+  max-width: 980px;
+  margin: clamp(40px, 6vw, 72px) auto 0;
+  padding: clamp(26px, 4vw, 48px);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--paper);
+  box-shadow: 0 30px 60px -44px rgba(4, 29, 75, 0.3);
+}
+.corg__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(201, 165, 106, 0.55);
+}
+.corg__logo {
+  width: auto;
+  height: 40px;
+}
+.corg__badge {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font: 600 11.5px/1 var(--display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.cpage .corg__title {
+  margin: 26px 0 6px;
+  font: 600 clamp(21px, 2.2vw, 26px) / 1.25 var(--display);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: var(--navy);
+}
+.corg__lead {
+  margin: 0;
+  color: var(--ink-2);
+}
+.corg__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px 40px;
+  margin: 30px 0 0;
+}
+.corg__grid div {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  grid-template-areas: 'ico dd' 'ico dt';
+  column-gap: 14px;
+  align-items: center;
+}
+.corg__grid svg {
+  grid-area: ico;
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border-radius: 12px;
+  background: var(--ivory);
+  color: var(--navy);
+}
+.corg__grid dd {
+  grid-area: dd;
+  margin: 0;
+  font: 600 18px/1.25 var(--display);
+  color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+.corg__grid dt {
+  grid-area: dt;
+  font-size: 13.5px;
+  color: var(--ink-3);
+}
+.corg__grid .corg__q svg {
+  background: rgba(11, 143, 99, 0.1);
+  color: var(--green);
+}
+.corg__grid .corg__q dd {
+  color: var(--green);
+}
+.corg__addr {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0 0;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--ivory);
+  color: var(--ink-2);
+}
+.corg__addr svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  color: #8a6a33;
+}
+.corg__addr b {
+  margin-right: 8px;
+  color: var(--navy);
+}
+.cpage .corg__fine {
+  margin: 18px 0 0;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+@media (max-width: 1000px) {
+  .cpage .contact {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .cwiz__name {
+    display: none;
+  }
+  .cwiz__steps .is-current .cwiz__name {
+    display: inline;
+  }
+  .corg__grid {
+    grid-template-columns: 1fr;
+  }
+  .corg__head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .crecap dl div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .cwiz__nav .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .cwiz > .cform__notes {
+    text-align: left;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cwiz__bar span,
+  .cwiz__dot {
+    transition: none;
+  }
+}

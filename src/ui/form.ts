@@ -83,11 +83,10 @@ export function initForm(form: HTMLFormElement) {
   form.append(live);
 
   // Direct e-mail channel, shown only once confirmed.
-  const direct = document.querySelector<HTMLElement>('[data-direct-email]');
+  const direct = document.querySelector<HTMLAnchorElement>('[data-direct-email]');
   if (direct && CONFIG.emailConfirmed) {
-    const a = direct.querySelector<HTMLAnchorElement>('[data-email-link]')!;
-    a.href = `mailto:${CONFIG.email}`;
-    a.textContent = CONFIG.email;
+    direct.href = `mailto:${CONFIG.email}`;
+    direct.querySelector('[data-email-text]')!.textContent = CONFIG.email;
     direct.hidden = false;
   }
   $('[data-mailto-note]').hidden = !!activeEndpoint();
@@ -211,13 +210,14 @@ export function initForm(form: HTMLFormElement) {
     const t = e.target as HTMLInputElement;
     if (t.name === 'intent') status.textContent = '';
     render(t.name === 'intent');
+    if (step === LAST) renderRecap();
   });
   banner.addEventListener('click', (e) => {
     if (!(e.target as HTMLElement).closest('[data-ctx-edit]')) return;
     ctx = { kind: 'none' };
     history.replaceState(null, '', `${location.pathname}?objet=formation`);
     render();
-    form.querySelector<HTMLInputElement>('input[name="card"]')?.focus();
+    form.querySelector<HTMLInputElement>('input[name="intent"]:checked')?.focus();
   });
   controls.forEach((c) => c.addEventListener('input', () => c.removeAttribute('aria-invalid')));
   render();
@@ -306,15 +306,15 @@ export function initForm(form: HTMLFormElement) {
   }
 
   // ------------------------------------------------------------- submit
-  function validate() {
+  function validate(scope?: HTMLElement) {
     const invalid: (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[] = [];
     for (const c of controls) {
-      if (c.disabled || !c.willValidate) continue;
+      if (c.disabled || !c.willValidate || (scope && !scope.contains(c))) continue;
       const ok = c.checkValidity();
       c.setAttribute('aria-invalid', String(!ok));
       if (!ok) invalid.push(c);
     }
-    if (!invalid.length) return true;
+    if (!invalid.length) return null;
     const names = [...new Set(invalid.map((c) => c.name))];
     const emailBad = invalid.some((c) => c.name === 'email' && (c as HTMLInputElement).validity.typeMismatch);
     const phoneMissing = names.includes('phone');
@@ -326,9 +326,133 @@ export function initForm(form: HTMLFormElement) {
     ];
     status.dataset.tone = 'error';
     status.textContent = parts.filter(Boolean).join(' ');
-    invalid[0].focus();
-    return false;
+    return invalid[0];
   }
+
+  // ------------------------------------------------------------- wizard
+  // One step visible at a time; « Continuer » validates the current step only.
+  const steps = Array.from(form.querySelectorAll<HTMLElement>('[data-step]'));
+  const LAST = steps.length - 1;
+  const STEP_NAMES = ['Votre besoin', 'Vos coordonnées', 'Votre demande'];
+  const stepBtns = Array.from(form.querySelectorAll<HTMLButtonElement>('[data-goto]'));
+  const progress = $('[data-progress]');
+  const back = $<HTMLButtonElement>('[data-back]');
+  const next = $<HTMLButtonElement>('[data-next]');
+  const notes = $('[data-notes]');
+  const recap = $('[data-recap]');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let step = 0;
+  let switching = false;
+
+  function chrome() {
+    stepBtns.forEach((b, n) => {
+      const li = b.parentElement!;
+      li.classList.toggle('is-done', n < step);
+      li.classList.toggle('is-current', n === step);
+      if (n === step) b.setAttribute('aria-current', 'step');
+      else b.removeAttribute('aria-current');
+      b.disabled = n > step;
+    });
+    progress.style.width = `${((step + 1) / steps.length) * 100}%`;
+    back.hidden = step === 0;
+    next.hidden = step === LAST;
+    submit.hidden = step !== LAST;
+    notes.hidden = step === 0;
+    if (step === LAST) renderRecap();
+  }
+
+  function goTo(n: number, animate = true) {
+    if (n === step || switching || n < 0 || n > LAST) return;
+    const from = steps[step];
+    const to = steps[n];
+    const dir = n > step ? 1 : -1;
+    status.textContent = '';
+    const show = () => {
+      from.hidden = true;
+      to.hidden = false;
+      step = n;
+      chrome();
+      if (animate && !reduced)
+        to.animate([{ opacity: 0, transform: `translateX(${24 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' });
+      // Keep the stepper clear of the sticky header.
+      const clear = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 72) + 16;
+      const top = form.getBoundingClientRect().top - clear;
+      if (top < 0) window.scrollBy({ top, behavior: reduced ? 'auto' : 'smooth' });
+      to.querySelector<HTMLElement>('.cstep__title')?.focus({ preventScroll: true });
+      live.textContent = `Étape ${n + 1} sur ${steps.length} : ${STEP_NAMES[n]}.`;
+      switching = false;
+    };
+    if (!animate || reduced) return show();
+    switching = true;
+    from.animate([{ opacity: 1 }, { opacity: 0, transform: `translateX(${-16 * dir}px)` }], { duration: 160, easing: 'ease-in' }).finished.then(show, show);
+  }
+
+  next.addEventListener('click', () => {
+    const bad = validate(steps[step]);
+    if (bad) return bad.focus();
+    goTo(step + 1);
+  });
+  back.addEventListener('click', () => goTo(step - 1));
+  stepBtns.forEach((b, n) => b.addEventListener('click', () => n < step && goTo(n)));
+  recap.addEventListener('click', (e) => {
+    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-recap-goto]');
+    if (t) goTo(Number(t.dataset.recapGoto));
+  });
+
+  // Summary shown before sending: what the visitor is about to send.
+  function renderRecap() {
+    const i = intent();
+    const live = (n: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${n}"]:not(:disabled)`);
+    const val = (n: string) => (live(n) ? value(n) : '');
+    const opt = (n: string) => {
+      const el = live(n);
+      return el instanceof HTMLSelectElement ? (el.selectedOptions[0]?.text ?? '') : '';
+    };
+    const picked = (n: string) =>
+      Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${n}"]:checked:not(:disabled)`))
+        .map((c) => c.parentElement!.textContent!.trim())
+        .join(', ');
+    const rows: [string, string][] = [];
+    const s = summary(i);
+    if (i === 'formation') {
+      if (ctx.kind !== 'none') rows.push(['Objet', s.text]);
+      rows.push(['Carte', picked('card')], ['Besoin', opt('need')], ['Échéance', val('renewal')]);
+    } else if (i === 'entreprise') {
+      rows.push(['Entreprise', val('company')], ['Collaborateurs', opt('team_size')], ['Besoin principal', opt('b2b_need')], ['Cartes', picked('cards')]);
+    } else if (i === 'financement') {
+      const funder = picked('funder_known');
+      rows.push(
+        ['Situation', picked('situation')],
+        ['Formation', opt('fund_course')],
+        ['Personnes à former', val('fund_people')],
+        ['Financeur connu', funder + (val('funder_name') ? ` (${val('funder_name')})` : '')],
+      );
+    } else {
+      rows.push(['Objet', val('subject')]);
+    }
+    const msg = val('message');
+    if (msg) rows.push(['Message', msg.length > 140 ? `${msg.slice(0, 140)}…` : msg]);
+    const contact = [val('name'), val('email'), val('phone')].filter(Boolean).join(' · ');
+    const callback = (form.elements.namedItem('callback') as HTMLInputElement).checked;
+    const dl = (pairs: [string, string][]) =>
+      pairs
+        .filter(([, v]) => v)
+        .map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`)
+        .join('');
+    const html = `<p class="crecap__title">Récapitulatif de votre demande</p>
+      <div class="crecap__group"><dl>${dl([['Besoin', INTENT_LABEL[i]]])}</dl><button type="button" class="crecap__edit" data-recap-goto="0">Modifier</button></div>
+      <div class="crecap__group"><dl>${dl([
+        ['Contact', contact],
+        ['Rappel', callback ? 'Oui, au sujet de cette demande' : ''],
+      ])}</dl><button type="button" class="crecap__edit" data-recap-goto="1">Modifier</button></div>
+      ${rows.some(([, v]) => v) ? `<div class="crecap__group"><dl>${dl(rows)}</dl></div>` : ''}`;
+    // Only touch the DOM when the content changed, so a click on « Modifier »
+    // is never lost to a re-render triggered by the blur of the field above.
+    if (html !== lastRecap) recap.innerHTML = lastRecap = html;
+  }
+  let lastRecap = '';
+  form.addEventListener('input', () => step === LAST && renderRecap());
+  chrome();
 
   function showSuccess(req: ContactRequest, reference: string | null) {
     success.innerHTML = `<p class="csuccess__kicker">✓ Demande transmise</p>
@@ -352,6 +476,7 @@ export function initForm(form: HTMLFormElement) {
     success.hidden = true;
     form.hidden = false;
     render();
+    goTo(0, false);
     form.querySelector<HTMLInputElement>('input[name="intent"]:checked')?.focus();
   });
 
@@ -361,7 +486,18 @@ export function initForm(form: HTMLFormElement) {
     if (sending) return;
     // Honeypot: real visitors never see this field.
     if (value('website')) return;
-    if (!validate()) return;
+    if (step < LAST) return next.click();
+    const bad = validate();
+    if (bad) {
+      const at = steps.findIndex((st) => st.contains(bad));
+      if (at !== -1 && at !== step) {
+        const msg = status.textContent;
+        goTo(at, false);
+        status.dataset.tone = 'error';
+        status.textContent = msg;
+      }
+      return bad.focus();
+    }
     const req = payload();
 
     if (!activeEndpoint()) {
