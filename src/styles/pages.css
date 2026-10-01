@@ -3534,7 +3534,7 @@ main {
 .cpage {
   --c-aside: 312px;
   --c-gap: 40px;
-  --c-pad: clamp(22px, 3vw, 38px);
+  --c-pad: clamp(22px, 2.6vw, 34px);
   --c-tint: #f4fbf8;
   --c-mint: #7fd8b5;
   --c-gold: #8a6a33;
@@ -3721,7 +3721,7 @@ main {
 /* -------------------------------------------------------------- wizard */
 
 .cwiz__head {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 .cwiz__title {
   margin: 0;
@@ -3803,7 +3803,7 @@ main {
 }
 .cwiz__bar {
   height: 3px;
-  margin: 16px 0 26px;
+  margin: 14px 0 22px;
   border-radius: 3px;
   background: #eceef4;
   overflow: hidden;
@@ -3818,7 +3818,7 @@ main {
 }
 .cstep {
   display: grid;
-  gap: 20px;
+  gap: 18px;
   min-width: 0;
 }
 .cstep__title {
@@ -3850,8 +3850,8 @@ main {
   display: grid;
   align-content: start;
   gap: 6px;
-  min-height: 132px;
-  padding: 22px 56px 22px 22px;
+  min-height: 116px;
+  padding: 18px 52px 18px 20px;
   border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--paper);
@@ -3868,10 +3868,10 @@ main {
   cursor: pointer;
 }
 .cintent__ico {
-  width: 44px;
-  height: 44px;
-  margin-bottom: 10px;
-  padding: 11px;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+  padding: 10px;
   border-radius: 12px;
   background: var(--ivory);
   color: var(--navy);
@@ -4004,7 +4004,7 @@ main {
 
 /* Step 4: summary before sending, groups in two columns. */
 .crecap {
-  padding: 18px 22px;
+  padding: 16px 20px;
   border-radius: 16px;
   background: var(--ivory);
 }
@@ -4014,7 +4014,7 @@ main {
 .crecap dl {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px 36px;
+  gap: 14px 32px;
   margin: 0;
 }
 .crecap__group {
@@ -4032,7 +4032,7 @@ main {
   grid-column: 2;
 }
 .crecap dd {
-  line-height: 1.45;
+  line-height: 1.4;
 }
 .crecap dt {
   display: flex;
@@ -4066,12 +4066,33 @@ main {
   text-transform: none;
 }
 
+/* Fixed frame: the card keeps one height whatever the step (the tallest
+   one sets it), and the buttons stay in the same place at the bottom. */
+.cwiz {
+  display: flex;
+  flex-direction: column;
+}
+.cpage {
+  --c-frame: 720px;
+}
+@media (max-width: 1060px) {
+  .cpage {
+    --c-frame: 700px;
+  }
+}
+@media (min-width: 761px) {
+  .cwiz {
+    min-height: var(--c-frame);
+  }
+}
+
 /* Navigation and final call to action. */
 .cwiz__nav {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-top: 24px;
+  margin-top: auto; /* pinned to the bottom of the fixed frame */
+  padding-top: 24px;
 }
 .cwiz__nav .btn {
   margin-left: auto;
@@ -4123,8 +4144,8 @@ main {
 }
 .cform__notes {
   display: grid;
-  gap: 4px;
-  margin-top: 14px;
+  gap: 2px;
+  margin-top: 10px;
   text-align: right;
 }
 
@@ -4259,7 +4280,7 @@ main {
   min-width: 0;
   font-size: 16px;
   font-weight: 650;
-  overflow-wrap: anywhere;
+  white-space: nowrap; /* never split the e-mail address */
 }
 .caside__line small {
   font-size: 12.5px;
@@ -4386,7 +4407,7 @@ main {
 /* ---------------------------------------------------------- responsive */
 
 /* Laptops (1366 × 768): bring the first choices above the fold. */
-@media (min-width: 981px) and (max-height: 820px) {
+@media (min-width: 1061px) and (max-height: 820px) {
   .page-hero--contact {
     padding-bottom: 32px;
   }
@@ -4400,12 +4421,27 @@ main {
 
 @media (max-width: 1080px) {
   .cpage {
-    --c-aside: 280px;
-    --c-gap: 28px;
+    --c-aside: 296px;
+    --c-gap: 24px;
+  }
+  .caside {
+    padding: 28px 24px;
+  }
+  .caside__line {
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .caside__line svg {
+    width: 32px;
+    height: 32px;
+    padding: 7px;
+  }
+  .caside__line span {
+    font-size: 15px;
   }
 }
 /* Narrow forms: numbers / checks only, plus the name of the active step. */
-@media (max-width: 1180px) and (min-width: 981px), (max-width: 700px) {
+@media (max-width: 1180px) and (min-width: 1061px), (max-width: 700px) {
   .cwiz__steps {
     display: flex;
     gap: 14px;
@@ -4420,13 +4456,15 @@ main {
     display: inline;
   }
 }
-@media (max-width: 980px) {
+@media (max-width: 1060px) {
   .contact {
     grid-template-columns: 1fr;
   }
   .caside {
     position: static;
   }
+}
+@media (max-width: 980px) {
   .corg__body {
     grid-template-columns: 1fr;
   }

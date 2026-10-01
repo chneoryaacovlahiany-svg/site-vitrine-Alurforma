@@ -152,6 +152,7 @@
                   </label>
                   <label data-for="fin-ent">Nombre de personnes à former<input name="fund_people" inputmode="numeric" maxlength="6" /></label>
                 </div>
+                <div class="form__row" data-for="financement">
                 <fieldset class="cfield" data-for="financement">
                   <legend>Organisme financeur connu&nbsp;?</legend>
                   <div class="pills">
@@ -160,9 +161,10 @@
                     <label><input type="radio" name="funder_known" value="ne-sait-pas" checked />Je ne sais pas</label>
                   </div>
                 </fieldset>
-                <label data-for="funder-yes"><span>Nom de l’organisme financeur <small>(facultatif)</small></span><input name="funder_name" maxlength="120" /></label>
+                <label data-for="funder-yes"><span>Nom du financeur <small>(facultatif)</small></span><input name="funder_name" maxlength="120" /></label>
+                </div>
                 <div class="cinfo" data-for="financement">
-                  <p><strong>Alurforma peut prendre en charge l’administratif</strong> : constitution et suivi du dossier, selon le dispositif concerné. La décision de prise en charge appartient toujours à l’organisme financeur.</p>
+                  <p><strong>Alurforma peut prendre en charge l’administratif du dossier</strong>, selon le dispositif. La décision de prise en charge appartient toujours à l’organisme financeur.</p>
                 </div>
 
                 <label data-for="autre">Objet<input name="subject" required maxlength="140" /></label>

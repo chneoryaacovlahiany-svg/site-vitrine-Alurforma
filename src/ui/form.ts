@@ -452,7 +452,7 @@ export function initForm(form: HTMLFormElement) {
     const callback = (form.elements.namedItem('callback') as HTMLInputElement).checked;
     const groups: Group[] = [
       ['Votre besoin', [INTENT_LABEL[i]], 0],
-      ['Contact', [val('name'), val('company'), val('email'), val('phone'), callback ? 'Rappel demandé' : ''], 1],
+      ['Contact', [val('name'), val('company'), [val('email'), val('phone')].filter(Boolean).join(' · '), callback ? 'Rappel demandé' : ''], 1],
     ];
     const details: Group[] = [];
     if (i === 'formation') {
