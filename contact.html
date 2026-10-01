@@ -35,13 +35,14 @@
         <div class="contact__main">
           <form class="cform ccard cwiz" data-form novalidate aria-labelledby="cwiz-title">
             <header class="cwiz__head">
-              <h2 class="cwiz__title" id="cwiz-title">Votre demande en 3&nbsp;étapes</h2>
+              <h2 class="cwiz__title" id="cwiz-title">Votre demande en 4&nbsp;étapes</h2>
               <p class="cwiz__lead">Quelques informations suffisent pour nous permettre de vous orienter correctement.</p>
             </header>
             <ol class="cwiz__steps" aria-label="Étapes de la demande">
               <li><button type="button" data-goto="0"><span class="cwiz__dot">1</span><span class="cwiz__name">Besoin</span></button></li>
-              <li><button type="button" data-goto="1"><span class="cwiz__dot">2</span><span class="cwiz__name">Coordonnées</span></button></li>
-              <li><button type="button" data-goto="2"><span class="cwiz__dot">3</span><span class="cwiz__name">Votre demande</span></button></li>
+              <li><button type="button" data-goto="1"><span class="cwiz__dot">2</span><span class="cwiz__name">Contact</span></button></li>
+              <li><button type="button" data-goto="2"><span class="cwiz__dot">3</span><span class="cwiz__name">Précisions</span></button></li>
+              <li><button type="button" data-goto="3"><span class="cwiz__dot">4</span><span class="cwiz__name">Confirmation</span></button></li>
             </ol>
             <div class="cwiz__bar" aria-hidden="true"><span data-progress></span></div>
 
@@ -79,49 +80,20 @@
             </div>
 
             <div class="cstep" data-step="2" hidden>
-              <h3 class="cstep__title" tabindex="-1">Votre demande</h3>
-              <div class="cstep__body" data-for="formation-std entreprise financement autre">
-                <div class="cgroup" data-for="formation-std entreprise financement">
-                  <p class="cgroup__title">Votre situation</p>
-                  <fieldset class="cfield" data-for="formation-std">
-                    <legend>Carte professionnelle</legend>
-                    <div class="pills">
-                      <label><input type="radio" name="card" value="T" />T · Transaction</label>
-                      <label><input type="radio" name="card" value="G" />G · Gestion</label>
-                      <label><input type="radio" name="card" value="S" />S · Syndic</label>
-                      <label><input type="radio" name="card" value="?" />Je ne sais pas</label>
-                    </div>
-                    <p class="cnote" data-card-soon hidden></p>
-                  </fieldset>
-                  <label data-for="entreprise">Nombre de collaborateurs
-                    <select name="team_size">
-                      <option value="1-5">1 à 5</option>
-                      <option value="6-20">6 à 20</option>
-                      <option value="21-50">21 à 50</option>
-                      <option value="51+">51 et plus</option>
-                    </select>
-                  </label>
-                  <fieldset class="cfield" data-for="entreprise">
-                    <legend>Cartes concernées <small>(plusieurs choix possibles)</small></legend>
-                    <div class="pills">
-                      <label><input type="checkbox" name="cards" value="T" />T · Transaction</label>
-                      <label><input type="checkbox" name="cards" value="G" />G · Gestion</label>
-                      <label><input type="checkbox" name="cards" value="S" />S · Syndic</label>
-                    </div>
-                  </fieldset>
-                  <fieldset class="cfield" data-for="financement">
-                    <legend>Vous êtes</legend>
-                    <div class="pills">
-                      <label><input type="radio" name="situation" value="salarie" required />Salarié</label>
-                      <label><input type="radio" name="situation" value="independant" />Indépendant / dirigeant</label>
-                      <label><input type="radio" name="situation" value="entreprise" />Entreprise / agence / réseau</label>
-                    </div>
-                  </fieldset>
-                </div>
-
-                <div class="cgroup" data-for="formation-free entreprise financement autre">
-                  <p class="cgroup__title">Votre besoin</p>
-                  <label data-for="formation-free">Ce que vous recherchez
+              <h3 class="cstep__title" tabindex="-1">Quelques précisions</h3>
+              <div class="cstep__body" data-msg-slot="autre">
+                <fieldset class="cfield" data-for="formation-std">
+                  <legend>Carte professionnelle</legend>
+                  <div class="pills">
+                    <label><input type="radio" name="card" value="T" />T · Transaction</label>
+                    <label><input type="radio" name="card" value="G" />G · Gestion</label>
+                    <label><input type="radio" name="card" value="S" />S · Syndic</label>
+                    <label><input type="radio" name="card" value="?" />Je ne sais pas</label>
+                  </div>
+                  <p class="cnote" data-card-soon hidden></p>
+                </fieldset>
+                <div class="form__row" data-for="formation-std">
+                  <label data-for="formation-free">Votre besoin
                     <select name="need">
                       <option value="formation-precise">Une formation précise</option>
                       <option value="completer-heures">Compléter mes heures</option>
@@ -131,7 +103,19 @@
                       <option value="ne-sait-pas" selected>Je ne sais pas encore</option>
                     </select>
                   </label>
-                  <label data-for="entreprise">Besoin principal
+                  <label><span>Échéance de renouvellement <small>(facultatif)</small></span><input name="renewal" placeholder="ex. mars 2027" maxlength="40" /></label>
+                </div>
+
+                <div class="form__row" data-for="entreprise">
+                  <label>Nombre de collaborateurs
+                    <select name="team_size">
+                      <option value="1-5">1 à 5</option>
+                      <option value="6-20">6 à 20</option>
+                      <option value="21-50">21 à 50</option>
+                      <option value="51+">51 et plus</option>
+                    </select>
+                  </label>
+                  <label>Besoin principal
                     <select name="b2b_need">
                       <option value="former-plusieurs">Former plusieurs collaborateurs</option>
                       <option value="organiser-heures">Organiser les heures ALUR</option>
@@ -141,38 +125,59 @@
                       <option value="autre">Autre</option>
                     </select>
                   </label>
-                  <div class="form__row" data-for="financement">
-                    <label>Formation concernée
-                      <select name="fund_course" data-course-select>
-                        <option value="">Pas encore choisie</option>
-                      </select>
-                    </label>
-                    <label data-for="fin-ent">Nombre de personnes à former<input name="fund_people" inputmode="numeric" maxlength="6" /></label>
+                </div>
+                <fieldset class="cfield" data-for="entreprise">
+                  <legend>Cartes concernées <small>(plusieurs choix possibles)</small></legend>
+                  <div class="pills">
+                    <label><input type="checkbox" name="cards" value="T" />T · Transaction</label>
+                    <label><input type="checkbox" name="cards" value="G" />G · Gestion</label>
+                    <label><input type="checkbox" name="cards" value="S" />S · Syndic</label>
                   </div>
-                  <fieldset class="cfield" data-for="financement">
-                    <legend>Organisme financeur connu&nbsp;?</legend>
-                    <div class="pills">
-                      <label><input type="radio" name="funder_known" value="oui" />Oui</label>
-                      <label><input type="radio" name="funder_known" value="non" />Non</label>
-                      <label><input type="radio" name="funder_known" value="ne-sait-pas" checked />Je ne sais pas</label>
-                    </div>
-                  </fieldset>
-                  <label data-for="funder-yes"><span>Nom de l’organisme financeur <small>(facultatif)</small></span><input name="funder_name" maxlength="120" /></label>
-                  <label data-for="autre">Objet<input name="subject" maxlength="140" /></label>
+                </fieldset>
+                <p class="cinfo" data-for="entreprise">Alurforma vous accompagne dans le déploiement, le suivi des parcours et, selon votre situation, les démarches de financement.</p>
+
+                <fieldset class="cfield" data-for="financement">
+                  <legend>Votre situation</legend>
+                  <div class="pills">
+                    <label><input type="radio" name="situation" value="salarie" required />Salarié</label>
+                    <label><input type="radio" name="situation" value="independant" />Indépendant / dirigeant</label>
+                    <label><input type="radio" name="situation" value="entreprise" />Entreprise / agence / réseau</label>
+                  </div>
+                </fieldset>
+                <div class="form__row" data-for="financement">
+                  <label>Formation concernée
+                    <select name="fund_course" data-course-select>
+                      <option value="">Pas encore choisie</option>
+                    </select>
+                  </label>
+                  <label data-for="fin-ent">Nombre de personnes à former<input name="fund_people" inputmode="numeric" maxlength="6" /></label>
+                </div>
+                <fieldset class="cfield" data-for="financement">
+                  <legend>Organisme financeur connu&nbsp;?</legend>
+                  <div class="pills">
+                    <label><input type="radio" name="funder_known" value="oui" />Oui</label>
+                    <label><input type="radio" name="funder_known" value="non" />Non</label>
+                    <label><input type="radio" name="funder_known" value="ne-sait-pas" checked />Je ne sais pas</label>
+                  </div>
+                </fieldset>
+                <label data-for="funder-yes"><span>Nom de l’organisme financeur <small>(facultatif)</small></span><input name="funder_name" maxlength="120" /></label>
+                <div class="cinfo" data-for="financement">
+                  <p><strong>Alurforma peut prendre en charge l’administratif</strong> : constitution et suivi du dossier, selon le dispositif concerné. La décision de prise en charge appartient toujours à l’organisme financeur.</p>
                 </div>
 
-                <div class="cgroup" data-for="formation-std entreprise financement autre">
-                  <p class="cgroup__title">Informations complémentaires</p>
-                  <label data-for="formation-std"><span>Échéance de renouvellement <small>(facultatif)</small></span><input name="renewal" placeholder="ex. mars 2027" maxlength="40" /></label>
-                  <label><span data-message-label>Message <small>(facultatif)</small></span><textarea name="message" rows="3" maxlength="3000"></textarea></label>
-                  <p class="cinfo" data-for="entreprise">Alurforma peut vous accompagner dans le déploiement, le suivi des parcours et, selon votre situation, dans les démarches administratives de financement.</p>
-                  <div class="cinfo" data-for="financement">
-                    <p>Alurforma peut vous accompagner dans la constitution et le suivi administratif de votre dossier de financement et, selon le dispositif concerné, prendre en charge tout ou partie des démarches liées à la formation.</p>
-                    <p><strong>La décision de prise en charge appartient toujours à l’organisme financeur.</strong></p>
-                  </div>
-                </div>
+                <label data-for="autre">Objet<input name="subject" required maxlength="140" /></label>
+              </div>
+            </div>
+
+            <div class="cstep" data-step="3" hidden>
+              <div>
+                <h3 class="cstep__title" tabindex="-1">Vérifiez votre demande</h3>
+                <p class="cstep__lead">Un dernier coup d’œil avant l’envoi.</p>
               </div>
               <div class="crecap" data-recap></div>
+              <div class="cstep__body" data-msg-slot="confirm">
+                <label data-message><span data-message-label>Ajouter une précision <small>(facultatif)</small></span><textarea name="message" rows="2" maxlength="3000"></textarea></label>
+              </div>
             </div>
 
             <div class="hp" aria-hidden="true"><label>Ne pas remplir<input name="website" tabindex="-1" autocomplete="off" /></label></div>

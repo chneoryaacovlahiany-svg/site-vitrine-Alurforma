@@ -31,6 +31,7 @@ const FIELD_LABEL: Record<string, string> = {
   email: 'e-mail',
   company: 'entreprise / agence',
   situation: 'votre situation',
+  subject: 'objet',
   message: 'message',
   phone: 'téléphone',
 };
@@ -70,6 +71,11 @@ export function initForm(form: HTMLFormElement) {
   const success = page.querySelector<HTMLElement>('[data-success]')!;
   const cardSoon = $('[data-card-soon]');
   const message = $<HTMLTextAreaElement>('textarea[name="message"]');
+  // One message field, two places: required « Message » with the details for
+  // « Autre demande », optional « Ajouter une précision » on the last step
+  // otherwise. Moving the node keeps a single name in the payload.
+  const messageField = $('[data-message]');
+  const msgSlot = { autre: $('[data-msg-slot="autre"]'), confirm: $('[data-msg-slot="confirm"]') };
   const phone = $<HTMLInputElement>('input[name="phone"]');
   const shown = Array.from(form.querySelectorAll<HTMLElement>('[data-for]'));
   const controls = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea')).filter(
@@ -190,7 +196,9 @@ export function initForm(form: HTMLFormElement) {
 
     $('[data-email-label]').textContent = i === 'entreprise' ? 'E-mail professionnel' : 'E-mail';
     message.required = i === 'autre';
-    $('[data-message-label]').innerHTML = i === 'autre' ? 'Message' : 'Message <small>(facultatif)</small>';
+    $('[data-message-label]').innerHTML = i === 'autre' ? 'Message' : 'Ajouter une précision <small>(facultatif)</small>';
+    const slot = i === 'autre' ? msgSlot.autre : msgSlot.confirm;
+    if (messageField.parentElement !== slot) slot.append(messageField);
     phone.required = (form.elements.namedItem('callback') as HTMLInputElement).checked;
 
     const card = checkedCard();
@@ -338,7 +346,8 @@ export function initForm(form: HTMLFormElement) {
   // One step visible at a time; « Continuer » validates the current step only.
   const steps = Array.from(form.querySelectorAll<HTMLElement>('[data-step]'));
   const LAST = steps.length - 1;
-  const STEP_NAMES = ['Votre besoin', 'Vos coordonnées', 'Votre demande'];
+  const STEP_NAMES = ['Besoin', 'Contact', 'Précisions', 'Confirmation'];
+  const head = $('.cwiz__head');
   const stepBtns = Array.from(form.querySelectorAll<HTMLButtonElement>('[data-goto]'));
   const progress = $('[data-progress]');
   const back = $<HTMLButtonElement>('[data-back]');
@@ -349,7 +358,17 @@ export function initForm(form: HTMLFormElement) {
   let step = 0;
   let switching = false;
 
+  // A step with nothing to ask for this request (e.g. card G/S already known
+  // from the URL) is skipped in both directions.
+  const isEmpty = (n: string | number) =>
+    !Array.from(steps[Number(n)].querySelectorAll<HTMLInputElement>('input, select, textarea')).some((c) => !c.disabled && c.name !== 'website');
+  const landing = (n: number, dir: number) => {
+    while (n > 0 && n < LAST && isEmpty(n)) n += dir;
+    return n;
+  };
+
   function chrome() {
+    head.hidden = step > 0;
     stepBtns.forEach((b, n) => {
       const li = b.parentElement!;
       li.classList.toggle('is-done', n < step);
@@ -376,6 +395,7 @@ export function initForm(form: HTMLFormElement) {
   form.addEventListener('change', syncNext);
 
   function goTo(n: number, animate = true) {
+    n = landing(n, n > step ? 1 : -1);
     if (n === step || switching || n < 0 || n > LAST) return;
     const from = steps[step];
     const to = steps[n];
@@ -388,10 +408,11 @@ export function initForm(form: HTMLFormElement) {
       chrome();
       if (animate && !reduced)
         to.animate([{ opacity: 0, transform: `translateX(${24 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' });
-      // Keep the stepper clear of the sticky header.
-      const clear = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 72) + 16;
+      // Line the stepper up just under the sticky header, so the whole step
+      // (and its buttons) is in view whatever the scroll position was.
+      const clear = (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 72) + 8;
       const top = form.getBoundingClientRect().top - clear;
-      if (top < 0) window.scrollBy({ top, behavior: reduced ? 'auto' : 'smooth' });
+      if (Math.abs(top) > 4) window.scrollBy({ top, behavior: reduced ? 'auto' : 'smooth' });
       to.querySelector<HTMLElement>('.cstep__title')?.focus({ preventScroll: true });
       live.textContent = `Étape ${n + 1} sur ${steps.length} : ${STEP_NAMES[n]}.`;
       switching = false;
@@ -413,7 +434,7 @@ export function initForm(form: HTMLFormElement) {
     if (t) goTo(Number(t.dataset.recapGoto));
   });
 
-  // Summary shown before sending: only what the visitor filled in, compact.
+  // Summary shown before sending: grouped, only what the visitor filled in.
   function renderRecap() {
     const i = intent();
     const live = (n: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${n}"]:not(:disabled)`);
@@ -423,50 +444,66 @@ export function initForm(form: HTMLFormElement) {
       return el instanceof HTMLSelectElement && el.value ? (el.selectedOptions[0]?.text ?? '') : '';
     };
     const picked = (n: string) =>
-      Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${n}"]:checked:not(:disabled)`))
-        .map((c) => c.parentElement!.textContent!.trim())
-        .join(', ');
-    const join = (...parts: string[]) => parts.filter(Boolean).join(' · ');
+      Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${n}"]:checked:not(:disabled)`)).map((c) => c.parentElement!.textContent!.trim());
+    const codes = (list: string[]) => list.map((t) => t.split(' · ')[0]);
     const s = summary(i);
-    // [label, value, step to edit]
-    const rows: [string, string, number?][] = [
-      ['Besoin', INTENT_LABEL[i], 0],
-      ['Contact', join(val('name'), val('email'), val('phone')), 1],
+    // [label, lines, step to edit]
+    type Group = [string, string[], number?];
+    const callback = (form.elements.namedItem('callback') as HTMLInputElement).checked;
+    const groups: Group[] = [
+      ['Votre besoin', [INTENT_LABEL[i]], 0],
+      ['Contact', [val('name'), val('company'), val('email'), val('phone'), callback ? 'Rappel demandé' : ''], 1],
     ];
+    const details: Group[] = [];
     if (i === 'formation') {
       const card = val('card');
-      const cardText = card === '?' ? 'Carte à préciser' : card ? `Carte ${card}` : '';
-      rows.push(['Parcours', ctx.kind === 'none' ? join(cardText, opt('need')) : join(s.text, cardText)], ['Échéance', val('renewal')]);
+      details.push([
+        'Votre parcours',
+        [
+          ctx.kind !== 'none' ? s.text : '',
+          card === '?' ? 'Carte à préciser' : card ? `Carte ${card}` : '',
+          ctx.kind === 'none' ? opt('need') : '',
+          val('renewal') && `Échéance : ${val('renewal')}`,
+        ],
+      ]);
     } else if (i === 'entreprise') {
+      const cards = codes(picked('cards'));
       const team = opt('team_size');
-      rows.push(
-        ['Entreprise', join(val('company'), team && `${team} collaborateurs`)],
-        ['Objectif', opt('b2b_need')],
-        ['Cartes', picked('cards').replace(/ · \p{L}+/gu, '')],
+      details.push(
+        ['Équipe', [team && `${team} collaborateurs`, cards.length ? `Carte${cards.length > 1 ? 's' : ''} ${cards.join(cards.length > 2 ? ', ' : ' et ')}` : '']],
+        ['Objectif', [opt('b2b_need')]],
       );
     } else if (i === 'financement') {
-      const funder = val('funder_known') === 'oui' ? `Connu${val('funder_name') ? ` · ${val('funder_name')}` : ''}` : val('funder_known') === 'non' ? 'Non connu' : '';
-      rows.push(
-        ['Situation', join(picked('situation'), val('fund_people') && `${val('fund_people')} personne(s)`)],
-        ['Formation', opt('fund_course')],
-        ['Financeur', funder],
+      const known = val('funder_known');
+      details.push(
+        ['Situation', [picked('situation').join(''), val('fund_people') && `${val('fund_people')} personne(s) à former`]],
+        ['Formation', [opt('fund_course')]],
+        ['Financeur', [known === 'oui' ? `Connu${val('funder_name') ? ` : ${val('funder_name')}` : ''}` : known === 'non' ? 'Non connu' : 'Je ne sais pas']],
       );
     } else {
-      rows.push(['Objet', val('subject')]);
+      const msg = val('message');
+      details.push(['Votre demande', [val('subject'), msg.length > 160 ? `${msg.slice(0, 160)}…` : msg]]);
     }
-    const msg = val('message');
-    if (msg) rows.push(['Message', msg.length > 120 ? `${msg.slice(0, 120)}…` : msg]);
-    if ((form.elements.namedItem('callback') as HTMLInputElement).checked) rows.push(['Rappel', 'Demandé']);
-    const html = `<p class="crecap__title">Résumé avant envoi</p><dl>${rows
-      .filter(([, v]) => v)
+    // « Modifier » once for the details, on the first group that shows.
+    const shown = details.filter(([, lines]) => lines.some(Boolean));
+    if (shown.length && !isEmpty(2)) shown[0][2] = 2;
+    groups.push(...shown);
+    const html = groups
+      .filter(([, lines]) => lines.some(Boolean))
       .map(
-        ([k, v, at]) =>
-          `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd>${at !== undefined ? `<button type="button" class="crecap__edit" data-recap-goto="${at}" aria-label="Modifier : ${esc(k.toLowerCase())}">Modifier</button>` : ''}</div>`,
+        ([label, lines, at]) =>
+          `<div class="crecap__group${label === 'Contact' ? ' crecap__group--tall' : ''}"><dt>${esc(label)}${
+            at !== undefined ? `<button type="button" class="crecap__edit" data-recap-goto="${at}" aria-label="Modifier : ${esc(label.toLowerCase())}">Modifier</button>` : ''
+          }</dt>${lines
+            .filter(Boolean)
+            .map((l) => `<dd${l === 'Rappel demandé' ? ' class="crecap__flag"' : ''}>${esc(l)}</dd>`)
+            .join('')}</div>`,
       )
-      .join('')}</dl>`;
+      .join('');
+    const out = `<dl>${html}</dl>`;
     // Only touch the DOM when the content changed, so a click on « Modifier »
     // is never lost to a re-render triggered by the blur of the field above.
-    if (html !== lastRecap) recap.innerHTML = lastRecap = html;
+    if (out !== lastRecap) recap.innerHTML = lastRecap = out;
   }
   let lastRecap = '';
   form.addEventListener('input', () => step === LAST && renderRecap());
