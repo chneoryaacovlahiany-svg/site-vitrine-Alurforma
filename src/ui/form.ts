@@ -1,6 +1,6 @@
 import { CONFIG, CARD_NAMES, type Card } from '../config';
 import { COURSES, type Course } from '../catalog/courses';
-import { mailtoHref, newRequestId, sendRequest, type ContactRequest, type RequestType } from './contact-request';
+import { activeEndpoint, mailtoHref, newRequestId, sendRequest, type ContactRequest, type RequestType } from './contact-request';
 
 /**
  * Contact page: one form that adapts to what the visitor wants to do.
@@ -90,7 +90,7 @@ export function initForm(form: HTMLFormElement) {
     a.textContent = CONFIG.email;
     direct.hidden = false;
   }
-  $('[data-mailto-note]').hidden = !!CONFIG.formEndpoint;
+  $('[data-mailto-note]').hidden = !!activeEndpoint();
 
   // Courses for the financing flow.
   const courseSelect = $<HTMLSelectElement>('[data-course-select]');
@@ -364,7 +364,7 @@ export function initForm(form: HTMLFormElement) {
     if (!validate()) return;
     const req = payload();
 
-    if (!CONFIG.formEndpoint) {
+    if (!activeEndpoint()) {
       window.location.href = mailtoHref(req);
       status.dataset.tone = 'info';
       status.textContent = 'Votre messagerie s’ouvre avec votre demande pré-remplie : elle nous parviendra une fois l’e-mail envoyé.';

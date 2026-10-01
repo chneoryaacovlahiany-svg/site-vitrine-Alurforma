@@ -4,11 +4,20 @@ La page Contact envoie chaque demande en JSON à `CONFIG.formEndpoint` (`src/con
 Tant que ce champ vaut `null`, le formulaire ouvre un e-mail pré-rempli vers `CONFIG.email`.
 Il l’annonce au visiteur et n’affiche jamais « demande reçue ».
 
-## Mise en service
+## Mise en service sur OVH (hébergement web)
 
-1. Créer l’endpoint (fonction serveur Netlify / Vercel, CRM, etc.) et renseigner `formEndpoint`.
-2. Autoriser son domaine dans la CSP : `connect-src` dans `public/_headers` **et** `vercel.json`.
-3. Vérifier la politique de confidentialité :
+L’endpoint est fourni : `public/api/contact.php` (PHP 8, aucune dépendance), copié dans `dist/api/` au build.
+
+1. `npm run build`, puis envoyer **tout le contenu de `dist/`** dans le dossier racine du site (en général `www/`) par FTP/SFTP.
+   Cela comprend les fichiers cachés `.htaccess` et `.ovhconfig` (PHP 8.3).
+2. Les demandes sont enregistrées dans `alurforma-data/`, **à côté** de `www/`, donc hors du web public.
+   Si ce dossier ne peut pas être créé, elles vont dans `www/api/_data/`, dont l’accès est bloqué par `api/.htaccess`.
+   Une ligne JSON par demande, un fichier par mois. Les fichiers de plus de 36 mois sont supprimés automatiquement (`RETENTION_MONTHS`).
+3. Chaque demande est aussi envoyée par e-mail à `contact@alurforma.fr`, avec sa référence et l’éventuelle demande de rappel.
+   L’envoi passe par la fonction `mail()` d’OVH avec l’expéditeur `noreply@alurforma.fr`. Les e-mails du domaine étant gérés par Google Workspace, ajouter OVH à l’enregistrement SPF du domaine (`include:mx.ovh.com`) pour que ces notifications n’arrivent pas en indésirables.
+4. Le formulaire n’utilise l’endpoint que sur `alurforma.fr` / `www.alurforma.fr` (`formEndpointHosts`). Partout ailleurs (aperçus), il reste en mode e-mail pré-rempli.
+5. Même origine : la CSP `connect-src 'self'` suffit.
+6. Vérifier la politique de confidentialité :
    - bases juridiques ;
    - durées de conservation ;
    - destinataires et sous-traitants ;
@@ -71,7 +80,19 @@ Le même `request_id` est renvoyé si le visiteur réessaie après un échec. Le
 - `2xx` : la demande est enregistrée. Corps facultatif `{ "reference": "AF-XXXXXX" }`. La référence n’est affichée que si elle est renvoyée.
 - Tout autre statut, ou un délai de plus de 15 s : le visiteur voit « L’envoi n’a pas abouti » et un lien e-mail de secours.
 
-## À faire côté serveur
+## Ce que fait le serveur (`contact.php`)
+
+Tout ce qui suit est implémenté et testé (PHP 8.4, `php -S`) :
+- `405` hors POST ;
+- `415` hors JSON ;
+- `403` si l’origine n’est pas le site ;
+- `413` au-delà de 32 Ko ;
+- `422` avec la liste des champs invalides ;
+- `429` au-delà de 5 demandes / 10 min par IP ou de 3 demandes / heure par e-mail ;
+- `200 { reference }` uniquement après enregistrement ;
+- un `request_id` déjà vu renvoie la même référence.
+
+### Contrôles côté serveur
 
 - Revalider tous les champs. Le navigateur n’est jamais une source de confiance.
 - Limiter les tailles : nom 120, e-mail 160, message 3000 caractères…

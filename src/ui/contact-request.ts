@@ -60,17 +60,23 @@ export interface ContactRequest {
 
 export type SendResult = { ok: true; reference: string | null } | { ok: false };
 
+/** The endpoint to use here, or null when it doesn't exist on this host. */
+export function activeEndpoint(): string | null {
+  return CONFIG.formEndpoint && CONFIG.formEndpointHosts.includes(location.hostname) ? CONFIG.formEndpoint : null;
+}
+
 export function newRequestId() {
   return crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 /** POST to the endpoint. Only an HTTP 2xx counts as received. */
 export async function sendRequest(req: ContactRequest): Promise<SendResult> {
-  if (!CONFIG.formEndpoint) return { ok: false };
+  const endpoint = activeEndpoint();
+  if (!endpoint) return { ok: false };
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 15000);
   try {
-    const res = await fetch(CONFIG.formEndpoint, {
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Idempotency-Key': req.request_id },
       body: JSON.stringify(req),

@@ -10,12 +10,16 @@ export const CONFIG = {
   /** Shown as an official channel on the Contact page only when true. */
   emailConfirmed: true,
   /**
-   * HTTPS endpoint receiving contact requests as JSON (CRM or serverless
-   * function — contract in docs/contact-api.md). While null, the form falls
-   * back to a pre-filled e-mail and says so; it never claims a request was
-   * received. Remember to allow the endpoint in the CSP (connect-src).
+   * Endpoint receiving contact requests as JSON (public/api/contact.php on
+   * the OVH hosting — contract in docs/contact-api.md). Same origin, so the
+   * CSP connect-src 'self' already allows it.
    */
-  formEndpoint: null as string | null,
+  formEndpoint: '/api/contact.php' as string | null,
+  /**
+   * Hosts where that endpoint exists. Anywhere else (previews, local files)
+   * the form falls back to a pre-filled e-mail and says so.
+   */
+  formEndpointHosts: ['alurforma.fr', 'www.alurforma.fr'],
   /** Version of the privacy notice shown under the form, sent with each request. */
   privacyNoticeVersion: '2026-10-01',
 };

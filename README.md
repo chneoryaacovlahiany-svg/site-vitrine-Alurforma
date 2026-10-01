@@ -40,6 +40,7 @@ L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **
 | `src/config.ts` | **À compléter avant la mise en ligne** : URL du LMS, e-mail, endpoint du formulaire, statuts T/G/S. |
 | `public/brand/` | Logo officiel détouré (sans modification des proportions) et symbole. |
 | `public/media/` | Vidéos web issues du générique : boucle d’ouverture de porte (WebM/MP4, 960 et 1600 px) et film complet. |
+| `public/.htaccess`, `public/.ovhconfig`, `public/api/contact.php` | Hébergement OVH : en-têtes de sécurité, HTTPS, PHP 8.3, réception des demandes Contact |
 | `public/_headers`, `vercel.json` | En-têtes de sécurité : CSP stricte, HSTS, `X-Frame-Options`, `Permissions-Policy`. |
 
 ### Accessibilité et performance
@@ -59,7 +60,7 @@ L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **
 
 ## À valider avant publication
 
-1. `src/config.ts` : `lmsUrl`, `email` (`contact@alurforma.fr`, confirmé) et `formEndpoint` (sinon le formulaire ouvre un e-mail pré-rempli) — contrat dans `docs/contact-api.md`.
+1. `src/config.ts` : `lmsUrl`, `email` (`contact@alurforma.fr`, confirmé) et `formEndpoint` (`/api/contact.php`, actif sur alurforma.fr uniquement ; ailleurs, e-mail pré-rempli) — mise en ligne OVH et contrat dans `docs/contact-api.md`.
 2. Pages légales : compléter les champs « à renseigner » (forme juridique, siège, RCS, TVA, directeur de publication, hébergeur, médiateur…).
 3. Statuts et durées des formations dans `src/catalog/courses.ts` : les mettre à jour à chaque mise en ligne (F01 version enrichie, F02 mise en ligne, F03 évaluations).
 4. Intervenants : le site ne cite aucun nom, seulement les rôles « formateur référent » et « professionnel de terrain » (plusieurs formateurs selon les formations).
