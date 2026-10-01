@@ -381,7 +381,8 @@ export function initForm(form: HTMLFormElement) {
     back.hidden = step === 0;
     next.hidden = step === LAST;
     submit.hidden = step !== LAST;
-    notes.hidden = step === 0;
+    // Kept in the layout on step 1 (invisible) so the buttons never move.
+    notes.classList.toggle('is-idle', step === 0);
     syncNext();
     if (step === LAST) renderRecap();
   }
