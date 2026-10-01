@@ -16,7 +16,7 @@
   <!-- @include header -->
 
   <main id="contenu">
-    <section class="page-hero">
+    <section class="page-hero page-hero--contact">
       <svg class="page-hero__paths" viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true">
         <path class="p-blue" d="M-20 400 C 300 330, 520 250, 760 120" />
         <path class="p-green" d="M160 400 C 420 330, 600 250, 800 120" />
@@ -30,9 +30,14 @@
     </section>
 
     <section class="section section--ivory cpage">
-      <div class="wrap contact">
+      <div class="wrap cpage__wrap">
+        <div class="contact">
         <div class="contact__main">
-          <form class="form form--light cform ccard cwiz" data-form novalidate>
+          <form class="cform ccard cwiz" data-form novalidate aria-labelledby="cwiz-title">
+            <header class="cwiz__head">
+              <h2 class="cwiz__title" id="cwiz-title">Votre demande en 3&nbsp;étapes</h2>
+              <p class="cwiz__lead">Quelques informations suffisent pour nous permettre de vous orienter correctement.</p>
+            </header>
             <ol class="cwiz__steps" aria-label="Étapes de la demande">
               <li><button type="button" data-goto="0"><span class="cwiz__dot">1</span><span class="cwiz__name">Besoin</span></button></li>
               <li><button type="button" data-goto="1"><span class="cwiz__dot">2</span><span class="cwiz__name">Coordonnées</span></button></li>
@@ -41,11 +46,11 @@
             <div class="cwiz__bar" aria-hidden="true"><span data-progress></span></div>
 
             <div class="cstep" data-step="0">
-              <h2 class="cstep__title" tabindex="-1">Que souhaitez-vous faire&nbsp;?</h2>
+              <h3 class="cstep__title" tabindex="-1">Que souhaitez-vous faire&nbsp;?</h3>
               <fieldset class="cintent">
                 <legend class="sr-only">Que souhaitez-vous faire&nbsp;?</legend>
                 <div class="cintent__grid">
-                  <label class="cintent__card"><input type="radio" name="intent" value="formation" checked /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><b>Trouver une formation</b><span>Carte, heures et parcours.</span></label>
+                  <label class="cintent__card"><input type="radio" name="intent" value="formation" required /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><b>Trouver une formation</b><span>Carte, heures et parcours.</span></label>
                   <label class="cintent__card"><input type="radio" name="intent" value="entreprise" /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 6-4.2"/></svg><b>Former mon équipe</b><span>Agence, collaborateurs et pilotage.</span></label>
                   <label class="cintent__card"><input type="radio" name="intent" value="financement" /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><b>Étudier un financement</b><span>OPCO, financeur et accompagnement administratif.</span></label>
                   <label class="cintent__card"><input type="radio" name="intent" value="autre" /><svg class="cintent__ico" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg><b>Autre demande</b><span>Question ou assistance.</span></label>
@@ -55,7 +60,7 @@
             </div>
 
             <div class="cstep" data-step="1" hidden>
-              <h2 class="cstep__title" tabindex="-1">Vos coordonnées</h2>
+              <h3 class="cstep__title" tabindex="-1">Vos coordonnées</h3>
               <div class="cstep__body">
                 <div class="form__row">
                   <label>Nom et prénom<input name="name" autocomplete="name" required maxlength="120" /></label>
@@ -65,42 +70,30 @@
                   <label><span>Téléphone <small>(facultatif)</small></span><input name="phone" type="tel" autocomplete="tel" maxlength="30" aria-describedby="phone-hint" /></label>
                   <label data-for="entreprise">Entreprise / agence<input name="company" autocomplete="organization" required maxlength="160" /></label>
                 </div>
-                <div class="ccallback">
-                  <label class="check"><input type="checkbox" name="callback" /><span data-callback-text>Je souhaite être rappelé par un conseiller Alurforma au sujet de cette demande.</span></label>
-                  <p class="cnote" id="phone-hint">Votre numéro est utilisé pour traiter votre demande. Si vous souhaitez être rappelé, cochez cette option.</p>
+                <div class="ccallback" role="group" aria-labelledby="callback-title">
+                  <p class="cgroup__title" id="callback-title">Rappel téléphonique</p>
+                  <label class="check"><input type="checkbox" name="callback" aria-describedby="phone-hint" /><span data-callback-text>Je souhaite être rappelé par un conseiller Alurforma au sujet de cette demande.</span></label>
+                  <p class="cnote" id="phone-hint">Votre numéro n’est utilisé pour un rappel que si vous le demandez.</p>
                 </div>
               </div>
             </div>
 
             <div class="cstep" data-step="2" hidden>
-              <h2 class="cstep__title" tabindex="-1">Votre demande</h2>
+              <h3 class="cstep__title" tabindex="-1">Votre demande</h3>
               <div class="cstep__body" data-for="formation-std entreprise financement autre">
-              <fieldset class="cfield" data-for="formation-std">
-                  <legend>Carte professionnelle</legend>
-                  <div class="pills">
-                    <label><input type="radio" name="card" value="T" />T · Transaction</label>
-                    <label><input type="radio" name="card" value="G" />G · Gestion</label>
-                    <label><input type="radio" name="card" value="S" />S · Syndic</label>
-                    <label><input type="radio" name="card" value="?" />Je ne sais pas</label>
-                  </div>
-                  <p class="cnote" data-card-soon hidden></p>
-                </fieldset>
-
-                <label data-for="formation-free">Votre besoin
-                  <select name="need">
-                    <option value="formation-precise">Une formation précise</option>
-                    <option value="completer-heures">Compléter mes heures</option>
-                    <option value="14h">14 h</option>
-                    <option value="28h">28 h</option>
-                    <option value="42h">42 h</option>
-                    <option value="ne-sait-pas" selected>Je ne sais pas encore</option>
-                  </select>
-                </label>
-
-                <label data-for="formation-std"><span>Échéance de renouvellement <small>(facultatif)</small></span><input name="renewal" placeholder="ex. mars 2027" maxlength="40" /></label>
-
-                <div class="form__row" data-for="entreprise">
-                  <label>Nombre de collaborateurs
+                <div class="cgroup" data-for="formation-std entreprise financement">
+                  <p class="cgroup__title">Votre situation</p>
+                  <fieldset class="cfield" data-for="formation-std">
+                    <legend>Carte professionnelle</legend>
+                    <div class="pills">
+                      <label><input type="radio" name="card" value="T" />T · Transaction</label>
+                      <label><input type="radio" name="card" value="G" />G · Gestion</label>
+                      <label><input type="radio" name="card" value="S" />S · Syndic</label>
+                      <label><input type="radio" name="card" value="?" />Je ne sais pas</label>
+                    </div>
+                    <p class="cnote" data-card-soon hidden></p>
+                  </fieldset>
+                  <label data-for="entreprise">Nombre de collaborateurs
                     <select name="team_size">
                       <option value="1-5">1 à 5</option>
                       <option value="6-20">6 à 20</option>
@@ -108,7 +101,37 @@
                       <option value="51+">51 et plus</option>
                     </select>
                   </label>
-                  <label>Besoin principal
+                  <fieldset class="cfield" data-for="entreprise">
+                    <legend>Cartes concernées <small>(plusieurs choix possibles)</small></legend>
+                    <div class="pills">
+                      <label><input type="checkbox" name="cards" value="T" />T · Transaction</label>
+                      <label><input type="checkbox" name="cards" value="G" />G · Gestion</label>
+                      <label><input type="checkbox" name="cards" value="S" />S · Syndic</label>
+                    </div>
+                  </fieldset>
+                  <fieldset class="cfield" data-for="financement">
+                    <legend>Vous êtes</legend>
+                    <div class="pills">
+                      <label><input type="radio" name="situation" value="salarie" required />Salarié</label>
+                      <label><input type="radio" name="situation" value="independant" />Indépendant / dirigeant</label>
+                      <label><input type="radio" name="situation" value="entreprise" />Entreprise / agence / réseau</label>
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div class="cgroup" data-for="formation-free entreprise financement autre">
+                  <p class="cgroup__title">Votre besoin</p>
+                  <label data-for="formation-free">Ce que vous recherchez
+                    <select name="need">
+                      <option value="formation-precise">Une formation précise</option>
+                      <option value="completer-heures">Compléter mes heures</option>
+                      <option value="14h">14 h</option>
+                      <option value="28h">28 h</option>
+                      <option value="42h">42 h</option>
+                      <option value="ne-sait-pas" selected>Je ne sais pas encore</option>
+                    </select>
+                  </label>
+                  <label data-for="entreprise">Besoin principal
                     <select name="b2b_need">
                       <option value="former-plusieurs">Former plusieurs collaborateurs</option>
                       <option value="organiser-heures">Organiser les heures ALUR</option>
@@ -118,55 +141,36 @@
                       <option value="autre">Autre</option>
                     </select>
                   </label>
+                  <div class="form__row" data-for="financement">
+                    <label>Formation concernée
+                      <select name="fund_course" data-course-select>
+                        <option value="">Pas encore choisie</option>
+                      </select>
+                    </label>
+                    <label data-for="fin-ent">Nombre de personnes à former<input name="fund_people" inputmode="numeric" maxlength="6" /></label>
+                  </div>
+                  <fieldset class="cfield" data-for="financement">
+                    <legend>Organisme financeur connu&nbsp;?</legend>
+                    <div class="pills">
+                      <label><input type="radio" name="funder_known" value="oui" />Oui</label>
+                      <label><input type="radio" name="funder_known" value="non" />Non</label>
+                      <label><input type="radio" name="funder_known" value="ne-sait-pas" checked />Je ne sais pas</label>
+                    </div>
+                  </fieldset>
+                  <label data-for="funder-yes"><span>Nom de l’organisme financeur <small>(facultatif)</small></span><input name="funder_name" maxlength="120" /></label>
+                  <label data-for="autre">Objet<input name="subject" maxlength="140" /></label>
                 </div>
 
-                <fieldset class="cfield" data-for="entreprise">
-                  <legend>Cartes concernées <small>(plusieurs choix possibles)</small></legend>
-                  <div class="pills">
-                    <label><input type="checkbox" name="cards" value="T" />T · Transaction</label>
-                    <label><input type="checkbox" name="cards" value="G" />G · Gestion</label>
-                    <label><input type="checkbox" name="cards" value="S" />S · Syndic</label>
+                <div class="cgroup" data-for="formation-std entreprise financement autre">
+                  <p class="cgroup__title">Informations complémentaires</p>
+                  <label data-for="formation-std"><span>Échéance de renouvellement <small>(facultatif)</small></span><input name="renewal" placeholder="ex. mars 2027" maxlength="40" /></label>
+                  <label><span data-message-label>Message <small>(facultatif)</small></span><textarea name="message" rows="3" maxlength="3000"></textarea></label>
+                  <p class="cinfo" data-for="entreprise">Alurforma peut vous accompagner dans le déploiement, le suivi des parcours et, selon votre situation, dans les démarches administratives de financement.</p>
+                  <div class="cinfo" data-for="financement">
+                    <p>Alurforma peut vous accompagner dans la constitution et le suivi administratif de votre dossier de financement et, selon le dispositif concerné, prendre en charge tout ou partie des démarches liées à la formation.</p>
+                    <p><strong>La décision de prise en charge appartient toujours à l’organisme financeur.</strong></p>
                   </div>
-                </fieldset>
-
-                <p class="cinfo" data-for="entreprise">Alurforma peut vous accompagner dans le déploiement, le suivi des parcours et, selon votre situation, dans les démarches administratives de financement.</p>
-
-                <fieldset class="cfield" data-for="financement">
-                  <legend>Votre situation</legend>
-                  <div class="pills">
-                    <label><input type="radio" name="situation" value="salarie" required />Salarié</label>
-                    <label><input type="radio" name="situation" value="independant" />Indépendant / dirigeant</label>
-                    <label><input type="radio" name="situation" value="entreprise" />Entreprise / agence / réseau</label>
-                  </div>
-                </fieldset>
-
-                <div class="form__row" data-for="financement">
-                  <label>Formation concernée
-                    <select name="fund_course" data-course-select>
-                      <option value="">Pas encore choisie</option>
-                    </select>
-                  </label>
-                  <label data-for="fin-ent">Nombre de personnes à former<input name="fund_people" inputmode="numeric" maxlength="6" /></label>
                 </div>
-
-                <fieldset class="cfield" data-for="financement">
-                  <legend>Organisme financeur connu&nbsp;?</legend>
-                  <div class="pills">
-                    <label><input type="radio" name="funder_known" value="oui" />Oui</label>
-                    <label><input type="radio" name="funder_known" value="non" />Non</label>
-                    <label><input type="radio" name="funder_known" value="ne-sait-pas" checked />Je ne sais pas</label>
-                  </div>
-                </fieldset>
-                <label data-for="funder-yes"><span>Nom de l’organisme financeur <small>(facultatif)</small></span><input name="funder_name" maxlength="120" /></label>
-
-                <div class="cinfo" data-for="financement">
-                  <p>Alurforma peut vous accompagner dans la constitution et le suivi administratif de votre dossier de financement et, selon le dispositif concerné, prendre en charge tout ou partie des démarches liées à la formation.</p>
-                  <p><strong>La décision de prise en charge appartient toujours à l’organisme financeur.</strong></p>
-                </div>
-
-                <label data-for="autre">Objet<input name="subject" maxlength="140" /></label>
-
-                <label data-for="formation-std entreprise financement autre"><span data-message-label>Message <small>(facultatif)</small></span><textarea name="message" rows="4" maxlength="3000"></textarea></label>
               </div>
               <div class="crecap" data-recap></div>
             </div>
@@ -176,7 +180,7 @@
             <div class="cwiz__nav">
               <button type="button" class="cwiz__back" data-back hidden>← Retour</button>
               <button type="button" class="btn btn--primary btn--lg" data-next>Continuer →</button>
-              <button class="btn btn--primary btn--lg" type="submit" data-submit hidden>Demander mon orientation</button>
+              <button class="btn btn--primary btn--lg cwiz__submit" type="submit" data-submit hidden>Demander mon orientation</button>
             </div>
             <p class="form__status" data-form-status role="status" aria-live="polite"></p>
             <div class="cform__notes" data-notes hidden>
@@ -187,36 +191,40 @@
           <div class="csuccess" data-success hidden tabindex="-1"></div>
         </div>
 
-        <aside class="contact__aside caside">
-          <h2>Besoin d’aide&nbsp;?</h2>
+        <aside class="contact__aside caside" aria-labelledby="caside-title">
+          <h2 id="caside-title">Besoin d’aide pour choisir&nbsp;?</h2>
+          <p class="caside__lead">Un conseiller Alurforma peut vous orienter selon votre situation.</p>
           <ul class="chelp">
-            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><div><b>Orientation</b><span>Trouver votre parcours.</span></div></li>
-            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 6-4.2"/></svg><div><b>Entreprise</b><span>Former vos équipes.</span></div></li>
-            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><div><b>Financement</b><span>Gestion administrative du dossier.</span></div></li>
-            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/></svg><div><b>Assistance</b><span>Une question sur votre accès ou votre parcours.</span></div></li>
+            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg><div><b>Orientation personnalisée</b><span>Formation, carte et heures à compléter.</span></div></li>
+            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 20a4.5 4.5 0 0 1 6-4.2"/></svg><div><b>Entreprise</b><span>Organisation et parcours de vos collaborateurs.</span></div></li>
+            <li><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><div><b>Financement</b><span>Accompagnement administratif selon votre situation.</span></div></li>
           </ul>
+          <p class="caside__label">Contact direct</p>
           <div class="caside__reach">
-            <a class="caside__line" href="tel:+33757990889"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span>07 57 99 08 89</span></a>
-            <a class="caside__line" data-direct-email data-email-link href="#" hidden><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span data-email-text></span></a>
+            <a class="caside__line" href="{{phone_href}}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span><small>Téléphone</small>{{phone}}</span></a>
+            <a class="caside__line" href="{{email_href}}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span><small>E-mail</small>{{email}}</span></a>
           </div>
         </aside>
-      </div>
+        </div>
 
-      <div class="wrap">
         <article class="corg" aria-labelledby="corg-title">
           <header class="corg__head">
             <img class="corg__logo" src="/brand/alurforma-logo-640.png" width="640" height="183" alt="Alurforma" loading="lazy" />
             <span class="corg__badge">Organisme de formation</span>
           </header>
-          <h2 class="corg__title" id="corg-title">Alurforma, organisme de formation professionnelle</h2>
-          <p class="corg__lead">Une marque de SUMMITWISE SAS dédiée à la formation continue des professionnels de l’immobilier.</p>
-          <dl class="corg__grid">
-            <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5l8-2v18M12 21h8V9l-8-2M8 8h.01M8 12h.01M8 16h.01M16 12h.01M16 16h.01"/></svg><dt>Société</dt><dd>SUMMITWISE SAS</dd></div>
-            <div class="corg__q"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><dt>Certification qualité</dt><dd>Qualiopi</dd></div>
-            <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h6M7 14h4"/></svg><dt>SIRET</dt><dd>944 811 819 00019</dd></div>
-            <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 6h4v4H6V9h4L9 3ZM5 17h14v4H5z"/></svg><dt>Déclaration d’activité</dt><dd>11922912592</dd></div>
-          </dl>
-          <p class="corg__addr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span><b>Siège social</b> 1 rue du Débarcadère, 92700 Colombes</span></p>
+          <div class="corg__body">
+            <div class="corg__intro">
+              <h2 class="corg__title" id="corg-title">Alurforma, organisme de formation professionnelle</h2>
+              <p class="corg__lead">Une marque de SUMMITWISE SAS dédiée à la formation continue des professionnels de l’immobilier.</p>
+            </div>
+            <dl class="corg__grid">
+              <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5l8-2v18M12 21h8V9l-8-2M8 8h.01M8 12h.01M8 16h.01M16 12h.01M16 16h.01"/></svg><dt>Société</dt><dd>SUMMITWISE SAS</dd></div>
+              <div class="corg__q"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg><dt>Certification qualité de l’organisme</dt><dd>Qualiopi</dd></div>
+              <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h6M7 14h4"/></svg><dt>SIRET</dt><dd>944 811 819 00019</dd></div>
+              <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 6h4v4H6V9h4L9 3ZM5 17h14v4H5z"/></svg><dt>Déclaration d’activité</dt><dd>11922912592</dd></div>
+            </dl>
+          </div>
+          <p class="corg__addr"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span><b>Siège social</b> {{address}}</span></p>
           <p class="corg__fine">Déclaration d’activité enregistrée auprès du préfet de région d’Île-de-France. Cet enregistrement ne vaut pas agrément de l’État.</p>
         </article>
       </div>

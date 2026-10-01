@@ -82,13 +82,6 @@ export function initForm(form: HTMLFormElement) {
   live.setAttribute('aria-live', 'polite');
   form.append(live);
 
-  // Direct e-mail channel, shown only once confirmed.
-  const direct = document.querySelector<HTMLAnchorElement>('[data-direct-email]');
-  if (direct && CONFIG.emailConfirmed) {
-    direct.href = `mailto:${CONFIG.email}`;
-    direct.querySelector('[data-email-text]')!.textContent = CONFIG.email;
-    direct.hidden = false;
-  }
   $('[data-mailto-note]').hidden = !!activeEndpoint();
 
   // Courses for the financing flow.
@@ -100,23 +93,27 @@ export function initForm(form: HTMLFormElement) {
   let ctx = readContext(params);
   const objet = params.get('objet');
   const statut = params.get('statut');
-  const intentFromUrl: Intent =
+  // Only a context from the URL pre-selects a need: arriving on the bare page,
+  // the visitor answers « Que souhaitez-vous faire ? » themselves.
+  const intentFromUrl: Intent | null =
     objet === 'entreprise' || objet === 'financement' || objet === 'autre'
       ? objet
       : objet === 'formation' || ctx.kind !== 'none'
         ? 'formation'
         : statut
           ? 'financement'
-          : 'formation';
+          : null;
   const radio = (name: string, value: string) => form.querySelector<HTMLInputElement>(`input[name="${name}"][value="${value}"]`);
-  radio('intent', intentFromUrl)!.checked = true;
+  if (intentFromUrl) radio('intent', intentFromUrl)!.checked = true;
   if (statut && SITUATIONS[statut]) radio('situation', statut)!.checked = true;
   if (ctx.kind === 'gs') radio('card', ctx.card)!.checked = true;
   // A course known from the URL also pre-fills the financing flow.
   const firstCourse = ctx.kind === 'course' || ctx.kind === 'custom' ? ctx.courses[0] : undefined;
   if (firstCourse) courseSelect.value = firstCourse.code;
 
+  /** Empty only on step 1, before the visitor has chosen. */
   const intent = () => (form.elements.namedItem('intent') as RadioNodeList).value as Intent;
+  const intentRadios = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="intent"]'));
   const value = (name: string) => {
     const el = form.elements.namedItem(name) as HTMLInputElement | RadioNodeList | null;
     return el ? String(el.value ?? '').trim() : '';
@@ -208,7 +205,10 @@ export function initForm(form: HTMLFormElement) {
 
   form.addEventListener('change', (e) => {
     const t = e.target as HTMLInputElement;
-    if (t.name === 'intent') status.textContent = '';
+    if (t.name === 'intent') {
+      status.textContent = '';
+      intentRadios.forEach((r) => r.removeAttribute('aria-invalid'));
+    }
     render(t.name === 'intent');
     if (step === LAST) renderRecap();
   });
@@ -319,6 +319,11 @@ export function initForm(form: HTMLFormElement) {
     const emailBad = invalid.some((c) => c.name === 'email' && (c as HTMLInputElement).validity.typeMismatch);
     const phoneMissing = names.includes('phone');
     const missing = names.filter((n) => !(n === 'email' && emailBad) && n !== 'phone').map((n) => FIELD_LABEL[n] ?? n);
+    if (names.includes('intent')) {
+      status.dataset.tone = 'error';
+      status.textContent = 'Choisissez ce que vous souhaitez faire pour continuer.';
+      return invalid[0];
+    }
     const parts = [
       missing.length ? `Merci de compléter : ${missing.join(', ')}.` : '',
       emailBad ? 'L’adresse e-mail ne semble pas valide.' : '',
@@ -358,8 +363,17 @@ export function initForm(form: HTMLFormElement) {
     next.hidden = step === LAST;
     submit.hidden = step !== LAST;
     notes.hidden = step === 0;
+    syncNext();
     if (step === LAST) renderRecap();
   }
+
+  // « Continuer » stays visibly inactive until a need is chosen; a click still
+  // explains why instead of doing nothing.
+  function syncNext() {
+    if (step === 0 && !intent()) next.setAttribute('aria-disabled', 'true');
+    else next.removeAttribute('aria-disabled');
+  }
+  form.addEventListener('change', syncNext);
 
   function goTo(n: number, animate = true) {
     if (n === step || switching || n < 0 || n > LAST) return;
@@ -399,53 +413,57 @@ export function initForm(form: HTMLFormElement) {
     if (t) goTo(Number(t.dataset.recapGoto));
   });
 
-  // Summary shown before sending: what the visitor is about to send.
+  // Summary shown before sending: only what the visitor filled in, compact.
   function renderRecap() {
     const i = intent();
     const live = (n: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${n}"]:not(:disabled)`);
     const val = (n: string) => (live(n) ? value(n) : '');
     const opt = (n: string) => {
       const el = live(n);
-      return el instanceof HTMLSelectElement ? (el.selectedOptions[0]?.text ?? '') : '';
+      return el instanceof HTMLSelectElement && el.value ? (el.selectedOptions[0]?.text ?? '') : '';
     };
     const picked = (n: string) =>
       Array.from(form.querySelectorAll<HTMLInputElement>(`input[name="${n}"]:checked:not(:disabled)`))
         .map((c) => c.parentElement!.textContent!.trim())
         .join(', ');
-    const rows: [string, string][] = [];
+    const join = (...parts: string[]) => parts.filter(Boolean).join(' · ');
     const s = summary(i);
+    // [label, value, step to edit]
+    const rows: [string, string, number?][] = [
+      ['Besoin', INTENT_LABEL[i], 0],
+      ['Contact', join(val('name'), val('email'), val('phone')), 1],
+    ];
     if (i === 'formation') {
-      if (ctx.kind !== 'none') rows.push(['Objet', s.text]);
-      rows.push(['Carte', picked('card')], ['Besoin', opt('need')], ['Échéance', val('renewal')]);
+      const card = val('card');
+      const cardText = card === '?' ? 'Carte à préciser' : card ? `Carte ${card}` : '';
+      rows.push(['Parcours', ctx.kind === 'none' ? join(cardText, opt('need')) : join(s.text, cardText)], ['Échéance', val('renewal')]);
     } else if (i === 'entreprise') {
-      rows.push(['Entreprise', val('company')], ['Collaborateurs', opt('team_size')], ['Besoin principal', opt('b2b_need')], ['Cartes', picked('cards')]);
-    } else if (i === 'financement') {
-      const funder = picked('funder_known');
+      const team = opt('team_size');
       rows.push(
-        ['Situation', picked('situation')],
+        ['Entreprise', join(val('company'), team && `${team} collaborateurs`)],
+        ['Objectif', opt('b2b_need')],
+        ['Cartes', picked('cards').replace(/ · \p{L}+/gu, '')],
+      );
+    } else if (i === 'financement') {
+      const funder = val('funder_known') === 'oui' ? `Connu${val('funder_name') ? ` · ${val('funder_name')}` : ''}` : val('funder_known') === 'non' ? 'Non connu' : '';
+      rows.push(
+        ['Situation', join(picked('situation'), val('fund_people') && `${val('fund_people')} personne(s)`)],
         ['Formation', opt('fund_course')],
-        ['Personnes à former', val('fund_people')],
-        ['Financeur connu', funder + (val('funder_name') ? ` (${val('funder_name')})` : '')],
+        ['Financeur', funder],
       );
     } else {
       rows.push(['Objet', val('subject')]);
     }
     const msg = val('message');
-    if (msg) rows.push(['Message', msg.length > 140 ? `${msg.slice(0, 140)}…` : msg]);
-    const contact = [val('name'), val('email'), val('phone')].filter(Boolean).join(' · ');
-    const callback = (form.elements.namedItem('callback') as HTMLInputElement).checked;
-    const dl = (pairs: [string, string][]) =>
-      pairs
-        .filter(([, v]) => v)
-        .map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`)
-        .join('');
-    const html = `<p class="crecap__title">Récapitulatif de votre demande</p>
-      <div class="crecap__group"><dl>${dl([['Besoin', INTENT_LABEL[i]]])}</dl><button type="button" class="crecap__edit" data-recap-goto="0">Modifier</button></div>
-      <div class="crecap__group"><dl>${dl([
-        ['Contact', contact],
-        ['Rappel', callback ? 'Oui, au sujet de cette demande' : ''],
-      ])}</dl><button type="button" class="crecap__edit" data-recap-goto="1">Modifier</button></div>
-      ${rows.some(([, v]) => v) ? `<div class="crecap__group"><dl>${dl(rows)}</dl></div>` : ''}`;
+    if (msg) rows.push(['Message', msg.length > 120 ? `${msg.slice(0, 120)}…` : msg]);
+    if ((form.elements.namedItem('callback') as HTMLInputElement).checked) rows.push(['Rappel', 'Demandé']);
+    const html = `<p class="crecap__title">Résumé avant envoi</p><dl>${rows
+      .filter(([, v]) => v)
+      .map(
+        ([k, v, at]) =>
+          `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd>${at !== undefined ? `<button type="button" class="crecap__edit" data-recap-goto="${at}" aria-label="Modifier : ${esc(k.toLowerCase())}">Modifier</button>` : ''}</div>`,
+      )
+      .join('')}</dl>`;
     // Only touch the DOM when the content changed, so a click on « Modifier »
     // is never lost to a re-render triggered by the blur of the field above.
     if (html !== lastRecap) recap.innerHTML = lastRecap = html;
@@ -477,7 +495,8 @@ export function initForm(form: HTMLFormElement) {
     form.hidden = false;
     render();
     goTo(0, false);
-    form.querySelector<HTMLInputElement>('input[name="intent"]:checked')?.focus();
+    syncNext();
+    intentRadios[0].focus();
   });
 
   let sending = false;

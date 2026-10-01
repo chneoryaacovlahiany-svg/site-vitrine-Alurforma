@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { defineConfig, type Plugin } from 'vite';
+import { CONFIG } from './src/config';
 import { renderFaqJsonLd, renderFaqList, renderFaqNav } from './src/content/faq';
 
 const pages = [
@@ -53,8 +54,38 @@ function faq(): Plugin {
   };
 }
 
+/**
+ * Contact details: `{{phone}}`, `{{email}}`, `{{address}}`… in pages and
+ * partials are filled from CONFIG, the single source of truth. Runs after
+ * the includes so partials are covered too.
+ */
+function coords(): Plugin {
+  const nbsp = (s: string) => s.replace(/ /g, '&nbsp;');
+  const tokens: Record<string, string> = {
+    phone: CONFIG.phone.display,
+    phone_nbsp: nbsp(CONFIG.phone.display),
+    phone_href: `tel:${CONFIG.phone.href}`,
+    phone_e164: CONFIG.phone.href,
+    email: CONFIG.email,
+    email_href: `mailto:${CONFIG.email}`,
+    address: CONFIG.address,
+    address_nbsp: CONFIG.address.split(', ').map(nbsp).join(', '),
+  };
+  return {
+    name: 'alurforma-coords',
+    transformIndexHtml: {
+      order: 'pre',
+      handler: (html, ctx) =>
+        html.replace(/\{\{(\w+)\}\}/g, (m, k: string) => {
+          if (!(k in tokens)) throw new Error(`Unknown token ${m} in ${ctx.filename}`);
+          return tokens[k];
+        }),
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [includes(), faq()],
+  plugins: [includes(), faq(), coords()],
   build: {
     target: 'es2022',
     sourcemap: false,

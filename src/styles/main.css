@@ -1672,89 +1672,6 @@ details p {
   color: var(--ink-2);
 }
 
-/* --------------------------------------------------------------- contact */
-
-.contact {
-  display: grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 64px;
-}
-.contact .head {
-  margin: 0;
-}
-.form {
-  display: grid;
-  gap: 18px;
-}
-.form__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: end;
-  gap: 18px;
-}
-.form label {
-  display: grid;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
-}
-.form small {
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.55);
-}
-.form input:not([type='checkbox']):not([type='radio']),
-.form select,
-.form textarea {
-  width: 100%;
-  min-height: 50px;
-  padding: 12px 16px;
-  border: 1px solid var(--line-dark);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
-  font: 400 16px/1.4 var(--font);
-  transition: border-color 0.2s, background-color 0.2s;
-}
-.form select option {
-  color: var(--ink);
-}
-.form input:focus,
-.form select:focus,
-.form textarea:focus {
-  outline: none;
-  border-color: var(--blue-soft);
-  background: rgba(255, 255, 255, 0.08);
-}
-.form [aria-invalid='true'] {
-  border-color: #ff8a80 !important;
-}
-.form .check {
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 12px;
-  font-weight: 400;
-  font-size: 14.5px;
-  color: rgba(255, 255, 255, 0.72);
-}
-.check input {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
-  accent-color: var(--blue);
-}
-.check a {
-  color: var(--blue-soft);
-}
-.form .btn {
-  justify-self: start;
-}
-.form__status {
-  min-height: 1.6em;
-  font-size: 15px;
-  color: var(--blue-soft);
-}
-
 /* ------------------------------------------------------------ responsive */
 
 @media (max-width: 1000px) {
@@ -1782,8 +1699,7 @@ details p {
   }
   .config,
   .biz,
-  .faq,
-  .contact {
+  .faq {
     grid-template-columns: 1fr;
     gap: 36px;
   }
@@ -1808,8 +1724,7 @@ details p {
   .fund__grid,
   .steps,
   .voices,
-  .law__grid,
-  .form__row {
+  .law__grid {
     grid-template-columns: 1fr;
   }
   .law__item,
