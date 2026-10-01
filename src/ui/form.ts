@@ -140,7 +140,7 @@ export function initForm(form: HTMLFormElement) {
         return 'Demander un devis pour ce parcours';
       default: {
         const card = checkedCard();
-        return card === 'G' || card === 'S' ? 'Être prévenu de l’ouverture' : 'Trouver mon parcours';
+        return card === 'G' || card === 'S' ? 'Être prévenu de l’ouverture' : 'Demander mon orientation';
       }
     }
   }
