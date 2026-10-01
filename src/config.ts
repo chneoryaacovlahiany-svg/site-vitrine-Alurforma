@@ -9,6 +9,10 @@ export const CONFIG = {
   email: 'contact@alurforma.fr',
   /** Shown as an official channel on the Contact page only when true. */
   emailConfirmed: true,
+  /** Provisional phone line given by the owner (« en attendant »). */
+  phone: { display: '07 57 99 08 89', href: '+33757990889' },
+  /** Registered office (extrait RNE / Kbis). */
+  address: '1 rue du Débarcadère, 92700 Colombes',
   /**
    * Endpoint receiving contact requests as JSON (public/api/contact.php on
    * the OVH hosting — contract in docs/contact-api.md). Same origin, so the

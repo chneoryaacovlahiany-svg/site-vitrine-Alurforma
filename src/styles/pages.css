@@ -4186,3 +4186,19 @@ main {
 .corg__list dd {
   white-space: nowrap;
 }
+.caside .cdirect + .cdirect {
+  margin-top: 10px;
+}
+.caside .cdirect span {
+  font-size: 15px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+}
+.corg__list .corg__wide dd {
+  white-space: normal;
+}
+@media (max-width: 760px) {
+  .corg__list .corg__wide {
+    grid-column: 1 / -1;
+  }
+}
