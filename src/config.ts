@@ -5,13 +5,19 @@
 export const CONFIG = {
   /** Public LMS login URL (« Espace apprenant »). */
   lmsUrl: 'https://alurforma.fr/',
-  /** Contact address used by the request form. TO CONFIRM. */
+  /** Contact address (confirmed by the owner, Google Workspace on alurforma.fr). */
   email: 'contact@alurforma.fr',
+  /** Shown as an official channel on the Contact page only when true. */
+  emailConfirmed: true,
   /**
-   * Optional HTTPS endpoint receiving the form as JSON (e.g. your CRM or a
-   * serverless function). When null, the form opens a pre-filled e-mail.
+   * HTTPS endpoint receiving contact requests as JSON (CRM or serverless
+   * function — contract in docs/contact-api.md). While null, the form falls
+   * back to a pre-filled e-mail and says so; it never claims a request was
+   * received. Remember to allow the endpoint in the CSP (connect-src).
    */
   formEndpoint: null as string | null,
+  /** Version of the privacy notice shown under the form, sent with each request. */
+  privacyNoticeVersion: '2026-10-01',
 };
 
 export type Card = 'T' | 'G' | 'S';

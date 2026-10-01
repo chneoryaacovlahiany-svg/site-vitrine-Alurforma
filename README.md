@@ -22,7 +22,7 @@ npm run preview    # sert dist/
 | `entreprises.html` | Offre agences et réseaux : suivi par collaborateur, chaîne de preuve, devis | Film « tableau de pilotage d’agence » |
 | `financement.html` | Pistes par statut, documents fournis, aucune promesse | Film « de votre statut à la décision » |
 | `faq.html` | Questions par thème | — |
-| `contact.html` | Identité de l’organisme, formulaire | — |
+| `contact.html` | Formulaire adaptatif (formation, entreprise, financement, autre), demande de rappel, identité de l’organisme | `src/ui/form.ts`, `src/ui/contact-request.ts`, `docs/contact-api.md` |
 | Pages légales | Mentions légales, CGV, confidentialité, accessibilité, réclamations | — |
 
 L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **au moment du build** par un plugin Vite : chaque page est livrée en HTML complet, donc indexable. Le lien de la page courante reçoit `aria-current="page"`.
@@ -59,7 +59,7 @@ L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **
 
 ## À valider avant publication
 
-1. `src/config.ts` : `lmsUrl`, `email` (actuellement `contact@alurforma.fr`, **à confirmer**) et `formEndpoint` (sinon le formulaire ouvre un e-mail pré-rempli).
+1. `src/config.ts` : `lmsUrl`, `email` (`contact@alurforma.fr`, confirmé) et `formEndpoint` (sinon le formulaire ouvre un e-mail pré-rempli) — contrat dans `docs/contact-api.md`.
 2. Pages légales : compléter les champs « à renseigner » (forme juridique, siège, RCS, TVA, directeur de publication, hébergeur, médiateur…).
 3. Statuts et durées des formations dans `src/catalog/courses.ts` : les mettre à jour à chaque mise en ligne (F01 version enrichie, F02 mise en ligne, F03 évaluations).
 4. Intervenants : le site ne cite aucun nom, seulement les rôles « formateur référent » et « professionnel de terrain » (plusieurs formateurs selon les formations).

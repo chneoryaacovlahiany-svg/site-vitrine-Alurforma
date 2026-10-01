@@ -1829,7 +1829,7 @@ main {
 .form--light small {
   color: var(--ink-3);
 }
-.form--light input:not([type='checkbox']),
+.form--light input:not([type='checkbox']):not([type='radio']),
 .form--light select,
 .form--light textarea {
   border-color: var(--line);
@@ -3572,4 +3572,353 @@ main {
   .faq__a {
     padding-right: 0;
   }
+}
+
+/* ------------------------------------------------ contact (adaptive form) */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.contact__aside {
+  order: -1;
+}
+.contact__aside h2 + .chelp {
+  margin-top: 18px;
+}
+.contact__aside h2:not(:first-child) {
+  margin-top: 36px;
+}
+.chelp {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.chelp li {
+  display: grid;
+  gap: 4px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.chelp b {
+  font: 600 12.5px/1.2 var(--display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.chelp span {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.cdirect p {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+.cdirect a {
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--navy);
+}
+.cform fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.cform__legend {
+  margin-bottom: 14px;
+  font: 600 clamp(20px, 2vw, 24px) / 1.2 var(--display);
+  letter-spacing: -0.01em;
+  color: var(--navy);
+}
+.cintent__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.form .cintent__card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 18px 20px 18px 50px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.25s, box-shadow 0.3s var(--ease), background-color 0.25s;
+}
+.cintent__card input {
+  position: absolute;
+  top: 21px;
+  left: 20px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--green);
+}
+.cintent__card b {
+  font: 600 17px/1.25 var(--display);
+  color: var(--navy);
+}
+.cintent__card span {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.cintent__card:hover {
+  border-color: #cfd6e6;
+}
+.cintent__card:has(input:checked) {
+  border-color: var(--green);
+  background: #f4fbf8;
+  box-shadow: 0 0 0 3px rgba(11, 143, 99, 0.16);
+}
+.cintent__card:has(input:focus-visible) {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+}
+.cform__fields {
+  display: grid;
+  gap: 18px;
+  margin-top: 8px;
+}
+.cform [hidden] {
+  display: none !important;
+}
+.cfield legend {
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.cfield legend small {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.form .pills label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 14.5px;
+  font-weight: 550;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.pills input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--green);
+}
+.form .pills label:has(input:checked) {
+  border-color: var(--green);
+  background: #f4fbf8;
+  color: var(--navy);
+}
+.form .pills label:has(input:focus-visible) {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}
+.form .pills label:has([aria-invalid='true']) {
+  border-color: #c0392b;
+}
+.cnote {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+.cnote a {
+  color: var(--green);
+}
+.cfield .cnote {
+  margin-top: 10px;
+  color: var(--ink-2);
+}
+.cinfo {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 16px 18px;
+  border-left: 3px solid var(--green);
+  border-radius: 0 14px 14px 0;
+  background: var(--ivory);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.cinfo strong {
+  color: var(--navy);
+}
+.cphone {
+  display: grid;
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.cform__submit {
+  display: grid;
+  gap: 10px;
+}
+.cform__submit .btn[aria-busy='true'] {
+  opacity: 0.75;
+  cursor: progress;
+}
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.creq {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid rgba(4, 29, 75, 0.12);
+  border-radius: var(--r);
+  background: linear-gradient(135deg, #f7f9fd, var(--ivory));
+}
+.creq__eyebrow {
+  font: 600 12px/1 var(--display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a6a33;
+}
+.creq__title {
+  margin-top: 8px;
+  font: 600 18px/1.35 var(--display);
+  color: var(--navy);
+}
+.creq__title span {
+  color: var(--green);
+}
+.creq__sub {
+  margin-top: 4px;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+.creq__badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border: 1px solid rgba(138, 106, 51, 0.35);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #8a6a33;
+}
+.creq__badge.is-ok {
+  border-color: rgba(11, 143, 99, 0.35);
+  color: var(--green);
+}
+.creq__edit {
+  flex: none;
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  font: 600 14px var(--font);
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.creq__edit:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.form--light .form__status[data-tone='error'] {
+  color: #b23b2e;
+}
+.form--light .form__status a {
+  color: var(--green);
+}
+.csuccess {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: clamp(28px, 4vw, 44px);
+  border: 1px solid rgba(11, 143, 99, 0.3);
+  border-radius: var(--r-lg);
+  background: #f4fbf8;
+}
+.csuccess:focus {
+  outline: none;
+}
+.csuccess .csuccess__kicker {
+  font: 600 13px/1 var(--display);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+.csuccess h2 {
+  font: 600 clamp(24px, 2.6vw, 30px) / 1.2 var(--display);
+  color: var(--navy);
+}
+.csuccess p {
+  color: var(--ink-2);
+}
+.csuccess__what {
+  font-weight: 650;
+  color: var(--navy) !important;
+}
+.csuccess .btn {
+  margin-top: 8px;
+}
+@media (max-width: 1000px) {
+  .contact__aside {
+    order: 0;
+  }
+}
+@media (max-width: 640px) {
+  .cintent__grid {
+    grid-template-columns: 1fr;
+  }
+  .creq {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cintent__card,
+  .pills label {
+    transition: none;
+  }
+}
+.cform label,
+.cform .form__row > * {
+  min-width: 0;
+}
+.cform select {
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+.cdirect {
+  margin-top: 36px;
 }

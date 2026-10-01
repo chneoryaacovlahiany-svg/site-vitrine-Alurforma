@@ -1703,7 +1703,7 @@ details p {
   font-weight: 400;
   color: rgba(255, 255, 255, 0.55);
 }
-.form input:not([type='checkbox']),
+.form input:not([type='checkbox']):not([type='radio']),
 .form select,
 .form textarea {
   width: 100%;

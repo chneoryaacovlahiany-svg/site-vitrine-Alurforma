@@ -1,88 +1,394 @@
-import { CONFIG } from '../config';
+import { CONFIG, CARD_NAMES, type Card } from '../config';
+import { COURSES, type Course } from '../catalog/courses';
+import { mailtoHref, newRequestId, sendRequest, type ContactRequest, type RequestType } from './contact-request';
 
 /**
- * Contact / quote form. Validates client-side, then either POSTs JSON to
- * CONFIG.formEndpoint or opens the visitor's mail client with a pre-filled
- * message. It never pretends a request was stored when it was not.
+ * Contact page: one form that adapts to what the visitor wants to do.
+ * Four intents (formation, entreprise, financement, autre) and, for
+ * formation, a context read from the URL (course, pack, custom pack, card
+ * G/S) shown in a « Votre demande » banner. Fields that don't apply are
+ * hidden *and* disabled, so they are neither validated nor sent; shared
+ * fields (name, e-mail, phone) keep their value when the intent changes.
  */
+
+type Intent = 'formation' | 'entreprise' | 'financement' | 'autre';
+type Ctx =
+  | { kind: 'none' }
+  | { kind: 'course'; courses: Course[] }
+  | { kind: 'pack'; hours: 14 | 28 | 42 }
+  | { kind: 'custom'; hours: number; courses: Course[] }
+  | { kind: 'gs'; card: 'G' | 'S' };
+
+const PACK_SUB: Record<14 | 28 | 42, string> = { 14: 'Une année', 28: 'Deux années', 42: 'Cycle de trois années' };
+const INTENT_LABEL: Record<Intent, string> = {
+  formation: 'Trouver une formation',
+  entreprise: 'Former mon équipe',
+  financement: 'Étudier un financement',
+  autre: 'Autre demande',
+};
+const FIELD_LABEL: Record<string, string> = {
+  name: 'nom et prénom',
+  email: 'e-mail',
+  company: 'entreprise / agence',
+  situation: 'votre situation',
+  message: 'message',
+  phone: 'téléphone',
+};
+const SITUATIONS: Record<string, string> = { salarie: 'Salarié', independant: 'Indépendant / dirigeant', entreprise: 'Entreprise / agence / réseau' };
+const NEEDS: Record<string, string> = {
+  'formation-precise': 'Une formation précise',
+  'completer-heures': 'Compléter mes heures',
+  '14h': '14 h',
+  '28h': '28 h',
+  '42h': '42 h',
+  'ne-sait-pas': 'Je ne sais pas encore',
+};
+
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+const byCode = (code: string) => COURSES.find((c) => c.code === code.toUpperCase());
+
+function readContext(params: URLSearchParams): Ctx {
+  const objet = params.get('objet');
+  if (objet === 'carte-g' || objet === 'carte-s') return { kind: 'gs', card: objet === 'carte-g' ? 'G' : 'S' };
+  const courses = (params.get('f') ?? '')
+    .split(',')
+    .map((c) => byCode(c.trim()))
+    .filter((c): c is Course => !!c);
+  const pack = params.get('pack')?.match(/^(pack|sur-mesure)-(\d+)$/);
+  if (pack?.[1] === 'pack' && ['14', '28', '42'].includes(pack[2])) return { kind: 'pack', hours: Number(pack[2]) as 14 | 28 | 42 };
+  if (pack?.[1] === 'sur-mesure') return { kind: 'custom', hours: Number(pack[2]), courses };
+  if (courses.length) return { kind: 'course', courses };
+  return { kind: 'none' };
+}
+
 export function initForm(form: HTMLFormElement) {
-  const status = form.querySelector<HTMLElement>('[data-form-status]')!;
-  const subject = form.querySelector<HTMLSelectElement>('[data-subject-select]')!;
+  const $ = <T extends Element = HTMLElement>(sel: string) => form.querySelector<T>(sel)!;
+  const page = form.parentElement!;
+  const status = $('[data-form-status]');
+  const submit = $<HTMLButtonElement>('[data-submit]');
+  const banner = page.querySelector<HTMLElement>('[data-context]')!;
+  const success = page.querySelector<HTMLElement>('[data-success]')!;
+  const cardSoon = $('[data-card-soon]');
+  const message = $<HTMLTextAreaElement>('textarea[name="message"]');
+  const phone = $<HTMLInputElement>('input[name="phone"]');
+  const shown = Array.from(form.querySelectorAll<HTMLElement>('[data-for]'));
+  const controls = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea')).filter(
+    (c) => c.name !== 'website',
+  );
 
-  // Pre-select the subject from ?objet=… (links from other pages).
-  const objet = new URLSearchParams(location.search).get('objet');
-  if (objet && Array.from(subject.options).some((o) => o.value === objet)) subject.value = objet;
-  // Pre-fill the message with the chosen formation(s) or pack.
+  // Screen-reader announcement when the form adapts to a new intent.
+  const live = document.createElement('p');
+  live.className = 'sr-only';
+  live.setAttribute('aria-live', 'polite');
+  form.append(live);
+
+  // Direct e-mail channel, shown only once confirmed.
+  const direct = document.querySelector<HTMLElement>('[data-direct-email]');
+  if (direct && CONFIG.emailConfirmed) {
+    const a = direct.querySelector<HTMLAnchorElement>('[data-email-link]')!;
+    a.href = `mailto:${CONFIG.email}`;
+    a.textContent = CONFIG.email;
+    direct.hidden = false;
+  }
+  $('[data-mailto-note]').hidden = !!CONFIG.formEndpoint;
+
+  // Courses for the financing flow.
+  const courseSelect = $<HTMLSelectElement>('[data-course-select]');
+  for (const c of COURSES) courseSelect.add(new Option(`${c.code} · ${c.title}${c.online ? '' : ' (bientôt disponible)'}`, c.code));
+
+  // --------------------------------------------------- initial state (URL)
   const params = new URLSearchParams(location.search);
-  const pack = params.get('pack');
-  const codes = params.get('f');
-  const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+  let ctx = readContext(params);
+  const objet = params.get('objet');
   const statut = params.get('statut');
-  const STATUTS: Record<string, string> = { salarie: 'Salarié', independant: 'Indépendant / dirigeant', entreprise: 'Entreprise / agence / réseau' };
-  if (message && !message.value && statut && STATUTS[statut]) {
-    message.value = `Ma situation : ${STATUTS[statut]}\nFormation concernée : \nNombre de personnes à former : \n\nJe souhaite étudier le financement de cette formation.`;
-  }
-  if (message && !message.value && (pack || codes)) {
-    const lines: string[] = [];
-    if (pack) {
-      const m = pack.match(/^(pack|sur-mesure)-(\d+)$/);
-      if (m) lines.push(m[1] === 'pack' ? `Je souhaite un devis pour le pack ${m[2]} h.` : `Je souhaite un devis pour un pack sur mesure (objectif ${m[2]} h).`);
+  const intentFromUrl: Intent =
+    objet === 'entreprise' || objet === 'financement' || objet === 'autre'
+      ? objet
+      : objet === 'formation' || ctx.kind !== 'none'
+        ? 'formation'
+        : statut
+          ? 'financement'
+          : 'formation';
+  const radio = (name: string, value: string) => form.querySelector<HTMLInputElement>(`input[name="${name}"][value="${value}"]`);
+  radio('intent', intentFromUrl)!.checked = true;
+  if (statut && SITUATIONS[statut]) radio('situation', statut)!.checked = true;
+  if (ctx.kind === 'gs') radio('card', ctx.card)!.checked = true;
+  // A course known from the URL also pre-fills the financing flow.
+  const firstCourse = ctx.kind === 'course' || ctx.kind === 'custom' ? ctx.courses[0] : undefined;
+  if (firstCourse) courseSelect.value = firstCourse.code;
+
+  const intent = () => (form.elements.namedItem('intent') as RadioNodeList).value as Intent;
+  const value = (name: string) => {
+    const el = form.elements.namedItem(name) as HTMLInputElement | RadioNodeList | null;
+    return el ? String(el.value ?? '').trim() : '';
+  };
+  const checkedCard = () => (value('card') || null) as Card | '?' | null;
+
+  // ------------------------------------------------------------- render
+  function ctaLabel(i: Intent) {
+    if (i === 'entreprise') return 'Demander une présentation';
+    if (i === 'financement') return 'Étudier ma situation';
+    if (i === 'autre') return 'Envoyer ma demande';
+    switch (ctx.kind) {
+      case 'gs':
+        return 'Être prévenu de l’ouverture';
+      case 'course':
+        return ctx.courses.every((c) => c.online) ? 'Demander des informations' : 'Être prévenu de l’ouverture';
+      case 'pack':
+        return 'Être informé de l’ouverture';
+      case 'custom':
+        return 'Demander un devis pour ce parcours';
+      default: {
+        const card = checkedCard();
+        return card === 'G' || card === 'S' ? 'Être prévenu de l’ouverture' : 'Trouver mon parcours';
+      }
     }
-    if (codes) {
-      const list = codes.split(',').filter((c) => /^F\d{2}$/.test(c));
-      if (list.length) lines.push(`${pack ? 'Formations choisies' : 'Formation'} : ${list.join(', ')}.`);
-    }
-    if (lines.length) message.value = `${lines.join('\n')}\n\nMa carte professionnelle : \nMon échéance de renouvellement : `;
   }
 
-  const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea'));
-  fields.forEach((f) => f.addEventListener('input', () => f.removeAttribute('aria-invalid')));
+  function renderBanner(i: Intent) {
+    if (i !== 'formation' || ctx.kind === 'none') {
+      banner.hidden = true;
+      banner.innerHTML = '';
+      return;
+    }
+    let title = '';
+    let sub = '';
+    let badge = '';
+    if (ctx.kind === 'course') {
+      title = ctx.courses.map((c) => `<span>${c.code}</span> ${esc(c.title)}`).join('<br />');
+      badge = ctx.courses.every((c) => c.online) ? 'Disponible' : ctx.courses.length > 1 ? 'Disponibilité selon la formation' : 'Bientôt disponible';
+    } else if (ctx.kind === 'pack') {
+      title = `Pack Carte Pro · ${ctx.hours} h`;
+      sub = PACK_SUB[ctx.hours];
+      badge = 'Ouverture prochaine';
+    } else if (ctx.kind === 'custom') {
+      title = `Parcours sur mesure · objectif ${ctx.hours} h`;
+      sub = ctx.courses.map((c) => `${c.code} · ${esc(c.title)}`).join('<br />');
+    } else {
+      title = `Carte ${ctx.card} — ${CARD_NAMES[ctx.card]}`;
+      badge = 'Bientôt disponible';
+    }
+    banner.innerHTML = `<div><p class="creq__eyebrow">Votre demande</p><p class="creq__title">${title}</p>${sub ? `<p class="creq__sub">${sub}</p>` : ''}${
+      badge ? `<span class="creq__badge${badge === 'Disponible' ? ' is-ok' : ''}">${badge}</span>` : ''
+    }</div><button type="button" class="creq__edit" data-ctx-edit>Modifier</button>`;
+    banner.hidden = false;
+  }
 
+  function render(announce = false) {
+    const i = intent();
+    const tokens = new Set<string>([i]);
+    if (i === 'formation') {
+      const sub = ctx.kind === 'gs' ? 'gs' : ctx.kind === 'none' ? 'free' : 'ctx';
+      tokens.add(`formation-${sub}`);
+      if (sub !== 'gs') tokens.add('formation-std');
+    }
+    if (i === 'financement') {
+      if (value('situation') === 'entreprise') tokens.add('fin-ent');
+      if (value('funder_known') === 'oui') tokens.add('funder-yes');
+    }
+    for (const el of shown) el.hidden = !el.dataset.for!.split(' ').some((t) => tokens.has(t));
+    for (const c of controls) {
+      if (c.name === 'intent') continue;
+      c.disabled = !!c.closest('[data-for][hidden]');
+    }
+
+    $('[data-email-label]').textContent = i === 'entreprise' ? 'E-mail professionnel' : 'E-mail';
+    message.required = i === 'autre';
+    $('[data-message-label]').innerHTML = i === 'autre' ? 'Message' : 'Message <small>(facultatif)</small>';
+    phone.required = (form.elements.namedItem('callback') as HTMLInputElement).checked;
+
+    const card = checkedCard();
+    const soon = tokens.has('formation-free') && (card === 'G' || card === 'S');
+    cardSoon.hidden = !soon;
+    if (soon) cardSoon.textContent = `Les formations carte ${card} — ${CARD_NAMES[card as Card].toLowerCase()} — sont bientôt disponibles : nous vous préviendrons de leur ouverture.`;
+
+    renderBanner(i);
+    submit.textContent = ctaLabel(i);
+    if (announce) live.textContent = `Formulaire adapté : ${INTENT_LABEL[i]}.`;
+  }
+
+  form.addEventListener('change', (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.name === 'intent') status.textContent = '';
+    render(t.name === 'intent');
+  });
+  banner.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('[data-ctx-edit]')) return;
+    ctx = { kind: 'none' };
+    history.replaceState(null, '', `${location.pathname}?objet=formation`);
+    render();
+    form.querySelector<HTMLInputElement>('input[name="card"]')?.focus();
+  });
+  controls.forEach((c) => c.addEventListener('input', () => c.removeAttribute('aria-invalid')));
+  render();
+
+  // ------------------------------------------------------------ payload
+  function summary(i: Intent): { type: RequestType; text: string } {
+    if (i === 'entreprise') return { type: 'entreprise', text: 'Offre Agences & Réseaux' };
+    if (i === 'financement') {
+      const c = byCode(value('fund_course'));
+      return { type: 'financement', text: `Étude de financement${c ? ` — ${c.code} · ${c.title}` : ''}` };
+    }
+    if (i === 'autre') return { type: 'autre', text: value('subject') || 'Autre demande' };
+    switch (ctx.kind) {
+      case 'course':
+        return { type: 'formation_course', text: ctx.courses.map((c) => `${c.code} · ${c.title}`).join(' ; ') };
+      case 'pack':
+        return { type: 'pack', text: `Pack Carte Pro · ${ctx.hours} h` };
+      case 'custom':
+        return { type: 'custom_pack', text: `Parcours sur mesure · objectif ${ctx.hours} h (${ctx.courses.map((c) => c.code).join(', ')})` };
+      case 'gs':
+        return { type: 'card_waitlist', text: `Carte ${ctx.card} — ${CARD_NAMES[ctx.card]} · ouverture` };
+      default: {
+        const card = checkedCard();
+        if (card === 'G' || card === 'S') return { type: 'card_waitlist', text: `Carte ${card} — ${CARD_NAMES[card]} · ouverture` };
+        return { type: 'formation', text: 'Trouver une formation' };
+      }
+    }
+  }
+
+  let requestId = newRequestId();
+  function payload(): ContactRequest {
+    const i = intent();
+    const fd = new FormData(form);
+    const get = (k: string) => {
+      const v = String(fd.get(k) ?? '').trim();
+      return v ? v : null;
+    };
+    const optionText = (k: string) => {
+      const sel = form.elements.namedItem(k) as HTMLSelectElement | null;
+      return sel && !sel.disabled ? (sel.selectedOptions[0]?.text ?? null) : null;
+    };
+    const s = summary(i);
+    const now = new Date().toISOString();
+    const callback = fd.get('callback') === 'on';
+    const cards =
+      i === 'entreprise' ? (fd.getAll('cards') as string[]) : ctx.kind === 'gs' ? [ctx.card] : get('card') && get('card') !== '?' ? [get('card')!] : [];
+    const courseCodes =
+      i === 'financement' ? (get('fund_course') ? [get('fund_course')!] : []) : i === 'formation' && (ctx.kind === 'course' || ctx.kind === 'custom') ? ctx.courses.map((c) => c.code) : [];
+    let ref: string | null = null;
+    try {
+      const r = document.referrer ? new URL(document.referrer) : null;
+      if (r && r.origin === location.origin) ref = r.pathname + r.hash;
+    } catch {
+      ref = null;
+    }
+    return {
+      request_id: requestId,
+      request_type: s.type,
+      contact_type: i === 'entreprise' || (i === 'financement' && get('situation') === 'entreprise') ? 'professional' : 'unknown',
+      name: get('name') ?? '',
+      email: get('email') ?? '',
+      phone: get('phone'),
+      company: get('company'),
+      professional_card: cards,
+      renewal_date: get('renewal'),
+      need: i === 'entreprise' ? optionText('b2b_need') : get('need') ? NEEDS[get('need')!] ?? null : null,
+      course_codes: courseCodes,
+      pack: i === 'formation' && ctx.kind === 'pack' ? `pack-${ctx.hours}` : i === 'formation' && ctx.kind === 'custom' ? `sur-mesure-${ctx.hours}` : null,
+      funding_status: get('situation') ? SITUATIONS[get('situation')!] : null,
+      funding_body_known: get('funder_known'),
+      funding_body: get('funder_name'),
+      team_size: optionText('team_size') ?? get('fund_people'),
+      subject: get('subject'),
+      message: get('message'),
+      summary: s.text,
+      source_page: 'contact',
+      source_url: location.href,
+      source_referrer: ref,
+      created_at: now,
+      callback_requested: callback,
+      callback_requested_at: callback ? now : null,
+      callback_scope: callback ? s.text : null,
+      callback_proof_text: callback ? $('[data-callback-text]').textContent!.trim() : null,
+      privacy_notice_version: CONFIG.privacyNoticeVersion,
+    };
+  }
+
+  // ------------------------------------------------------------- submit
+  function validate() {
+    const invalid: (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[] = [];
+    for (const c of controls) {
+      if (c.disabled || !c.willValidate) continue;
+      const ok = c.checkValidity();
+      c.setAttribute('aria-invalid', String(!ok));
+      if (!ok) invalid.push(c);
+    }
+    if (!invalid.length) return true;
+    const names = [...new Set(invalid.map((c) => c.name))];
+    const emailBad = invalid.some((c) => c.name === 'email' && (c as HTMLInputElement).validity.typeMismatch);
+    const phoneMissing = names.includes('phone');
+    const missing = names.filter((n) => !(n === 'email' && emailBad) && n !== 'phone').map((n) => FIELD_LABEL[n] ?? n);
+    const parts = [
+      missing.length ? `Merci de compléter : ${missing.join(', ')}.` : '',
+      emailBad ? 'L’adresse e-mail ne semble pas valide.' : '',
+      phoneMissing ? 'Indiquez un numéro de téléphone pour être rappelé.' : '',
+    ];
+    status.dataset.tone = 'error';
+    status.textContent = parts.filter(Boolean).join(' ');
+    invalid[0].focus();
+    return false;
+  }
+
+  function showSuccess(req: ContactRequest, reference: string | null) {
+    success.innerHTML = `<p class="csuccess__kicker">✓ Demande transmise</p>
+      <h2>Merci, votre demande est entre nos mains.</h2>
+      <p>Nous avons bien reçu votre demande concernant&nbsp;:</p>
+      <p class="csuccess__what">${esc(req.summary)}</p>
+      ${reference ? `<p class="csuccess__ref">Référence : <b>${esc(reference)}</b></p>` : ''}
+      ${req.callback_requested ? '<p>Vous avez demandé à être rappelé au sujet de cette demande.</p>' : ''}
+      <button type="button" class="btn btn--dark" data-again>Faire une autre demande</button>`;
+    form.hidden = true;
+    banner.hidden = true;
+    success.hidden = false;
+    success.focus();
+  }
+  success.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('[data-again]')) return;
+    form.reset();
+    ctx = { kind: 'none' };
+    requestId = newRequestId();
+    status.textContent = '';
+    success.hidden = true;
+    form.hidden = false;
+    render();
+    form.querySelector<HTMLInputElement>('input[name="intent"]:checked')?.focus();
+  });
+
+  let sending = false;
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    let firstInvalid: HTMLElement | null = null;
-    for (const f of fields) {
-      const ok = f.checkValidity();
-      f.setAttribute('aria-invalid', String(!ok));
-      if (!ok && !firstInvalid) firstInvalid = f;
-    }
-    if (firstInvalid) {
-      status.textContent = 'Merci de compléter les champs obligatoires et d’accepter l’utilisation de vos informations.';
-      firstInvalid.focus();
-      return;
-    }
-    const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
-    data.subject = subject.selectedOptions[0]?.text ?? data.subject;
-    delete data.consent;
+    if (sending) return;
+    // Honeypot: real visitors never see this field.
+    if (value('website')) return;
+    if (!validate()) return;
+    const req = payload();
 
-    if (CONFIG.formEndpoint) {
-      status.textContent = 'Envoi en cours…';
-      try {
-        const res = await fetch(CONFIG.formEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-        if (!res.ok) throw new Error(String(res.status));
-        form.reset();
-        status.textContent = 'Merci, votre demande a bien été transmise. Nous vous répondons par e-mail.';
-      } catch {
-        status.textContent = `L’envoi n’a pas abouti. Vous pouvez nous écrire directement à ${CONFIG.email}.`;
-      }
+    if (!CONFIG.formEndpoint) {
+      window.location.href = mailtoHref(req);
+      status.dataset.tone = 'info';
+      status.textContent = 'Votre messagerie s’ouvre avec votre demande pré-remplie : elle nous parviendra une fois l’e-mail envoyé.';
       return;
     }
 
-    const body = [
-      `Nom : ${data.name}`,
-      `E-mail : ${data.email}`,
-      data.phone ? `Téléphone : ${data.phone}` : '',
-      '',
-      data.message,
-    ]
-      .filter((l, i) => l !== '' || i === 3)
-      .join('\n');
-    const href = `mailto:${CONFIG.email}?subject=${encodeURIComponent(`[Alurforma] ${data.subject}`)}&body=${encodeURIComponent(body)}`;
-    window.location.href = href;
-    status.textContent = 'Votre messagerie s’ouvre avec la demande pré-remplie : il ne reste qu’à l’envoyer.';
+    sending = true;
+    const label = submit.textContent;
+    submit.disabled = true;
+    submit.setAttribute('aria-busy', 'true');
+    submit.textContent = 'Envoi en cours…';
+    status.textContent = '';
+    const res = await sendRequest(req);
+    sending = false;
+    submit.disabled = false;
+    submit.removeAttribute('aria-busy');
+    submit.textContent = label;
+    if (res.ok) {
+      showSuccess(req, res.reference);
+      requestId = newRequestId();
+      return;
+    }
+    // Same request_id on retry: the server can deduplicate.
+    status.dataset.tone = 'error';
+    status.innerHTML = `L’envoi n’a pas abouti. Vous pouvez réessayer ou nous écrire à <a href="${esc(mailtoHref(req))}">${esc(CONFIG.email)}</a>.`;
   });
 }

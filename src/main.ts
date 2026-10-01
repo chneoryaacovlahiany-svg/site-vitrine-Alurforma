@@ -10,7 +10,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { CONFIG } from './config';
 import { initConfigurator } from './ui/configurator';
-import { initForm } from './ui/form';
 import { initTabs } from './ui/tabs';
 import { watchPlayback } from './ui/video-fallback';
 
@@ -240,7 +239,7 @@ $$('.chain').forEach((el) => {
 const config = $('[data-config]');
 if (config) initConfigurator(config, $('[data-config-result]')!);
 const form = $<HTMLFormElement>('[data-form]');
-if (form) initForm(form);
+if (form) import('./ui/form').then(({ initForm }) => initForm(form));
 
 // Financement page: situation → circuit.
 // FAQ: highlight the rubric being read in the sticky nav.
