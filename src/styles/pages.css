@@ -3848,10 +3848,12 @@ main {
 .cform .cintent__card {
   position: relative;
   display: grid;
-  align-content: start;
-  gap: 6px;
-  min-height: 116px;
-  padding: 18px 52px 18px 20px;
+  grid-template-columns: 40px 1fr;
+  grid-template-areas: 'ico title' 'ico text';
+  align-content: center;
+  gap: 2px 14px;
+  min-height: 92px;
+  padding: 16px 48px 16px 18px;
   border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--paper);
@@ -3868,9 +3870,10 @@ main {
   cursor: pointer;
 }
 .cintent__ico {
+  grid-area: ico;
+  align-self: start;
   width: 40px;
   height: 40px;
-  margin-bottom: 6px;
   padding: 10px;
   border-radius: 12px;
   background: var(--ivory);
@@ -3878,11 +3881,13 @@ main {
   transition: background-color 0.25s, color 0.25s;
 }
 .cintent__card b {
-  font: 600 18px/1.25 var(--display);
+  grid-area: title;
+  font: 600 17px/1.25 var(--display);
   color: var(--navy);
 }
 .cintent__card span {
-  font-size: 14.5px;
+  grid-area: text;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.45;
   color: var(--ink-3);
@@ -3890,8 +3895,8 @@ main {
 .cintent__card::after {
   content: '';
   position: absolute;
-  top: 22px;
-  right: 22px;
+  top: 18px;
+  right: 18px;
   width: 22px;
   height: 22px;
   border: 1.5px solid #d5d9e5;
@@ -4073,11 +4078,11 @@ main {
   flex-direction: column;
 }
 .cpage {
-  --c-frame: 728px;
+  --c-frame: 664px;
 }
 @media (max-width: 1179px) {
   .cpage {
-    --c-frame: 700px;
+    --c-frame: 656px;
   }
 }
 @media (min-width: 761px) {
@@ -4142,14 +4147,11 @@ main {
 .form__status a {
   color: var(--green);
 }
-.cform__notes.is-idle {
-  visibility: hidden;
-}
 .cform__notes {
   display: grid;
   gap: 2px;
-  margin-top: 10px;
-  text-align: right;
+  margin: 12px 4px 0;
+  text-align: center;
 }
 
 /* Confirmation after sending. */
@@ -4480,10 +4482,6 @@ main {
   }
   .cform .cintent__card {
     min-height: 0;
-    padding: 20px 52px 20px 20px;
-  }
-  .cintent__ico {
-    margin-bottom: 6px;
   }
   .cwiz__bar {
     margin-bottom: 28px;

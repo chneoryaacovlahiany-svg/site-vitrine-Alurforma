@@ -92,17 +92,18 @@
                   </div>
                   <p class="cnote" data-card-soon hidden></p>
                 </fieldset>
+                <fieldset class="cfield" data-for="formation-free">
+                  <legend>Votre besoin</legend>
+                  <div class="pills">
+                    <label><input type="radio" name="need" value="formation-precise" />Une formation précise</label>
+                    <label><input type="radio" name="need" value="completer-heures" />Compléter mes heures</label>
+                    <label><input type="radio" name="need" value="14h" />14 h</label>
+                    <label><input type="radio" name="need" value="28h" />28 h</label>
+                    <label><input type="radio" name="need" value="42h" />42 h</label>
+                    <label><input type="radio" name="need" value="ne-sait-pas" checked />Je ne sais pas encore</label>
+                  </div>
+                </fieldset>
                 <div class="form__row" data-for="formation-std">
-                  <label data-for="formation-free">Votre besoin
-                    <select name="need">
-                      <option value="formation-precise">Une formation précise</option>
-                      <option value="completer-heures">Compléter mes heures</option>
-                      <option value="14h">14 h</option>
-                      <option value="28h">28 h</option>
-                      <option value="42h">42 h</option>
-                      <option value="ne-sait-pas" selected>Je ne sais pas encore</option>
-                    </select>
-                  </label>
                   <label><span>Échéance de renouvellement <small>(facultatif)</small></span><input name="renewal" placeholder="ex. mars 2027" maxlength="40" /></label>
                 </div>
 
@@ -190,11 +191,11 @@
               <button class="btn btn--primary btn--lg cwiz__submit" type="submit" data-submit hidden>Demander mon orientation</button>
             </div>
             <p class="form__status" data-form-status role="status" aria-live="polite"></p>
-            <div class="cform__notes" data-notes>
-              <p class="cnote" data-mailto-note hidden>L’envoi se fait depuis votre messagerie : la demande nous parvient une fois l’e-mail envoyé.</p>
-              <p class="cnote">Vos informations servent uniquement à traiter votre demande. <a href="./confidentialite.html">Politique de confidentialité</a></p>
-            </div>
           </form>
+          <div class="cform__notes" data-notes>
+            <p class="cnote" data-mailto-note hidden>L’envoi se fait depuis votre messagerie : la demande nous parvient une fois l’e-mail envoyé.</p>
+            <p class="cnote">Vos informations servent uniquement à traiter votre demande. <a href="./confidentialite.html">Politique de confidentialité</a></p>
+          </div>
           <div class="csuccess" data-success hidden tabindex="-1"></div>
         </div>
 

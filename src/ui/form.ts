@@ -88,7 +88,9 @@ export function initForm(form: HTMLFormElement) {
   live.setAttribute('aria-live', 'polite');
   form.append(live);
 
-  $('[data-mailto-note]').hidden = !!activeEndpoint();
+  // Notes sit under the card, outside the fixed frame.
+  const notes = page.querySelector<HTMLElement>('[data-notes]')!;
+  notes.querySelector<HTMLElement>('[data-mailto-note]')!.hidden = !!activeEndpoint();
 
   // Courses for the financing flow.
   const courseSelect = $<HTMLSelectElement>('[data-course-select]');
@@ -352,7 +354,7 @@ export function initForm(form: HTMLFormElement) {
   const progress = $('[data-progress]');
   const back = $<HTMLButtonElement>('[data-back]');
   const next = $<HTMLButtonElement>('[data-next]');
-  const notes = $('[data-notes]');
+
   const recap = $('[data-recap]');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let step = 0;
@@ -381,8 +383,6 @@ export function initForm(form: HTMLFormElement) {
     back.hidden = step === 0;
     next.hidden = step === LAST;
     submit.hidden = step !== LAST;
-    // Kept in the layout on step 1 (invisible) so the buttons never move.
-    notes.classList.toggle('is-idle', step === 0);
     syncNext();
     if (step === LAST) renderRecap();
   }
@@ -463,7 +463,7 @@ export function initForm(form: HTMLFormElement) {
         [
           ctx.kind !== 'none' ? s.text : '',
           card === '?' ? 'Carte à préciser' : card ? `Carte ${card}` : '',
-          ctx.kind === 'none' ? opt('need') : '',
+          ctx.kind === 'none' ? picked('need').join('') : '',
           val('renewal') && `Échéance : ${val('renewal')}`,
         ],
       ]);
@@ -521,6 +521,7 @@ export function initForm(form: HTMLFormElement) {
     form.hidden = true;
     banner.hidden = true;
     success.hidden = false;
+    notes.hidden = true;
     success.focus();
   }
   success.addEventListener('click', (e) => {
@@ -531,6 +532,7 @@ export function initForm(form: HTMLFormElement) {
     status.textContent = '';
     success.hidden = true;
     form.hidden = false;
+    notes.hidden = false;
     render();
     goTo(0, false);
     syncNext();
