@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://alurforma.fr/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://alurforma.fr/formations.html</loc><priority>0.9</priority></url>
+  <url><loc>https://alurforma.fr/entreprises.html</loc><priority>0.8</priority></url>
+  <url><loc>https://alurforma.fr/financement.html</loc><priority>0.6</priority></url>
+  <url><loc>https://alurforma.fr/faq.html</loc><priority>0.6</priority></url>
+  <url><loc>https://alurforma.fr/contact.html</loc><priority>0.5</priority></url>
+  <url><loc>https://alurforma.fr/mentions-legales.html</loc><priority>0.2</priority></url>
+  <url><loc>https://alurforma.fr/cgv.html</loc><priority>0.2</priority></url>
+  <url><loc>https://alurforma.fr/confidentialite.html</loc><priority>0.2</priority></url>
+  <url><loc>https://alurforma.fr/accessibilite.html</loc><priority>0.2</priority></url>
+  <url><loc>https://alurforma.fr/reclamations.html</loc><priority>0.2</priority></url>
+</urlset>

@@ -1,0 +1,389 @@
+/* ==========================================================================
+   Accessibility comfort panel (src/ui/a11y.ts) — settings are attributes
+   data-a11y-* on <html>, same names as the LMS. Comfort only: the site's
+   native accessibility does not depend on this file.
+   ========================================================================== */
+
+/* --------------------------------------------------------- the settings */
+
+/* Text size: every font size is multiplied by --a11y-fs (vite.config.ts). */
+html[data-a11y-font='sm'] { --a11y-fs: 0.875; }
+html[data-a11y-font='lg'] { --a11y-fs: 1.125; }
+html[data-a11y-font='xl'] { --a11y-fs: 1.25; }
+
+/* Stronger contrast: darker greys, opaque light text, firmer lines. */
+html[data-a11y-contrast='on'] {
+  --ink-2: #1f2542;
+  --ink-3: #343b5c;
+  --line: #a9b0c4;
+  --a11y-alpha: 0.94;
+}
+html[data-a11y-contrast='on'] .cpage { --c-gold: #5f4519; }
+html[data-a11y-contrast='on'] .cwiz__steps button,
+html[data-a11y-contrast='on'] .cwiz__dot { color: var(--ink-3); }
+html[data-a11y-contrast='on'] ::placeholder { color: #4b5270; opacity: 1; }
+
+/* Dyslexia font (loaded on demand from @fontsource/opendyslexic). */
+html[data-a11y-dyslexia='on'] body,
+html[data-a11y-dyslexia='on'] body * {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  word-spacing: 0.08em;
+}
+
+/* Larger or wider text must reflow, never push the page sideways. */
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl'])
+  :is(h1, h2, h3, h4, p, li, a, button, span, b, strong, label, dd, dt, legend, small) {
+  overflow-wrap: anywhere; /* a word only breaks if it cannot fit on its own line */
+}
+/* Larger or wider text: the compact menu (☰) takes over from the link bar,
+   as it already does on narrower screens. */
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl']) :is(.nav__links, .nav__cta) {
+  display: none;
+}
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl']) .nav__burger {
+  display: block;
+}
+/* Contact stepper: numbers, plus the name of the active step only. */
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl']) .cwiz__steps {
+  display: flex;
+  gap: 14px;
+}
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl']) .cwiz__steps .is-current {
+  flex: 1;
+}
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl']) .cwiz__steps li:not(.is-current) .cwiz__name {
+  display: none;
+}
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl'])
+  body :not(.sr, .sr-only, .a11y-tab__label) {
+  white-space: normal !important; /* pills, badges, e-mail: wrap rather than overflow */
+}
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl']) .btn {
+  max-width: 100%;
+}
+html:is([data-a11y-dyslexia='on'], [data-a11y-letter='wide'], [data-a11y-font='lg'], [data-a11y-font='xl']) body {
+  overflow-x: clip; /* decorative overhangs only (hero light paths) */
+}
+
+/* Relaxed line height on reading text. */
+html[data-a11y-line='relaxed'] :is(p, li, dd, dt, label, td, th, small, .cnote, .faq__a) {
+  line-height: 1.85 !important;
+}
+
+/* Wider letter and word spacing on reading text. */
+html[data-a11y-letter='wide'] :is(p, li, dd, dt, label, td, th, small) {
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.12em !important;
+}
+
+/* Reduced motion (main.ts also stops smooth scroll, reveals and videos). */
+html[data-a11y-motion='reduce'] *,
+html[data-a11y-motion='reduce'] *::before,
+html[data-a11y-motion='reduce'] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Underline every text link (buttons styled as buttons stay as they are). */
+html[data-a11y-links='underline'] a:not(.btn):not(.brand):not(.a11y-tab) {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+}
+
+/* Strong focus ring: white / navy / gold, visible on light and dark. */
+html[data-a11y-focus='strong'] :focus-visible {
+  outline: 3px solid #041d4b !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 8px #f2c14e !important;
+}
+
+/* --------------------------------------------------------------- the tab */
+
+.a11y-tab {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 9px 16px 11px;
+  border: 0;
+  border-radius: 16px 0 0 16px;
+  background: var(--navy);
+  color: #fff;
+  box-shadow: -8px 0 24px -10px rgba(4, 29, 75, 0.55);
+  transform: translateY(-50%);
+  cursor: pointer;
+  touch-action: none;
+  transition: padding 0.2s var(--ease), background-color 0.2s;
+}
+.a11y-tab:hover {
+  padding-left: 14px;
+  background: #0a2a63;
+}
+.a11y-tab svg {
+  color: #7fd8b5;
+}
+.a11y-tab__label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font: 600 11px/1 var(--display);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.a11y-tab__grip {
+  width: 14px;
+  height: 4px;
+  border-block: 1.5px solid rgba(255, 255, 255, 0.45);
+}
+.a11y-tab.is-dragging {
+  cursor: grabbing;
+  background: #0a2a63;
+}
+.a11y-tab:focus-visible {
+  outline: 3px solid #f2c14e;
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------- the panel */
+
+.a11y-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+}
+.a11y-panel[hidden] {
+  display: none;
+}
+.a11y-panel:not(.is-open) {
+  pointer-events: none;
+}
+.a11y-panel__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 18, 46, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.a11y-panel__sheet {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  width: min(400px, calc(100vw - 24px));
+  border-radius: 22px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 30px 80px -20px rgba(4, 29, 75, 0.45);
+  transform: translateX(24px);
+  opacity: 0;
+  transition: transform 0.22s var(--ease), opacity 0.2s;
+  overflow: hidden;
+}
+.a11y-panel.is-open .a11y-panel__backdrop { opacity: 1; }
+.a11y-panel.is-open .a11y-panel__sheet { transform: none; opacity: 1; }
+.a11y-panel__sheet:focus { outline: none; }
+.a11y-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.a11y-panel__head h2 {
+  margin: 0;
+  font: 600 20px/1.2 var(--display);
+  color: var(--navy);
+}
+.a11y-panel__head p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+.a11y-panel__close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--navy);
+  cursor: pointer;
+}
+.a11y-panel__close:hover { background: var(--ivory); }
+.a11y-panel__body {
+  display: grid;
+  gap: 20px;
+  padding: 18px 22px 22px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.a11y-group {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.a11y-group legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font: 600 11.5px/1.2 var(--display);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a6a33;
+}
+
+/* Text size choices. */
+.a11y-sizes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.a11y-size {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 10px 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.a11y-size input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.a11y-size b { font: 600 17px/1.1 var(--display); color: var(--navy); }
+.a11y-size small { font-size: 12px; color: var(--ink-3); }
+.a11y-size:has(input:checked) {
+  border-color: var(--green);
+  background: #f4fbf8;
+  box-shadow: 0 0 0 2px rgba(11, 143, 99, 0.18);
+}
+.a11y-size:has(input:focus-visible) {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}
+
+/* Switches: a native checkbox with role="switch", drawn as a toggle. */
+.a11y-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.a11y-switch:hover { background: var(--ivory); }
+.a11y-switch span { display: grid; gap: 2px; min-width: 0; }
+.a11y-switch b { font-size: 15px; font-weight: 600; color: var(--navy); }
+.a11y-switch small { font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+.a11y-switch input {
+  flex: none;
+  position: relative;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+  border-radius: 999px;
+  background: #cfd4e2;
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.a11y-switch input::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(4, 29, 75, 0.3);
+  transition: transform 0.2s var(--ease);
+}
+.a11y-switch input:checked { background: var(--green); }
+.a11y-switch input:checked::after { transform: translateX(18px); }
+.a11y-switch input:disabled { opacity: 0.6; cursor: default; }
+.a11y-switch input:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}
+.a11y-switch:has(input:checked) { border-color: rgba(11, 143, 99, 0.45); }
+
+.a11y-reset {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  font: 600 14.5px var(--font);
+  color: var(--navy);
+  cursor: pointer;
+}
+.a11y-reset:hover { background: var(--ivory); }
+.a11y-note {
+  margin: -8px 0 0;
+  font-size: 12.5px;
+  text-align: center;
+  color: var(--ink-3);
+}
+.a11y-more {
+  justify-self: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The page behind the open panel does not scroll. */
+html.a11y-open { overflow: hidden; }
+
+/* ---------------------------------------------------------- responsive */
+
+@media (max-width: 640px) {
+  .a11y-tab {
+    gap: 0;
+    padding: 10px 7px 10px 9px;
+    border-radius: 12px 0 0 12px;
+  }
+  .a11y-tab__label { display: none; }
+  .a11y-tab__grip { margin-bottom: 6px; }
+  .a11y-panel__sheet {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 92dvh;
+    border-radius: 22px 22px 0 0;
+    transform: translateY(24px);
+  }
+  .a11y-sizes { gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .a11y-tab,
+  .a11y-panel__backdrop,
+  .a11y-panel__sheet,
+  .a11y-switch input,
+  .a11y-switch input::after { transition: none; }
+}
