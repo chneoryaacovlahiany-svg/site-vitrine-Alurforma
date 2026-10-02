@@ -37,6 +37,7 @@ L’en-tête et le pied de page sont communs (`partials/*.html`) et injectés **
 | `src/lms/*` | Écrans LMS dessinés en Canvas 2D (logo officiel, données fictives) et attestation SPÉCIMEN. |
 | `src/presentations/*` | Lecteur de « films » GSAP (chapitres, pause, lecture seulement si visible, format vertical sur mobile) et les trois montages. |
 | `src/catalog/courses.ts` | Catalogue des formations (F01, F02, F03) : objectifs, leçons et durées vidéo mesurées, statut, évaluation. Ajouter une formation = ajouter un objet ici. |
+| `src/ui/a11y.ts`, `src/styles/a11y.css`, `public/a11y-boot.js` | Panneau d’accessibilité (confort, pas une preuve de conformité) : contraste renforcé, taille du texte, police dyslexie, interlignage, espacement, animations réduites, liens soulignés, focus renforcé. Préférences en localStorage (`alurforma:a11y`), rien n’est envoyé. Onglet déplaçable verticalement (souris, doigt, flèches ↑ ↓). |
 | `src/config.ts` | **À compléter avant la mise en ligne** : URL du LMS, e-mail, téléphone, adresse, endpoint du formulaire, statuts T/G/S. Téléphone, e-mail et adresse sont injectés au build dans les pages et le pied de page via les jetons `{{phone}}`, `{{phone_href}}`, `{{email}}`, `{{email_href}}`, `{{address}}`… (`vite.config.ts`, plugin `coords`) : une seule source à modifier. |
 | `public/brand/` | Logo officiel détouré (sans modification des proportions) et symbole. |
 | `public/media/` | Vidéos web issues du générique : boucle d’ouverture de porte (WebM/MP4, 960 et 1600 px) et film complet. |

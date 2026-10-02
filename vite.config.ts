@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
+import type { Plugin as PostcssPlugin } from 'postcss';
 import { defineConfig, type Plugin } from 'vite';
 import { CONFIG } from './src/config';
 import { renderFaqJsonLd, renderFaqList, renderFaqNav } from './src/content/faq';
@@ -84,8 +85,46 @@ function coords(): Plugin {
   };
 }
 
+/**
+ * Accessibility preferences are re-applied before first paint by
+ * public/a11y-boot.js (a file, not inline: the CSP only allows 'self').
+ */
+function a11yBoot(): Plugin {
+  return {
+    name: 'alurforma-a11y-boot',
+    transformIndexHtml: () => [{ tag: 'script', attrs: { src: '/a11y-boot.js' }, injectTo: 'head-prepend' }],
+  };
+}
+
+/**
+ * CSS rewrites for the accessibility panel (src/ui/a11y.ts):
+ * - every font size is multiplied by --a11y-fs (A− … A++), since the site's
+ *   sizes are in px and a root font-size change would not reach them;
+ * - semi-transparent text colours get a minimum opacity, --a11y-alpha, raised
+ *   by « Contraste renforcé ».
+ * Both variables default to a no-op, so the normal rendering is unchanged.
+ */
+function a11yCss(): PostcssPlugin {
+  const SIZE = /\d*\.?\d+px|(?:clamp|min|max)\((?:[^()]|\([^()]*\))*\)/;
+  const scale = (v: string) => `calc(${v} * var(--a11y-fs, 1))`;
+  return {
+    postcssPlugin: 'alurforma-a11y',
+    Declaration(decl) {
+      if (decl.value.includes('--a11y-')) return;
+      if (decl.prop === 'font-size' && /px|vw|vh/.test(decl.value)) decl.value = scale(decl.value);
+      else if (decl.prop === 'font') decl.value = decl.value.replace(SIZE, scale);
+      else if (decl.prop === 'color')
+        decl.value = decl.value.replace(
+          /rgba\(\s*(\d+),\s*(\d+),\s*(\d+),\s*(0?\.\d+)\s*\)/g,
+          (_, r, g, b, a) => `rgba(${r}, ${g}, ${b}, max(${a}, var(--a11y-alpha, 0)))`,
+        );
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [includes(), faq(), coords()],
+  plugins: [includes(), faq(), coords(), a11yBoot()],
+  css: { postcss: { plugins: [a11yCss()] } },
   build: {
     target: 'es2022',
     sourcemap: false,

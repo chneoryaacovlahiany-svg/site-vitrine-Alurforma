@@ -4,11 +4,13 @@ import '@fontsource/instrument-serif/400.css';
 import '@fontsource/instrument-serif/400-italic.css';
 import './styles/main.css';
 import './styles/pages.css';
+import './styles/a11y.css';
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { CONFIG } from './config';
+import { initA11y } from './ui/a11y';
 import { initConfigurator } from './ui/configurator';
 import { initTabs } from './ui/tabs';
 import { watchPlayback } from './ui/video-fallback';
@@ -18,7 +20,10 @@ gsap.registerPlugin(ScrollTrigger);
 const $ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => root.querySelector<T>(s);
 const $$ = <T extends Element = HTMLElement>(s: string, root: ParentNode = document) => Array.from(root.querySelectorAll<T>(s));
 
-const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Reduced motion: the device setting, or « Réduire les animations » in the
+// accessibility panel (applied before this script by a11y-boot.js).
+const reduced =
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.a11yMotion === 'reduce';
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 // -------------------------------------------------------------- config ----
@@ -26,13 +31,16 @@ const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matc
 $$<HTMLAnchorElement>('[data-lms]').forEach((a) => (a.href = CONFIG.lmsUrl));
 $$('[data-year]').forEach((n) => (n.textContent = String(new Date().getFullYear())));
 
+initA11y();
+
 // ------------------------------------------------------------ smooth scroll
 
 let lenis: Lenis | null = null;
+const lenisTick = (time: number) => lenis?.raf(time * 1000);
 if (!reduced) {
   lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 0.9 });
   lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis!.raf(time * 1000));
+  gsap.ticker.add(lenisTick);
   gsap.ticker.lagSmoothing(0);
 }
 
@@ -300,3 +308,16 @@ if (tabApi && location.hash.length > 1) {
 }
 
 window.addEventListener('load', () => ScrollTrigger.refresh());
+
+// « Réduire les animations » switched on while browsing: stop what can be
+// stopped right away (smooth scroll, pending reveals, playing videos); the
+// 3D sequence and presentations follow on the next page load.
+document.addEventListener('a11y:change', (e) => {
+  if (reduced || !(e as CustomEvent<{ reducedMotion: boolean }>).detail.reducedMotion) return;
+  gsap.ticker.remove(lenisTick);
+  lenis?.destroy();
+  lenis = null;
+  ScrollTrigger.getAll().forEach((t) => t.vars.once && t.kill());
+  gsap.set('.reveal', { autoAlpha: 1, y: 0 });
+  $$<HTMLVideoElement>('video[autoplay], [data-hero-video]').forEach((v) => v.pause());
+});
